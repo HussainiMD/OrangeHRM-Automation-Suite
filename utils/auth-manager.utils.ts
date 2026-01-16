@@ -1,22 +1,38 @@
+
 import { APIRequestContext, request, APIResponse } from "@playwright/test";
 import * as fs from "fs";
 import path from "path";
 
+const lockFilePath: string = path.join('storage', '.auth-manager-global.lock');
+const errorMsgFilePath: string = path.join('storage', '.auth-manager-global.error');
+
 const resolvers: Array<Function> = [];
 const rejectors: Array<Function> = [];
-let isRefreshInProgress:boolean = false;
 
-/**This Auth manager is to keep a central role around auth token management
- * It works per worker (NodeJS process)
- * There could be multiple tests running in parallel failing due to auth & asking to refresh Auth
- * We want all of them to be waiting on a promise, which will be eventually be resolved or rejected based on refresh process result
- * To control, refresh process method is called only once for all the parallel tests, we are using a boolean control flag (isRefreshInProgress)
+let isAuthLockMonitorStarted:boolean = false;
+
+/** Logic below can be better understood if we look at context:
+ *  For a given machine, we should have ONLY one AUTH token. Even expired token management should not voilate this rule
+ *  As playwright by default uses parellel execution which means tests can run in isolation due to workers
+ *  We need to communicate across worker process about state of token refreshment process through File System (locks)
+ *  Here is the detailed process
+ *  1. whoever is asking to refresh token, we are promising them (let them wait and we will notify status - success/error)
+ *  2. A lock file is created as soon as refresh token is started and subsequently removed
+ *  3. In case of error, an error file is created. Otherwise by default it is assumed refresh of token is successful
+ *  4. Above 2 steps are for inter worker communication but within a worker there can be multiple tests waiting for refresh token status
+ *  5. To communicate across tests within worker, we are using a central monitor which will keep checking lock file
+ *  6. Once lock file is released, monitor will verify status of token refreshment process and then then notify tests about error or success
  */
-
 export async function refreshAdminAuthState() {    
-
-    /*If refreshing of auth token is not started, start it and it has to run only once at any point of time */
-    if(!isRefreshInProgress) doRefreshAdminAuthState();
+    /*call only if lock file does not exist. Avoid RACE conditions*/
+    if(!fs.existsSync(lockFilePath))         
+        doRefreshAdminAuthState();
+    
+    /*Only ONCE per worker, lock monitor should be running */
+    if(!isAuthLockMonitorStarted) {
+        startAuthLockMonitor();
+        isAuthLockMonitorStarted = true;
+    }
     
     /*whoever calls for refresh auth will get a promise */
     return new Promise((resolve, reject) => {
@@ -25,10 +41,14 @@ export async function refreshAdminAuthState() {
     })    
 }
 
-
 async function doRefreshAdminAuthState() { 
+    /*Cleaning last execution status if any */
+    if(fs.existsSync(errorMsgFilePath))
+        fs.unlinkSync(errorMsgFilePath);
+    
+    console.log('Creating the Lock File by Process ID-' + process.pid.toString());
+    fs.writeFileSync(lockFilePath, `shared lock file used by playwright authentication manager - PID:${process.pid.toString()}`, {flag: 'wx'});   
     console.log('Starting the process to Refresh for a new Auth token');
-    isRefreshInProgress = true;
 
     const apiReqContext: APIRequestContext = await request.newContext({
          baseURL: process.env.base_url        
@@ -52,25 +72,42 @@ async function doRefreshAdminAuthState() {
                 password: process.env.password ?? ''
             }
         })
-
         if(!validateAPIResponse.ok())         
             throw new Error('Validate API call failed. Cannot get an active authenticated context');
-
         const authResponseText: string = await validateAPIResponse.text();
         if((/[:]error/).test(authResponseText))         
             throw new Error('unable to do auth validation');
-
         await apiReqContext.storageState({path: './storage/admin-auth.json'});        
-        notifySuccess();
     } catch(err: any) {
+
         console.log(err);
-        notifyError('Something went wrong while refreshing Auth token. Please inspect logs for details');
-    } finally {       
-        apiReqContext.dispose();        
-        isRefreshInProgress = false;
+        fs.writeFileSync(errorMsgFilePath, `To signal playwright workers that authentication attempt has failed. PID-${process.pid.toString()}`, {flag: 'wx+'});   //wx+ means that we want file to be available exclusively for read and write. Fail operation if file exists     
+
+    } finally {        
+        
+        apiReqContext.dispose();
+
+        if(fs.existsSync(lockFilePath)) {
+            console.log('Removing the Lock File by Process ID - ' + process.pid.toString());
+            fs.unlinkSync(lockFilePath);     //unlink is a safer way to delete file (means delete only when no process reads)
+        } else console.log('Lock file is expected to EXIST but NOT found by Process ID - ' + process.pid.toString());   
+
     }
 }
 
+
+/*This is a monitor used at a WORKER level. Only ONE monitor should run */
+function startAuthLockMonitor() {
+   const timerId = setInterval(()=> {
+        if(!fs.existsSync(lockFilePath)) {
+            if(fs.existsSync(errorMsgFilePath)) notifyError('something failed, please check logs for details');
+            else notifySuccess();
+            isAuthLockMonitorStarted = false;
+            console.log(`clearing timer ${timerId}`);
+            clearInterval(timerId);
+        } else console.log(`Process (${process.pid.toString()}) still waiting for lock to be released`);
+    }, 1000)
+}
 
 function notifySuccess() {
     resolvers.forEach(resolver => resolver());
