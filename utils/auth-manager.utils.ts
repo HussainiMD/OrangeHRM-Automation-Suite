@@ -41,15 +41,16 @@ export async function refreshAdminAuthState() {
     })    
 }
 
-async function doRefreshAdminAuthState() { 
+async function doRefreshAdminAuthState() {     
+    console.log('Creating the Lock File by Process ID-' + process.pid.toString());
+    fs.writeFileSync(lockFilePath, `shared lock file used by playwright authentication manager - PID:${process.pid.toString()}`, {flag: 'wx'});   
+    
+    console.log('Starting the process to Refresh for a new Auth token');
+
     /*Cleaning last execution status if any */
     if(fs.existsSync(errorMsgFilePath))
         fs.unlinkSync(errorMsgFilePath);
     
-    console.log('Creating the Lock File by Process ID-' + process.pid.toString());
-    fs.writeFileSync(lockFilePath, `shared lock file used by playwright authentication manager - PID:${process.pid.toString()}`, {flag: 'wx'});   
-    console.log('Starting the process to Refresh for a new Auth token');
-
     const apiReqContext: APIRequestContext = await request.newContext({
          baseURL: process.env.base_url        
     });
