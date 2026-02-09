@@ -16,6 +16,7 @@ export const test = base.extend<AdminUserFixture>({
 
         /** This API call will fail if made from expired/non authenticated context. 
          * We are fetching only 1 record (limit=1) for FASTER execution 
+         * Below logic is a PRO-ACTIVE step instead of REACTIVE with interception of response. It helps avoiding failure of tests.
          */
         const apiResponse:APIResponse = await apiRequestContext.get('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1');
 
@@ -44,7 +45,7 @@ export const test = base.extend<AdminUserFixture>({
 
         adminUserContext.close();
     },
-    authPage: async ({authContext}, use) => {
+    authPage: async ({authContext}, use) => { //here auth context is automatically being provided to this call back function
         const authenticatedPage = await authContext.newPage();             
 
         await use(authenticatedPage);
