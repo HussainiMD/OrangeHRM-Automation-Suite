@@ -2,6 +2,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
 import { refreshAdminAuthState } from "../utils/auth-manager.utils";
+import { addTestEmployee } from "../utils/users-manager.util";
 import {APIRequestContext, APIResponse, request} from "@playwright/test";
 
 dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
@@ -14,6 +15,7 @@ async function extractAndSaveContext()  {
        await refreshAdminAuthState();
     } catch(err) {
         console.log(err);
+        throw err;
     }
 }
 
@@ -21,4 +23,5 @@ async function extractAndSaveContext()  {
 //Playwright expects only ONE default module, hence the work around
 export default async () => {
     await extractAndSaveContext();
+    await addTestEmployee();    
 }
