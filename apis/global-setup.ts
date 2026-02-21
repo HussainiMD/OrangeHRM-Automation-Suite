@@ -2,8 +2,10 @@ import fs from "fs";
 import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
 import { refreshAdminAuthState } from "../utils/auth-manager.utils";
-import { addTestEmployee } from "../utils/users-manager.util";
+import { getEmployeeDataFilePath, addTestEmployee } from "../utils/users-manager.util";
 import {APIRequestContext, APIResponse, request} from "@playwright/test";
+import BasicEmployeeType from "../tests/types/BasicEmployeeType";
+import EmployeeType from "../tests/types/EmployeeType";
 
 dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
 
@@ -19,9 +21,33 @@ async function extractAndSaveContext()  {
     }
 }
 
+/** This is function to add a test employee which will be used to create user(s) across the test cases. 
+ * Test Employee has to be present in orange hrm otherwise test cases will fail.
+ * Both Employee ID and Employee number sounds similar but ID is user provided and optional. Where as employee number is auto generated.
+ * So, to add a USER, employee number is mandatory.
+ * We are creating test employee only once through global setup. Then sharing employee number through file system "employee data file path".
+ * NOTE: Though we are doing add only once, there are chances that test employee gets deleted by orange hrm team's clean up cron job. We are ignoring that risk for now
+ */
+async function extractAndSaveEmployeeDetails() {
+    const newEmployeeData:BasicEmployeeType = {
+                        "firstName": "playwright",
+                        "middleName": "",
+                        "lastName": "employee_007"                
+    };
+
+    const employeeDetails:EmployeeType = await addTestEmployee(newEmployeeData); 
+    
+    const employeeNumber = employeeDetails.empNumber;
+    console.log(`employeeNumber generated for test employee is ${employeeNumber}`);
+    
+    //put it in a file so that multiple worker threads can access data
+    const employeeDataFilePath:string = getEmployeeDataFilePath();
+    fs.writeFileSync(employeeDataFilePath, JSON.stringify({employeeNumber}), {encoding:'utf-8'});
+}
+
 
 //Playwright expects only ONE default module, hence the work around
 export default async () => {
     await extractAndSaveContext();
-    await addTestEmployee();    
+    await extractAndSaveEmployeeDetails();
 }

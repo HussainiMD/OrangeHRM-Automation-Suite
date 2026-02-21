@@ -3,38 +3,32 @@ import {APIRequest, APIRequestContext, APIResponse, request, TestInfo} from "@pl
 import fs from "fs";
 import path from "path";
 import UserType from "../tests/types/UserType";
+import BasicEmployeeType from "../tests/types/BasicEmployeeType";
+import EmployeeType from "../tests/types/EmployeeType";
 
 const employeeDataFilePath: string = path.join('storage', '.test-employee-global.json');
 
-/** This is function to add a test employee which will be used to create user(s) across the test cases. 
- * Test Employee has to be present in orange hrm otherwise test cases will fail.
- * Both Employee ID and Employee number sounds similar but ID is user provided and optional. Where as employee number is auto generated.
- * So, to add a USER, employee number is mandatory.
- * We are creating test employee only once through global setup. Then sharing employee number through file system "employee data file path".
- * NOTE: Though we are doing add only once, there are chances that test employee gets deleted by orange hrm team's clean up cron job. We are ignoring that risk for now
- */
-async function addTestEmployee(): Promise<void> {
+//utility function to share path so that exact path configuration remains here with the owner file
+const getEmployeeDataFilePath = ():string => employeeDataFilePath;
+
+interface addEmployeeResponseDataType {
+    "data": EmployeeType
+}
+
+/**Here we will be adding a test employee */
+async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
     const requestContext:APIRequestContext = await request.newContext({storageState: './storage/admin-auth.json'});
     try {
         const addEmployeeResponse:APIResponse = await requestContext.post('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/pim/employees', {
                 headers: { 'Content-Type': 'application/json'},
-                data: {
-                        "firstName": "playwright_",
-                        "middleName": "",
-                        "lastName": "employee_007"                
-                }
+                data
             });
         
         console.log(`add test employee request status ${addEmployeeResponse.status()}`);
         if(!addEmployeeResponse.ok()) throw new Error(`add test employee API returned response with status ${addEmployeeResponse.status()}`);
 
-        const newEmployeeRecord:object = await addEmployeeResponse.json();
-        const employeeNumber = newEmployeeRecord?.data?.empNumber;
-        console.log(`employeeNumber generated for test employee is ${employeeNumber}`);
-
-        //put it in a file so that multiple worker threads can access data
-        fs.writeFileSync(employeeDataFilePath, JSON.stringify({employeeNumber}), {encoding:'utf-8'});
-        
+        const newEmployeeRecord:addEmployeeResponseDataType = await addEmployeeResponse.json();         
+        return newEmployeeRecord.data;        
     } catch(err) {
         console.warn('Unable to add test employee data to orange hrm');
         console.warn(err);
@@ -42,12 +36,12 @@ async function addTestEmployee(): Promise<void> {
     }
 }
 
-
+/**This function helps to create a non admin (ESS) user */
 async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType> {    
     const apiRequestContext:APIRequestContext = await request.newContext({storageState: './storage/admin-auth.json'});
     try {        
         const exists = await doesUserExists(name, apiRequestContext);
-        console.log(`exists? ${exists}`);
+        console.log(`does "${name}" user exists? ${exists}`);
         if(exists) throw new Error(`${name} user already exists. Each user name has to be unique. Please try with a different name`);
 
         //extract employee number from file system, which is expected to be present before this code starts executes
@@ -75,8 +69,9 @@ async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType
                 "empNumber": testEmployeeNumber
             }
         });
-        console.log(`add user request status ${addUserResp.status()}`);
-        console.log(await addUserResp.text());
+
+        console.log(`add user request API response status is ${addUserResp.status()}`);
+        
         return {
             name,
             "password": "tester123"
@@ -113,4 +108,4 @@ async function doesUserExists(name: string, requestContext:APIRequestContext): P
 
 }
 
-export {addTestEmployee, addNewESSUser} 
+export {getEmployeeDataFilePath, addTestEmployee, addNewESSUser} 
