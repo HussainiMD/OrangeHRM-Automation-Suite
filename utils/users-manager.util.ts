@@ -11,8 +11,14 @@ const employeeDataFilePath: string = path.join('storage', '.test-employee-global
 //utility function to share path so that exact path configuration remains here with the owner file
 const getEmployeeDataFilePath = ():string => employeeDataFilePath;
 
-interface addEmployeeResponseDataType {
+interface AddEmployeeResponseDataType {
     "data": EmployeeType
+}
+
+interface SearchUserResponseMetaDataType {
+    meta: {
+        total: number
+    }
 }
 
 /**Here we will be adding a test employee */
@@ -27,7 +33,7 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
         console.log(`add test employee request status ${addEmployeeResponse.status()}`);
         if(!addEmployeeResponse.ok()) throw new Error(`add test employee API returned response with status ${addEmployeeResponse.status()}`);
 
-        const newEmployeeRecord:addEmployeeResponseDataType = await addEmployeeResponse.json();         
+        const newEmployeeRecord:AddEmployeeResponseDataType = await addEmployeeResponse.json();         
         return newEmployeeRecord.data;        
     } catch(err) {
         console.warn('Unable to add test employee data to orange hrm');
@@ -89,12 +95,8 @@ async function doesUserExists(name: string, requestContext:APIRequestContext): P
                 
         if(!apiResponse.ok()) return false;
 
-        const searchResult: Object = await apiResponse.json();
-        
-        if(!searchResult.hasOwnProperty('meta')) return false;
-        const metaData: Object = searchResult['meta'];
-        if(!metaData.hasOwnProperty('total') ) return false;
-        const totalMatchCount:number = parseInt(metaData['total']);
+        const searchResult: SearchUserResponseMetaDataType = await apiResponse.json();       
+        const totalMatchCount:number = searchResult.meta.total;
 
         const areMatchesFound: boolean = totalMatchCount > 0;
         return areMatchesFound;
