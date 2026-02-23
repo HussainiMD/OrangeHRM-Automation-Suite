@@ -2,12 +2,12 @@ import {test as base, APIRequestContext, APIResponse, BrowserContext, Page, Resp
 import { refreshAdminAuthState } from "../utils/auth-manager.utils";
 
 interface AdminUserFixture {
-    authContext: BrowserContext,
-    authPage: Page
+    adminUserAuthContext: BrowserContext,
+    adminUserAuthPage: Page
 }
 
 export const test = base.extend<AdminUserFixture>({
-    authContext: async ({browser}, use) => {
+    adminUserAuthContext: async ({browser}, use) => {
         
         const apiRequestContext:APIRequestContext = await request.newContext({
             baseURL: process.env.base_URL,
@@ -45,8 +45,8 @@ export const test = base.extend<AdminUserFixture>({
 
         adminUserContext.close();
     },
-    authPage: async ({authContext}, use) => { //here auth context is automatically being provided to this call back function
-        const authenticatedPage = await authContext.newPage();             
+    adminUserAuthPage: async ({adminUserAuthContext}, use) => { //here auth context is automatically being provided to this call back function
+        const authenticatedPage = await adminUserAuthContext.newPage();             
 
         await use(authenticatedPage);
         
