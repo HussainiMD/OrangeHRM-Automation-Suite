@@ -6,6 +6,7 @@ import UserType from "../tests/types/UserType";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
 import {getValidAuthJSONPath} from "../utils/auth-manager.utils";
+import { baseLogger } from "./logger";
 
 const employeeDataFilePath: string = path.join('storage', 'test-employee-global.json');
 
@@ -38,14 +39,14 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
                 data
             });
         
-        console.log(`add test employee request status ${addEmployeeResponse.status()}`);
+        baseLogger.info(`add test employee request status ${addEmployeeResponse.status()}`);
         if(!addEmployeeResponse.ok()) throw new Error(`add test employee API returned response with status ${addEmployeeResponse.status()}`);
 
         const newEmployeeRecord:AddEmployeeResponseDataType = await addEmployeeResponse.json();         
         return newEmployeeRecord.data;        
     } catch(err) {
-        console.warn('Unable to add test employee data to orange hrm');
-        console.warn(err);
+        baseLogger.warn('Unable to add test employee data to orange hrm');
+        baseLogger.warn(err);
         throw err;
     }
 }
@@ -64,7 +65,7 @@ async function deleteTestEmployee(empIds:Array<number>): Promise<void> {
                 ids: empIds
             }
         });
-    console.log(`delete employee (id:${empIds.join()}) API call resulted in response code ${apiResponse.status()}`);
+    baseLogger.info(`delete employee (id:${empIds.join()}) API call resulted in response code ${apiResponse.status()}`);
     if(!apiResponse.ok())
         throw new Error(`Delete Employee for IDs "${empIds.join()}" has failed - status code: ${apiResponse.status()}. Here are the error details ${await apiResponse.text()}`);
 }
@@ -77,7 +78,7 @@ async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType
     const apiRequestContext:APIRequestContext = await request.newContext({storageState: authJSONLocation});
     try {        
         const exists = await doesUserExists(name, apiRequestContext);
-        console.log(`does "${name}" user exists? ${exists}`);
+        baseLogger.info(`does "${name}" user exists? ${exists}`);
         if(exists) throw new Error(`${name} user already exists. Each user name has to be unique. Please try with a different name`);
 
         //extract employee number from file system, which is expected to be present before this code starts executes
@@ -87,7 +88,7 @@ async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType
             const testEmployeeDataStr: string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
             const testEmployeeData:JSON = JSON.parse(testEmployeeDataStr);
             testEmployeeNumber = testEmployeeData?.employeeNumber;
-            console.log(`using employee number ${testEmployeeNumber}`);
+            baseLogger.info(`using employee number ${testEmployeeNumber}`);
         }
         catch(err) {
             throw new Error(`Something went wrong while trying to extra employee data from the file system - ${err}`);
@@ -106,7 +107,7 @@ async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType
             }
         });
 
-        console.log(`add user request API response status is ${addUserResp.status()}`);
+        baseLogger.info(`add user request API response status is ${addUserResp.status()}`);
         if(!addUserResp.ok()) throw new Error(`Add user request has failed :: ${await addUserResp.text()}`);
         
         return {
@@ -135,7 +136,7 @@ async function doesUserExists(name: string, requestContext:APIRequestContext): P
         return areMatchesFound;
 
     } catch(err) {
-        console.log(err);
+        baseLogger.warn(err);
         return false;
     }
 

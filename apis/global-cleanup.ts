@@ -2,6 +2,7 @@ import {getEmployeeDataFilePath, deleteTestEmployee} from "../utils/users-manage
 import EmployeeType from "../tests/types/EmployeeType";
 import fs from "fs";
 import path from "path";
+import { baseLogger } from "../utils/logger";
 
 async function cleanUPTestEmployee(): Promise<void> {
     const employeeDataFilePath:string = getEmployeeDataFilePath();
@@ -21,10 +22,10 @@ function deleteAllFilesFromFolder(folderPath: string) {
 
 
 export default async (): Promise<void> => {
-    console.log('Doing GLOBAL CLEAN UP now');
+    baseLogger.info('Doing GLOBAL CLEAN UP now');
     await cleanUPTestEmployee();
     const storageFolderPath:string = path.join(process.cwd(), 'storage');//cwd() returnts current working directory of process
-    console.log(`Going to reset the contents of folder - ${storageFolderPath}`);
+    baseLogger.info(`Going to reset the contents of folder - ${storageFolderPath}`);
     deleteAllFilesFromFolder(storageFolderPath);
     // deleteAllFilesFromFolder('C:\Projects_Work_Space\SDET\Automation_Testing\PlayWright\ProjectOrangeHRM\Automation\storage');
 }

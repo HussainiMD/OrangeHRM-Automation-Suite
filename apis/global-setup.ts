@@ -5,6 +5,7 @@ import { getEmployeeDataFilePath, addTestEmployee } from "../utils/users-manager
 import {APIRequestContext, APIResponse, request} from "@playwright/test";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
+import { baseLogger } from "../utils/logger";
 
 dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
 
@@ -25,7 +26,7 @@ async function extractAndSaveEmployeeDetails(): Promise<void> {
     const employeeDetails:EmployeeType = await addTestEmployee(newEmployeeData); 
     
     const employeeNumber = employeeDetails.empNumber;
-    console.log(`employeeNumber generated for test employee is ${employeeNumber}`);
+    baseLogger.info(`employeeNumber generated for test employee is ${employeeNumber}`);
     
     //put it in a file so that multiple worker threads can access data
     const employeeDataFilePath:string = getEmployeeDataFilePath();

@@ -1,5 +1,6 @@
 import {test as base, BrowserContext, Page, Response, APIRequestContext, request, APIResponse } from "@playwright/test";
 import fs from "fs";
+import { baseLogger } from "./logger";
 
 const authJsonPath:string = `./storage/admin-auth-${process.pid}.json`;
 let isAuthLockMonitorStarted:boolean = false;
@@ -13,7 +14,7 @@ let isAuthLockMonitorStarted:boolean = false;
 
 async function refreshAdminAuthState():Promise<void> {     
     if(!isAuthLockMonitorStarted) isAuthLockMonitorStarted = true;
-    console.log(`PID: ${process.pid} - Starting the process for a new Auth token`);
+    baseLogger.info(`PID: ${process.pid} - Starting the process for a new Auth token`);
     
     const apiReqContext: APIRequestContext = await request.newContext({
          baseURL: process.env.base_url        
@@ -68,7 +69,7 @@ async function getExistingAuthValidationCode(): Promise<number> {
         const apiResponse:APIResponse = await apiRequestContext.get('/web/index.php/api/v2/admin/users?limit=1');
 
         const apiRespStatus:number = apiResponse.status();        
-        console.log(`PID: ${process.pid} - Got response code ${apiRespStatus} while accessing URL-${apiResponse.url()}`);
+        baseLogger.info(`PID: ${process.pid} - Got response code ${apiRespStatus} while accessing URL-${apiResponse.url()}`);
         
         apiRequestContext.dispose(); // no need to do "await" as we trust it to happen. This helps increase script execution time
         return apiRespStatus;
@@ -87,7 +88,7 @@ export async function getValidAuthJSONPath(): Promise<string> {
     if(fs.existsSync(authJsonPath)) { 
         const apiRespStatus = await getExistingAuthValidationCode();
         if(apiRespStatus == 200) isAuthNeeded = false;
-        else console.log('Doing Re-Auth as current authentication (context) expired');
+        else baseLogger.info('Doing Re-Auth as current authentication (context) expired');
     }
 
     if(isAuthNeeded) {        
@@ -97,7 +98,7 @@ export async function getValidAuthJSONPath(): Promise<string> {
             console.log(err);
             throw err;
         } 
-    } else console.log('No need of Auth as current authentication is valid');
+    } else baseLogger.info('No need of Auth as current authentication is valid');
 
     return authJsonPath;
 }
