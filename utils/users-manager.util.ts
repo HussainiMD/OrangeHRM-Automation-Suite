@@ -5,11 +5,9 @@ import path from "path";
 import UserType from "../tests/types/UserType";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
+import {getValidAuthJSONPath} from "../utils/auth-manager.utils";
 
-const employeeDataFilePath: string = path.join('storage', '.test-employee-global.json');
-
-//utility function to share path so that exact path configuration remains here with the owner file
-const getEmployeeDataFilePath = ():string => employeeDataFilePath;
+const employeeDataFilePath: string = path.join('storage', 'test-employee-global.json');
 
 interface AddEmployeeResponseDataType {
     "data": EmployeeType
@@ -21,9 +19,19 @@ interface SearchUserResponseMetaDataType {
     }
 }
 
-/**Here we will be adding a test employee */
+
+/**utility function to share path so that exact path configuration remains here with the owner file
+ * @returns string representing the path
+*/
+const getEmployeeDataFilePath = ():string => employeeDataFilePath;
+
+
+/**Here we will be adding a test employee 
+ * @returns a record of employee
+*/
 async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
-    const requestContext:APIRequestContext = await request.newContext({storageState: './storage/admin-auth.json'});
+    const authJSONLocation: string = await getValidAuthJSONPath();
+    const requestContext:APIRequestContext = await request.newContext({storageState: authJSONLocation});
     try {
         const addEmployeeResponse:APIResponse = await requestContext.post('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/pim/employees', {
                 headers: { 'Content-Type': 'application/json'},
@@ -42,9 +50,31 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
     }
 }
 
-/**This function helps to create a non admin (ESS) user */
+/**This function helps to delete an employee by empNumber 
+ * @returns nothing/void. Throws exception if operation fails
+*/
+async function deleteTestEmployee(empIds:Array<number>): Promise<void> {
+    const authJSONLocation: string = await getValidAuthJSONPath();
+    
+    const apiRequestContext: APIRequestContext = await request.newContext({storageState: authJSONLocation});
+    const apiResponse: APIResponse = await apiRequestContext.delete
+        ('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/pim/employees', {
+            headers: { 'Content-Type': 'application/json'},
+            data: {
+                ids: empIds
+            }
+        });
+    console.log(`delete employee (id:${empIds.join()}) API call resulted in response code ${apiResponse.status()}`);
+    if(!apiResponse.ok())
+        throw new Error(`Delete Employee for IDs "${empIds.join()}" has failed - status code: ${apiResponse.status()}. Here are the error details ${await apiResponse.text()}`);
+}
+
+/**This function helps to create a non admin (ESS) user 
+ * @returns a record of user
+*/
 async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType> {    
-    const apiRequestContext:APIRequestContext = await request.newContext({storageState: './storage/admin-auth.json'});
+    const authJSONLocation: string = await getValidAuthJSONPath();
+    const apiRequestContext:APIRequestContext = await request.newContext({storageState: authJSONLocation});
     try {        
         const exists = await doesUserExists(name, apiRequestContext);
         console.log(`does "${name}" user exists? ${exists}`);
@@ -77,18 +107,21 @@ async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType
         });
 
         console.log(`add user request API response status is ${addUserResp.status()}`);
+        if(!addUserResp.ok()) throw new Error(`Add user request has failed :: ${await addUserResp.text()}`);
         
         return {
             name,
             "password": "tester123"
         }
     } finally {
-        apiRequestContext.dispose(); //no need to wait as it happens async
+        await apiRequestContext.dispose(); //no need to wait as it happens async
     }
 }
 
 
-/**A function to check if the user exists */
+/**A function to check if the user exists in the backend
+ * @returns a boolean result
+*/
 async function doesUserExists(name: string, requestContext:APIRequestContext): Promise<boolean> {       
     try {
         const apiResponse:APIResponse = await requestContext.get(`/web/index.php/api/v2/admin/users?limit=50&offset=0&username=${name}&sortField=u.userName&sortOrder=ASC`);
@@ -110,4 +143,4 @@ async function doesUserExists(name: string, requestContext:APIRequestContext): P
 
 }
 
-export {getEmployeeDataFilePath, addTestEmployee, addNewESSUser} 
+export {getEmployeeDataFilePath, addTestEmployee, deleteTestEmployee, addNewESSUser} 

@@ -1,55 +1,19 @@
+import {test as base, BrowserContext, Page, Response, APIRequestContext, request, APIResponse } from "@playwright/test";
+import fs from "fs";
 
-import { APIRequestContext, request, APIResponse } from "@playwright/test";
-import * as fs from "fs";
-import path from "path";
-
-const lockFilePath: string = path.join('storage', '.auth-manager-global.lock');
-const errorMsgFilePath: string = path.join('storage', '.auth-manager-global.error');
-
-const resolvers: Array<Function> = [];
-const rejectors: Array<Function> = [];
-
+const authJsonPath:string = `./storage/admin-auth-${process.pid}.json`;
 let isAuthLockMonitorStarted:boolean = false;
 
+
 /** Logic below can be better understood if we look at context:
- *  For a given machine, we should have ONLY one AUTH token. Even expired token management should not voilate this rule
- *  As playwright by default uses parellel execution which means tests can run in isolation due to workers
- *  We need to communicate across worker process about state of token refreshment process through File System (locks)
- *  Here is the detailed process
- *  1. whoever is asking to refresh token, we are promising them (let them wait and we will notify status - success/error)
- *  2. A lock file is created as soon as refresh token is started and subsequently removed
- *  3. In case of error, an error file is created. Otherwise by default it is assumed refresh of token is successful
- *  4. Above 2 steps are for inter worker communication but within a worker there can be multiple tests waiting for refresh token status
- *  5. To communicate across tests within worker, we are using a central monitor which will keep checking lock file
- *  6. Once lock file is released, monitor will verify status of token refreshment process and then then notify tests about error or success
+ *  For a given worker thread, we should have ONLY one AUTH token. Even expired token management should not voilate this rule   
+ *  To avoid race condition/duplicate execution of refreshing token, we are using isAuthLockMonitorStarted flag
+ * @returns void/notihing
  */
-export async function refreshAdminAuthState() {    
-    /*call only if lock file does not exist. Avoid RACE conditions*/
-    if(!fs.existsSync(lockFilePath))         
-        doRefreshAdminAuthState();
-    
-    /*Only ONCE per worker, lock monitor should be running */
-    if(!isAuthLockMonitorStarted) {
-        startAuthLockMonitor();
-        isAuthLockMonitorStarted = true;
-    }
-    
-    /*whoever calls for refresh auth will get a promise */
-    return new Promise((resolve, reject) => {
-            resolvers.push(resolve);
-            rejectors.push(reject);
-    })    
-}
 
-async function doRefreshAdminAuthState() {     
-    console.log('Creating the Lock File by Process ID-' + process.pid.toString());
-    fs.writeFileSync(lockFilePath, `shared lock file used by playwright authentication manager - PID:${process.pid.toString()}`, {flag: 'wx'});   
-    
-    console.log('Starting the process to Refresh for a new Auth token');
-
-    /*Cleaning last execution status if any */
-    if(fs.existsSync(errorMsgFilePath))
-        fs.unlinkSync(errorMsgFilePath);
+async function refreshAdminAuthState():Promise<void> {     
+    if(!isAuthLockMonitorStarted) isAuthLockMonitorStarted = true;
+    console.log(`PID: ${process.pid} - Starting the process for a new Auth token`);
     
     const apiReqContext: APIRequestContext = await request.newContext({
          baseURL: process.env.base_url        
@@ -78,49 +42,63 @@ async function doRefreshAdminAuthState() {
         const authResponseText: string = await validateAPIResponse.text();
         if((/[:]error/).test(authResponseText))         
             throw new Error('unable to do auth validation');
-        await apiReqContext.storageState({path: './storage/admin-auth.json'});        
-    } catch(err: any) {
-
-        console.log(err);
-        fs.writeFileSync(errorMsgFilePath, `To signal playwright workers that authentication attempt has failed. PID-${process.pid.toString()}`, {flag: 'wx+'});   //wx+ means that we want file to be available exclusively for read and write. Fail operation if file exists     
-
-    } finally {        
-        
-        apiReqContext.dispose();
-
-        if(fs.existsSync(lockFilePath)) {
-            console.log('Removing the Lock File by Process ID - ' + process.pid.toString());
-            fs.unlinkSync(lockFilePath);     //unlink is a safer way to delete file (means delete only when no process reads)
-        } else console.log('Lock file is expected to EXIST but NOT found by Process ID - ' + process.pid.toString());   
-
+        await apiReqContext.storageState({path: authJsonPath});        
+    }  finally {        
+        isAuthLockMonitorStarted = false;
+        await apiReqContext.dispose();        
     }
 }
 
 
-/*This is a monitor used at a WORKER level. Only ONE monitor should run */
-function startAuthLockMonitor() {
-   const timerId = setInterval(()=> {
-        if(!fs.existsSync(lockFilePath)) {
-            if(fs.existsSync(errorMsgFilePath)) notifyError('something failed, please check logs for details');
-            else notifySuccess();
-            isAuthLockMonitorStarted = false;
-            console.log(`clearing timer ${timerId}`);
-            clearInterval(timerId);
-        } else console.log(`Process (${process.pid.toString()}) still waiting for lock to be released`);
-    }, 1000)
+/**
+ * a function to verify existing auth to be valid by a sample api
+ * @returns status code of api response
+ */
+
+async function getExistingAuthValidationCode(): Promise<number> {
+        const apiRequestContext:APIRequestContext = await request.newContext({
+            baseURL: process.env.base_URL,
+            storageState: authJsonPath
+        });
+
+        /** This API call will fail if made from expired/non authenticated context. 
+         * We are fetching only 1 record (limit=1) for FASTER execution 
+         * Below logic is a PRO-ACTIVE step instead of REACTIVE with interception of response. It helps avoiding failure of tests.
+         */
+        const apiResponse:APIResponse = await apiRequestContext.get('/web/index.php/api/v2/admin/users?limit=1');
+
+        const apiRespStatus:number = apiResponse.status();        
+        console.log(`PID: ${process.pid} - Got response code ${apiRespStatus} while accessing URL-${apiResponse.url()}`);
+        
+        apiRequestContext.dispose(); // no need to do "await" as we trust it to happen. This helps increase script execution time
+        return apiRespStatus;
 }
 
-function notifySuccess() {
-    resolvers.forEach(resolver => resolver());
-    resetArrays();    
+
+
+/**
+ * This will verify if the existing auth context is still active & valid.
+ * If not, then it will refresh the auth before returning the auth json location
+ * @returns a string with value of path referring the pre authenticated json
+ */
+export async function getValidAuthJSONPath(): Promise<string> {   
+    let isAuthNeeded: boolean = true;
+
+    if(fs.existsSync(authJsonPath)) { 
+        const apiRespStatus = await getExistingAuthValidationCode();
+        if(apiRespStatus == 200) isAuthNeeded = false;
+        else console.log('Doing Re-Auth as current authentication (context) expired');
+    }
+
+    if(isAuthNeeded) {        
+        try {
+            await refreshAdminAuthState();                
+        } catch(err) {
+            console.log(err);
+            throw err;
+        } 
+    } else console.log('No need of Auth as current authentication is valid');
+
+    return authJsonPath;
 }
 
-function notifyError(msg: string) {
-    rejectors.forEach(rejector => rejector(msg));
-    resetArrays();
-}
-
-function resetArrays() {
-    resolvers.length = 0;    
-    rejectors.length = 0;
-}

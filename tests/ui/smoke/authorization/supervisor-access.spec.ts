@@ -1,5 +1,5 @@
 import {expect, Response, Locator} from "@playwright/test";
-import {test} from "../../../../fixtures/admin-auth.fixtures"
+import {test} from "../../../../fixtures/admin-auth.fixture"
 import LoginPage from "../../../../pages/LoginPage";
 
 /**

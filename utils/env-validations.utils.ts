@@ -1,5 +1,7 @@
 
-/*Implictly process is supposed to have the environment variables already available*/
+/**Implictly process is supposed to have the environment variables already available
+ * @returns a boolean value of the function result
+*/
 export function isCredentialsEnvValid() : boolean {
     const fields : Array<any> = [process.env.base_url, process.env.userid, process.env.password];
 

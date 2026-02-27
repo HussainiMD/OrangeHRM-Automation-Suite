@@ -4,12 +4,10 @@ import UserMenu from "../../../../pages/components/UserMenu";
 import UserType from "../../../types/UserType";
 import { addNewESSUser } from "../../../../utils/users-manager.util";
 
-test.describe.configure({mode: "parallel", timeout: 30000});
-
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_003
  */
-test('Verify ESS Users has NO access to Admin module', async ({page}, testInfo) => {
+test('Verify ESS Users has NO access to Admin module', async ({page}, testInfo) => {    
     const user:UserType = await addNewESSUser('playwright', testInfo);    
     const navResponse:Response | null = await page.goto('/web/index.php/auth/login')
     expect(navResponse).toBeTruthy();

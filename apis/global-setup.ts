@@ -1,25 +1,12 @@
 import fs from "fs";
 import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
-import { refreshAdminAuthState } from "../utils/auth-manager.utils";
 import { getEmployeeDataFilePath, addTestEmployee } from "../utils/users-manager.util";
 import {APIRequestContext, APIResponse, request} from "@playwright/test";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
 
 dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
-
-async function extractAndSaveContext()  {
-    if(!validationsUtil.isCredentialsEnvValid())        
-        throw new Error('Unable to read BASE URL, User Name and Password from environment file');
-    
-    try {
-       await refreshAdminAuthState();
-    } catch(err) {
-        console.log(err);
-        throw err;
-    }
-}
 
 /** This is function to add a test employee which will be used to create user(s) across the test cases. 
  * Test Employee has to be present in orange hrm otherwise test cases will fail.
@@ -28,7 +15,7 @@ async function extractAndSaveContext()  {
  * We are creating test employee only once through global setup. Then sharing employee number through file system "employee data file path".
  * NOTE: Though we are doing add only once, there are chances that test employee gets deleted by orange hrm team's clean up cron job. We are ignoring that risk for now
  */
-async function extractAndSaveEmployeeDetails() {
+async function extractAndSaveEmployeeDetails(): Promise<void> {
     const newEmployeeData:BasicEmployeeType = {
                         "firstName": "playwright",
                         "middleName": "",
@@ -47,7 +34,10 @@ async function extractAndSaveEmployeeDetails() {
 
 
 //Playwright expects only ONE default module, hence the work around
-export default async () => {
-    await extractAndSaveContext();
+export default async (): Promise<void> => {
+    // ensure credentials are provided before starting the actual test suite execution    
+    if(!validationsUtil.isCredentialsEnvValid())        
+        throw new Error('Unable to read BASE URL, User Name and Password from environment file');
+
     await extractAndSaveEmployeeDetails();
 }

@@ -12,6 +12,8 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  timeout: 150 * 1000, // 150 seconds,
+  /*specify the tests location folder */
   testDir: '../tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -32,6 +34,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   globalSetup: '../apis/global-setup',
+  globalTeardown: '../apis/global-cleanup',
 
   /* Configure projects for major browsers */
   projects: [
