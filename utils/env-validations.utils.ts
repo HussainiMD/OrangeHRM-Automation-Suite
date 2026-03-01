@@ -3,7 +3,7 @@
  * @returns a boolean value of the function result
 */
 export function isCredentialsEnvValid() : boolean {
-    const fields : Array<any> = [process.env.base_url, process.env.userid, process.env.password];
+    const fields : Array<any> = [process.env.base_url, process.env.admin_userid, process.env.admin_password, process.env.ess_userid, process.env.ess_user_password];
 
     for(let idx=0; idx < fields.length; idx++) {
         if(!fields[idx] || typeof fields[idx] != 'string' || fields[idx].length == 0) return false;        
@@ -11,3 +11,4 @@ export function isCredentialsEnvValid() : boolean {
 
     return true;
 }
+

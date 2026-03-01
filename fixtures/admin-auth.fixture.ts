@@ -1,7 +1,7 @@
 import {test as base, BrowserContext, Page} from "../tests/base";
 import { getValidAuthJSONPath } from "../utils/auth-manager.utils";
 
-interface AdminUserFixture {
+interface AdminUserType {
     adminUserAuthContext: BrowserContext,
     adminUserAuthPage: Page
 }
@@ -12,12 +12,12 @@ interface AdminUserFixture {
  * But if session expires during the MID of test execution, we will let it fail.
  * Upon next retry, it will get a fresh context with valid login. So, at least one retry should be enabled at global level for ALL tests. 
  * */
-const test = base.extend<AdminUserFixture>({
+const test = base.extend<AdminUserType>({
     adminUserAuthContext: async ({browser}, use) => {
         
          /* Here browser context is created only for valid/active auth*/
         const adminUserContext: BrowserContext = await browser.newContext({
-            storageState: await getValidAuthJSONPath()            
+            storageState: await getValidAuthJSONPath(true)            
         });   
                
         await use(adminUserContext);

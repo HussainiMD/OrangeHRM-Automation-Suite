@@ -1,5 +1,5 @@
 "use strict";
-import {APIRequest, APIRequestContext, APIResponse, request, TestInfo} from "@playwright/test";
+import {APIRequestContext, APIResponse, request} from "@playwright/test";
 import fs from "fs";
 import path from "path";
 import UserType from "../tests/types/UserType";
@@ -31,8 +31,10 @@ const getEmployeeDataFilePath = ():string => employeeDataFilePath;
  * @returns a record of employee
 */
 async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
-    const authJSONLocation: string = await getValidAuthJSONPath();
-    const requestContext:APIRequestContext = await request.newContext({storageState: authJSONLocation});
+    const adminAuthJSONLocation: string = await getValidAuthJSONPath(true);
+
+    //using admin credentials for operation
+    const requestContext:APIRequestContext = await request.newContext({storageState: adminAuthJSONLocation});
     try {
         const addEmployeeResponse:APIResponse = await requestContext.post('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/pim/employees', {
                 headers: { 'Content-Type': 'application/json'},
@@ -40,7 +42,9 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
             });
         
         baseLogger.info(`add test employee request status ${addEmployeeResponse.status()}`);
-        if(!addEmployeeResponse.ok()) throw new Error(`add test employee API returned response with status ${addEmployeeResponse.status()}`);
+
+        if(!addEmployeeResponse.ok()) 
+            throw new Error(`add test employee API returned response with status ${addEmployeeResponse.status()}`);
 
         const newEmployeeRecord:AddEmployeeResponseDataType = await addEmployeeResponse.json();         
         return newEmployeeRecord.data;        
@@ -51,33 +55,40 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
     }
 }
 
+
 /**This function helps to delete an employee by empNumber 
  * @returns nothing/void. Throws exception if operation fails
 */
-async function deleteTestEmployee(empIds:Array<number>): Promise<void> {
-    const authJSONLocation: string = await getValidAuthJSONPath();
+async function deleteTestEmployee(empId:number): Promise<void> {
+    const adminAuthJSONLocation: string = await getValidAuthJSONPath(true);
     
-    const apiRequestContext: APIRequestContext = await request.newContext({storageState: authJSONLocation});
+    //using admin credentials for operation
+    const apiRequestContext: APIRequestContext = await request.newContext({storageState: adminAuthJSONLocation});
     const apiResponse: APIResponse = await apiRequestContext.delete
         ('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/pim/employees', {
             headers: { 'Content-Type': 'application/json'},
             data: {
-                ids: empIds
+                ids: [empId]
             }
         });
-    baseLogger.info(`delete employee (id:${empIds.join()}) API call resulted in response code ${apiResponse.status()}`);
+
+    baseLogger.info(`delete employee (id:${empId}) API call resulted in response code ${apiResponse.status()}`);
+
     if(!apiResponse.ok())
-        throw new Error(`Delete Employee for IDs "${empIds.join()}" has failed - status code: ${apiResponse.status()}. Here are the error details ${await apiResponse.text()}`);
+        throw new Error(`Delete Employee for IDs "${empId}" has failed - status code: ${apiResponse.status()}. Here are the error details ${await apiResponse.text()}`);
 }
+
 
 /**This function helps to create a non admin (ESS) user 
  * @returns a record of user
 */
-async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType> {    
-    const authJSONLocation: string = await getValidAuthJSONPath();
-    const apiRequestContext:APIRequestContext = await request.newContext({storageState: authJSONLocation});
+async function addNewESSUser(name: string) : Promise<UserType> {    
+    const adminAuthJSONLocation: string = await getValidAuthJSONPath(true);
+
+    //using admin credentials for operation
+    const apiRequestContext:APIRequestContext = await request.newContext({storageState: adminAuthJSONLocation});
     try {        
-        const exists = await doesUserExists(name, apiRequestContext);
+        const exists = await doesUserExists(name);
         baseLogger.info(`does "${name}" user exists? ${exists}`);
         if(exists) throw new Error(`${name} user already exists. Each user name has to be unique. Please try with a different name`);
 
@@ -100,7 +111,7 @@ async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType
             },
             data: {
                 "username": name,
-                "password": "tester123",
+                "password": process.env.ess_user_password,
                 "status": true,
                 "userRoleId": 2,
                 "empNumber": testEmployeeNumber
@@ -123,9 +134,13 @@ async function addNewESSUser(name: string, testInfo:TestInfo) : Promise<UserType
 /**A function to check if the user exists in the backend
  * @returns a boolean result
 */
-async function doesUserExists(name: string, requestContext:APIRequestContext): Promise<boolean> {       
+async function doesUserExists(name: string): Promise<boolean> {     
+    const adminAuthJSONLocation: string = await getValidAuthJSONPath(true);
+
+    //using admin credentials for operation
+    const apiRequestContext:APIRequestContext = await request.newContext({storageState: adminAuthJSONLocation});  
     try {
-        const apiResponse:APIResponse = await requestContext.get(`/web/index.php/api/v2/admin/users?limit=50&offset=0&username=${name}&sortField=u.userName&sortOrder=ASC`);
+        const apiResponse:APIResponse = await apiRequestContext.get(`/web/index.php/api/v2/admin/users?limit=50&offset=0&username=${name}&sortField=u.userName&sortOrder=ASC`);
                 
         if(!apiResponse.ok()) return false;
 

@@ -16,7 +16,7 @@ test('Verify Admin Users has access to Admin module', async ({adminUserAuthPage}
     expect(await adminLocator.count()).toBeGreaterThanOrEqual(1);
 
     const userMenu: UserMenu = new UserMenu(adminUserAuthPage);
-    // await userMenu.logOut();
+    await userMenu.logOut();
 })
 
 

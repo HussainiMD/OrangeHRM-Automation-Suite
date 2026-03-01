@@ -2,8 +2,9 @@ import {test as base, BrowserContext, Page, Response, APIRequestContext, request
 import fs from "fs";
 import baseLogger from "./logger";
 
-const authJsonPath:string = `./storage/admin-auth-${process.pid}.json`;
-let isAuthLockMonitorStarted:boolean = false;
+const adminAuthJsonPath: string = `./storage/admin-auth-${process.pid}.json`;
+const userAuthJsonPath: string = ``;
+let isAuthLockMonitorStarted: boolean = false;
 
 
 /** Logic below can be better understood if we look at context:
@@ -12,7 +13,7 @@ let isAuthLockMonitorStarted:boolean = false;
  * @returns void/notihing
  */
 
-async function refreshAdminAuthState():Promise<void> {     
+async function refreshAdminAuthState(): Promise<void> {     
     if(!isAuthLockMonitorStarted) isAuthLockMonitorStarted = true;
     baseLogger.info(`PID: ${process.pid} - Starting the process for a new Auth token`);
     
@@ -34,8 +35,8 @@ async function refreshAdminAuthState():Promise<void> {
         const validateAPIResponse : APIResponse = await apiReqContext.post('/web/index.php/auth/validate', {
             form: {
                 _token: csrfToken,//needs CSRF token for API
-                username: process.env.userid ?? '',
-                password: process.env.password ?? ''
+                username: process.env.admin_userid ?? '',
+                password: process.env.admin_password ?? ''
             }
         })
         if(!validateAPIResponse.ok())         
@@ -43,7 +44,7 @@ async function refreshAdminAuthState():Promise<void> {
         const authResponseText: string = await validateAPIResponse.text();
         if((/[:]error/).test(authResponseText))         
             throw new Error('unable to do auth validation');
-        await apiReqContext.storageState({path: authJsonPath});        
+        await apiReqContext.storageState({path: adminAuthJsonPath});        
     }  finally {        
         isAuthLockMonitorStarted = false;
         await apiReqContext.dispose();        
@@ -59,7 +60,7 @@ async function refreshAdminAuthState():Promise<void> {
 async function getExistingAuthValidationCode(): Promise<number> {
         const apiRequestContext:APIRequestContext = await request.newContext({
             baseURL: process.env.base_URL,
-            storageState: authJsonPath
+            storageState: adminAuthJsonPath
         });
 
         /** This API call will fail if made from expired/non authenticated context. 
@@ -82,10 +83,10 @@ async function getExistingAuthValidationCode(): Promise<number> {
  * If not, then it will refresh the auth before returning the auth json location
  * @returns a string with value of path referring the pre authenticated json
  */
-export async function getValidAuthJSONPath(): Promise<string> {   
+export async function getValidAuthJSONPath(forAdmin:boolean): Promise<string> {   
     let isAuthNeeded: boolean = true;
 
-    if(fs.existsSync(authJsonPath)) { 
+    if(fs.existsSync(adminAuthJsonPath)) { 
         const apiRespStatus = await getExistingAuthValidationCode();
         if(apiRespStatus == 200) isAuthNeeded = false;
         else baseLogger.info('Doing Re-Auth as current authentication (context) expired');
@@ -100,6 +101,6 @@ export async function getValidAuthJSONPath(): Promise<string> {
         } 
     } else baseLogger.info('No need of Auth as current authentication is valid');
 
-    return authJsonPath;
+    return adminAuthJsonPath;
 }
 
