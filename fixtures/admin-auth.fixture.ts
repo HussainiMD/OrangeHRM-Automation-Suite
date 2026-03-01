@@ -17,7 +17,7 @@ const test = base.extend<AdminUserType>({
         
          /* Here browser context is created only for valid/active auth*/
         const adminUserContext: BrowserContext = await browser.newContext({
-            storageState: await getValidAuthJSONPath(true)            
+            storageState: await getValidAuthJSONPath()            
         });   
                
         await use(adminUserContext);

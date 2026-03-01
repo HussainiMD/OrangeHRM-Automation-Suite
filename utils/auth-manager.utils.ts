@@ -35,7 +35,7 @@ async function refreshAdminAuthState(): Promise<void> {
         const validateAPIResponse : APIResponse = await apiReqContext.post('/web/index.php/auth/validate', {
             form: {
                 _token: csrfToken,//needs CSRF token for API
-                username: process.env.admin_userid ?? '',
+                username: process.env.admin_user_name ?? '',
                 password: process.env.admin_password ?? ''
             }
         })
@@ -83,7 +83,7 @@ async function getExistingAuthValidationCode(): Promise<number> {
  * If not, then it will refresh the auth before returning the auth json location
  * @returns a string with value of path referring the pre authenticated json
  */
-export async function getValidAuthJSONPath(forAdmin:boolean): Promise<string> {   
+export async function getValidAuthJSONPath(): Promise<string> {   
     let isAuthNeeded: boolean = true;
 
     if(fs.existsSync(adminAuthJsonPath)) { 

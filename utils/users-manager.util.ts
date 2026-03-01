@@ -6,8 +6,10 @@ import UserType from "../tests/types/UserType";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
 import {getValidAuthJSONPath} from "../utils/auth-manager.utils";
+import { duplicateUserError } from "../tests/errors/duplicate-user-error";
 import baseLogger from "./logger";
 
+const baseURL: string = process.env.base_url ?? 'https://opensource-demo.orangehrmlive.com';
 const employeeDataFilePath: string = path.join('storage', 'test-employee-global.json');
 
 interface AddEmployeeResponseDataType {
@@ -31,12 +33,12 @@ const getEmployeeDataFilePath = ():string => employeeDataFilePath;
  * @returns a record of employee
 */
 async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath(true);
+    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
 
     //using admin credentials for operation
-    const requestContext:APIRequestContext = await request.newContext({storageState: adminAuthJSONLocation});
+    const requestContext:APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
     try {
-        const addEmployeeResponse:APIResponse = await requestContext.post('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/pim/employees', {
+        const addEmployeeResponse:APIResponse = await requestContext.post('/web/index.php/api/v2/pim/employees', {
                 headers: { 'Content-Type': 'application/json'},
                 data
             });
@@ -60,12 +62,11 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
  * @returns nothing/void. Throws exception if operation fails
 */
 async function deleteTestEmployee(empId:number): Promise<void> {
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath(true);
+    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
     
     //using admin credentials for operation
-    const apiRequestContext: APIRequestContext = await request.newContext({storageState: adminAuthJSONLocation});
-    const apiResponse: APIResponse = await apiRequestContext.delete
-        ('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/pim/employees', {
+    const apiRequestContext: APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
+    const apiResponse: APIResponse = await apiRequestContext.delete('/web/index.php/api/v2/pim/employees', {
             headers: { 'Content-Type': 'application/json'},
             data: {
                 ids: [empId]
@@ -83,14 +84,14 @@ async function deleteTestEmployee(empId:number): Promise<void> {
  * @returns a record of user
 */
 async function addNewESSUser(name: string) : Promise<UserType> {    
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath(true);
+    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
 
     //using admin credentials for operation
-    const apiRequestContext:APIRequestContext = await request.newContext({storageState: adminAuthJSONLocation});
+    const apiRequestContext:APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
     try {        
         const exists = await doesUserExists(name);
         baseLogger.info(`does "${name}" user exists? ${exists}`);
-        if(exists) throw new Error(`${name} user already exists. Each user name has to be unique. Please try with a different name`);
+        if(exists) throw new duplicateUserError(`${name} user already exists. Each user name has to be unique. Please try with a different name`);
 
         //extract employee number from file system, which is expected to be present before this code starts executes
         let testEmployeeNumber:number;
@@ -99,10 +100,10 @@ async function addNewESSUser(name: string) : Promise<UserType> {
             const testEmployeeDataStr: string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
             const testEmployeeData:JSON = JSON.parse(testEmployeeDataStr);
             testEmployeeNumber = testEmployeeData?.employeeNumber;
-            baseLogger.info(`using employee number ${testEmployeeNumber}`);
+            baseLogger.info(`using employee number ${testEmployeeNumber} for adding new user`);
         }
         catch(err) {
-            throw new Error(`Something went wrong while trying to extra employee data from the file system - ${err}`);
+            throw new Error(`Something went wrong while trying to extract employee data from the file system - ${err}`);
         }    
 
         const addUserResp:APIResponse = await apiRequestContext.post(`/web/index.php/api/v2/admin/users`, {
@@ -135,10 +136,10 @@ async function addNewESSUser(name: string) : Promise<UserType> {
  * @returns a boolean result
 */
 async function doesUserExists(name: string): Promise<boolean> {     
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath(true);
+    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
 
     //using admin credentials for operation
-    const apiRequestContext:APIRequestContext = await request.newContext({storageState: adminAuthJSONLocation});  
+    const apiRequestContext:APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});  
     try {
         const apiResponse:APIResponse = await apiRequestContext.get(`/web/index.php/api/v2/admin/users?limit=50&offset=0&username=${name}&sortField=u.userName&sortOrder=ASC`);
                 

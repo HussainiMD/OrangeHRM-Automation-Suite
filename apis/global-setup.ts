@@ -1,10 +1,10 @@
 import fs from "fs";
 import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
-import { getEmployeeDataFilePath, addTestEmployee } from "../utils/users-manager.util";
-import {APIRequestContext, APIResponse, request} from "@playwright/test";
+import { getEmployeeDataFilePath, addTestEmployee, addNewESSUser } from "../utils/users-manager.util";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
+import { duplicateUserError } from "../tests/errors/duplicate-user-error";
 import baseLogger from "../utils/logger";
 
 dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
@@ -41,4 +41,11 @@ export default async (): Promise<void> => {
         throw new Error('Unable to read BASE URL, User Name and Password from environment file');
 
     await extractAndSaveEmployeeDetails();
+    const userName: string = process.env.ess_user_name ?? '';
+    try {
+        await addNewESSUser(userName);
+    } catch(err) {
+        if(err instanceof duplicateUserError) baseLogger.warn(`User with ${userName} already exists in the backend`);
+        else   throw err;
+    }
 }
