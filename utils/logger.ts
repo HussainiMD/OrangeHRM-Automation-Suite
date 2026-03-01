@@ -2,8 +2,7 @@ import pino from "pino";
 import { TestInfo } from "@playwright/test";
 import { worker } from "node:cluster";
 
-pino.destination()
-
+/**We are not doing instantiating using "new". Just calling pino() function  */
 const baseLogger = pino(
     {
         level: 'info',
@@ -25,14 +24,4 @@ const baseLogger = pino(
     */
 );
 
-function createTestLogger(testinfo: TestInfo) {
-    return baseLogger.child({
-        worker: testinfo.workerIndex,
-        test: testinfo.title,
-        retry: testinfo.retry,
-        file: testinfo.file
-    })
-
-}
-
-export {baseLogger, createTestLogger};
+export default baseLogger;

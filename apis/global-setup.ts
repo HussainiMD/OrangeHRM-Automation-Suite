@@ -5,7 +5,7 @@ import { getEmployeeDataFilePath, addTestEmployee } from "../utils/users-manager
 import {APIRequestContext, APIResponse, request} from "@playwright/test";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
-import { baseLogger } from "../utils/logger";
+import baseLogger from "../utils/logger";
 
 dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
 

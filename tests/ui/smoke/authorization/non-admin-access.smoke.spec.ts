@@ -1,4 +1,4 @@
-import {test, expect, Browser, Locator, Response} from "@playwright/test";
+import {test, expect, Browser, Locator, Response} from "../../../base";
 import LoginPage from "../../../../pages/LoginPage";
 import UserMenu from "../../../../pages/components/UserMenu";
 import UserType from "../../../types/UserType";

@@ -6,7 +6,7 @@ import UserType from "../tests/types/UserType";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
 import {getValidAuthJSONPath} from "../utils/auth-manager.utils";
-import { baseLogger } from "./logger";
+import baseLogger from "./logger";
 
 const employeeDataFilePath: string = path.join('storage', 'test-employee-global.json');
 

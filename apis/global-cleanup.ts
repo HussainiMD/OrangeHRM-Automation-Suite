@@ -2,7 +2,7 @@ import {getEmployeeDataFilePath, deleteTestEmployee} from "../utils/users-manage
 import EmployeeType from "../tests/types/EmployeeType";
 import fs from "fs";
 import path from "path";
-import { baseLogger } from "../utils/logger";
+import baseLogger from "../utils/logger";
 
 async function cleanUPTestEmployee(): Promise<void> {
     const employeeDataFilePath:string = getEmployeeDataFilePath();

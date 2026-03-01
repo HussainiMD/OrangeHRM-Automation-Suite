@@ -1,5 +1,4 @@
-import {expect, Browser, Locator, Response} from "@playwright/test";
-import {test} from "../../../../fixtures/admin-auth.fixture";
+import {test, expect, Browser, Locator, Response} from "../../../../fixtures/admin-auth.fixture";
 import LoginPage from "../../../../pages/LoginPage";
 import UserMenu from "../../../../pages/components/UserMenu";
 import UserType from "../../../types/UserType";

@@ -1,6 +1,6 @@
 import {test as base, BrowserContext, Page, Response, APIRequestContext, request, APIResponse } from "@playwright/test";
 import fs from "fs";
-import { baseLogger } from "./logger";
+import baseLogger from "./logger";
 
 const authJsonPath:string = `./storage/admin-auth-${process.pid}.json`;
 let isAuthLockMonitorStarted:boolean = false;
