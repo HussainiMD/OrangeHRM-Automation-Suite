@@ -2,6 +2,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
 import { getEmployeeDataFilePath, addTestEmployee, addNewESSUser } from "../utils/users-manager.util";
+import { addPersonalLeavesToBaseEmployee } from "../utils/leave-management.util";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
 import { duplicateUserError } from "../tests/errors/duplicate-user-error";
@@ -41,6 +42,7 @@ export default async (): Promise<void> => {
         throw new Error('Unable to read BASE URL, User Name and Password from environment file');
 
     await extractAndSaveEmployeeDetails();
+    
     const userName: string = process.env.ess_user_name ?? '';
     try {        
         await addNewESSUser(userName);
@@ -48,4 +50,6 @@ export default async (): Promise<void> => {
         if(err instanceof duplicateUserError) baseLogger.warn(`User with ${userName} already exists in the backend`);
         else   throw err;
     }
+
+    await addPersonalLeavesToBaseEmployee(10);
 }

@@ -58,7 +58,8 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
 }
 
 
-/**This function helps to delete an employee by empNumber 
+/**This function helps to delete an employee by empNumber
+ * If employee is deleted then all related users (login ids) will also be deleted
  * @returns nothing/void. Throws exception if operation fails
 */
 async function deleteTestEmployee(empId:number): Promise<void> {
@@ -91,7 +92,11 @@ async function addNewESSUser(name: string) : Promise<UserType> {
     try {        
         const exists = await doesUserExists(name);
         baseLogger.info(`does "${name}" user exists? ${exists}`);
-        if(exists) throw new duplicateUserError(`${name} user already exists. Each user name has to be unique. Please try with a different name`);
+        if(exists) {
+            const msg: string = `${name} user already exists. Each user name has to be unique. Please try with a different name`;
+            baseLogger.warn(msg);
+            throw new duplicateUserError(msg);
+        }
 
         //extract employee number from file system, which is expected to be present before this code starts executes
         let testEmployeeNumber:number;
