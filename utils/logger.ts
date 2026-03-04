@@ -1,6 +1,4 @@
 import pino from "pino";
-import { TestInfo } from "@playwright/test";
-import { worker } from "node:cluster";
 
 /**We are not doing instantiating using "new". Just calling pino() function  */
 const baseLogger = pino(

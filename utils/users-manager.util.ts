@@ -1,5 +1,5 @@
 "use strict";
-import {APIRequestContext, APIResponse, request} from "@playwright/test";
+import {APIRequestContext, APIResponse, request} from "../tests/base";
 import fs from "fs";
 import path from "path";
 import UserType from "../tests/types/UserType";

@@ -42,7 +42,7 @@ export default async (): Promise<void> => {
 
     await extractAndSaveEmployeeDetails();
     const userName: string = process.env.ess_user_name ?? '';
-    try {
+    try {        
         await addNewESSUser(userName);
     } catch(err) {
         if(err instanceof duplicateUserError) baseLogger.warn(`User with ${userName} already exists in the backend`);

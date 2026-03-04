@@ -1,4 +1,4 @@
-import {test, expect, Browser, chromium, Page, Response, Locator} from "@playwright/test";
+import { Locator, Page } from "../tests/base";
 import credentials from "../tests/types/credentials";
 
 

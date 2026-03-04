@@ -1,5 +1,4 @@
 import {getEmployeeDataFilePath, deleteTestEmployee} from "../utils/users-manager.util";
-import EmployeeType from "../tests/types/EmployeeType";
 import fs from "fs";
 import path from "path";
 import baseLogger from "../utils/logger";

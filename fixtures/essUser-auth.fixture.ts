@@ -13,7 +13,7 @@ const test = base.extend<ESSUserType>({
     essUserAuthContext: async ({browser}, use) => {
        const context: BrowserContext = await browser.newContext();
        await use(context);
-       context.close();
+       await context.close();
     },
     essUserAuthPage: async ({essUserAuthContext}, use) => {
         const page: Page = await essUserAuthContext.newPage();

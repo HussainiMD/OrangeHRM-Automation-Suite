@@ -1,11 +1,10 @@
-import {test, expect, Locator, Response } from "../../../../fixtures/admin-auth.fixture";
-import LoginPage from "../../../../pages/LoginPage";
+import { expect, Locator, Response, test } from "../../../../fixtures/admin-auth.fixture";
 import UserMenu from "../../../../pages/components/UserMenu";
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_001
  */
-test('user can login, see profile button, and logout', async ({adminUserAuthPage, logger}, testInfo) => {       
+test('user can login, see profile button, and logout', async ({adminUserAuthPage, logger}) => {       
     const navResponse: Response |null = await adminUserAuthPage.goto('https://opensource-demo.orangehrmlive.com/web/index.php', {waitUntil: "networkidle"});
     expect(navResponse).toBeTruthy();
 

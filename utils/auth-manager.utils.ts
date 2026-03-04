@@ -1,9 +1,8 @@
-import {test as base, BrowserContext, Page, Response, APIRequestContext, request, APIResponse } from "@playwright/test";
 import fs from "fs";
+import { APIRequestContext, APIResponse, request } from "../tests/base";
 import baseLogger from "./logger";
 
 const adminAuthJsonPath: string = `./storage/admin-auth-${process.pid}.json`;
-const userAuthJsonPath: string = ``;
 let isAuthLockMonitorStarted: boolean = false;
 
 
@@ -96,7 +95,7 @@ export async function getValidAuthJSONPath(): Promise<string> {
         try {
             await refreshAdminAuthState();                
         } catch(err) {
-            console.log(err);
+            baseLogger.warn(err);
             throw err;
         } 
     } else baseLogger.info('No need of Auth as current authentication is valid');

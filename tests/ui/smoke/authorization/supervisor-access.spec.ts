@@ -1,5 +1,4 @@
-import {test, expect, Response, Locator} from "../../../../fixtures/admin-auth.fixture";
-import LoginPage from "../../../../pages/LoginPage";
+import { expect, Locator, Response, test } from "../../../../fixtures/admin-auth.fixture";
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_005

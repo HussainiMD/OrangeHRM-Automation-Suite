@@ -1,8 +1,5 @@
-import {test, expect, Browser, Locator, Response} from "../../../../fixtures/admin-auth.fixture";
-import LoginPage from "../../../../pages/LoginPage";
+import { expect, Locator, Response, test } from "../../../../fixtures/admin-auth.fixture";
 import UserMenu from "../../../../pages/components/UserMenu";
-import UserType from "../../../types/UserType";
-import { addNewESSUser } from "../../../../utils/users-manager.util";
 
 
 /**
