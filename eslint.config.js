@@ -66,6 +66,13 @@ export default [
       'error',
       {
         paths: [
+          // Keep the global restrictions too
+          {
+            name: '@playwright/test',
+            message: '@playwright/test is allowed only inside base.ts or tests.',
+          },
+          { name: 'axios', message: 'Use Playwright request fixture instead.' },
+          // Spec-specific restriction
           { name: 'fs', message: 'Do not use fs in tests. Use fixtures.' },
         ],
       },
