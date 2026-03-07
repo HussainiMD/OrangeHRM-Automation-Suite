@@ -85,7 +85,7 @@ async function deleteTestEmployee(empId:number): Promise<void> {
 /**This function helps to create a non admin (ESS) user 
  * @returns a record of user
 */
-async function addNewESSUser(name: string) : Promise<UserType> {    
+async function addNewESSUser(name: string, isEnabled:boolean = true) : Promise<UserType> {    
     const adminAuthJSONLocation: string = await getValidAuthJSONPath();
 
     //using admin credentials for operation
@@ -119,7 +119,7 @@ async function addNewESSUser(name: string) : Promise<UserType> {
             data: {
                 "username": name,
                 "password": process.env.ess_user_password,
-                "status": true,
+                "status": isEnabled,
                 "userRoleId": 2,
                 "empNumber": testEmployeeNumber
             }
