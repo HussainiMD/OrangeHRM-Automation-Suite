@@ -3,8 +3,10 @@ import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
 import { getEmployeeDataFilePath, addTestEmployee, addNewESSUser } from "../utils/users-manager.util";
 import { addPersonalLeavesToBaseEmployee } from "../utils/leave-management.util";
+import { doCleanUp } from "./global-cleanup";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
+import { EmployeeDetailsType } from "../utils/types/EmployeeDetailsType";
 import { duplicateUserError } from "../tests/errors/duplicate-user-error";
 import baseLogger from "../utils/logger";
 
@@ -31,12 +33,30 @@ async function extractAndSaveEmployeeDetails(): Promise<void> {
     
     //put it in a file so that multiple worker threads can access data
     const employeeDataFilePath:string = getEmployeeDataFilePath();
-    fs.writeFileSync(employeeDataFilePath, JSON.stringify({employeeNumber}), {encoding:'utf-8'});
+    const data: EmployeeDetailsType = {employeeNumber};
+    fs.writeFileSync(employeeDataFilePath, JSON.stringify(data), {encoding:'utf-8'});
 }
 
 
+function attachCrashHandlers() {
+    process.on('exit', async () => {
+        await doCleanUp();
+    });
+
+    process.on('SIGINT', async () => {
+        await doCleanUp();
+    });
+
+    process.on('SIGTERM', async () => {
+        await doCleanUp();
+    });
+}
+
 //Playwright expects only ONE default module, hence the work around
 export default async (): Promise<void> => {
+    baseLogger.info(`doing the Global Setup now...`);
+    attachCrashHandlers();
+
     // ensure credentials are provided before starting the actual test suite execution    
     if(!validationsUtil.isCredentialsEnvValid())        
         throw new Error('Unable to read BASE URL, User Name and Password from environment file');
@@ -46,10 +66,12 @@ export default async (): Promise<void> => {
     const userName: string = process.env.ess_user_name ?? '';
     try {        
         await addNewESSUser(userName);
+        await addPersonalLeavesToBaseEmployee(10);//if add user fail, we do not want to continue
     } catch(err) {
         if(err instanceof duplicateUserError) baseLogger.warn(`User with ${userName} already exists in the backend`);
-        else   throw err;
-    }
-
-    await addPersonalLeavesToBaseEmployee(10);
+        await doCleanUp(); //we want to do clean up regardless, so that subsequent test suit execution gets a clean slate
+        throw err; //stop test exectuion if set up fails
+    } 
+        
+    baseLogger.info(`finished the Global Setup`);   
 }

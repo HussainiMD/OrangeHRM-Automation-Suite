@@ -5,6 +5,7 @@ import path from "path";
 import UserType from "../tests/types/UserType";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
+import { EmployeeDetailsType } from "./types/EmployeeDetailsType";
 import {getValidAuthJSONPath} from "../utils/auth-manager.utils";
 import { duplicateUserError } from "../tests/errors/duplicate-user-error";
 import baseLogger from "./logger";
@@ -103,7 +104,7 @@ async function addNewESSUser(name: string) : Promise<UserType> {
 
         try {
             const testEmployeeDataStr: string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
-            const testEmployeeData:JSON = JSON.parse(testEmployeeDataStr);
+            const testEmployeeData:EmployeeDetailsType = JSON.parse(testEmployeeDataStr);
             testEmployeeNumber = testEmployeeData?.employeeNumber;
             baseLogger.info(`using employee number ${testEmployeeNumber} for adding new user`);
         }

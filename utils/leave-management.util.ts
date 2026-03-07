@@ -1,24 +1,54 @@
-import {request, APIRequestContext, APIResponse} from "../tests/base";
+import {request, APIRequestContext, APIResponse, Page} from "../tests/base";
 import baseLogger from "./logger";
 import { getValidAuthJSONPath } from "./auth-manager.utils";
 import { getEmployeeDataFilePath } from "./users-manager.util";
+import { EmployeeDetailsType } from "./types/EmployeeDetailsType";
 import fs from "fs";
 
 const baseURL: string = process.env.base_url ?? 'https://opensource-demo.orangehrmlive.com';
 
+interface LeaveBalanceResponseType {
+    data : {
+        balance: {
+            entitled: number,
+            used: number,
+            scheduled: number,
+            pending: number,
+            taken: number,
+            balance: number
+        }
+    }
+}
+
+
+/**utitlity function to get leavetype id by using leave type name
+ * @returns id (a number)
+ */
+function getLeaveTypeId(byName: string): number {
+    if(!byName || typeof byName !== 'string' || byName.trim().length == 0) return -1;
+
+    byName = byName.trim();
+
+    switch(byName) {
+        case 'US - Vacation': return 1
+        case 'US - Personal': return 4
+        case 'US - Maternity': return 5
+        default: return -1
+    }
+}
+
 /**utility function to get JSON data payload
  * @returns JSON object
  */
-function getLeaveEntitlementData(employeeNumber: number, leaveCount: number) {
+function getAddLeaveEntitlementJSON(employeeNumber: number, leaveCount: number) {
     const datenow = new Date();
-    const fromDate: string = `${datenow.getFullYear()}-${datenow.getMonth()+1}-${datenow.getDate()}`;
-    const toDate: string = `${datenow.getFullYear()+1}-${datenow.getMonth()+1}-${datenow.getDate()}`;
-
-    baseLogger.info(`from date:${fromDate} & to date:${toDate}`);
+    const fromDate: string = `${datenow.getFullYear()}-${datenow.getMonth()+1}-${datenow.getDate()}`;// +1 for month because in JS, month starts with 0
+    const toDate: string = `${datenow.getFullYear()+1}-${datenow.getMonth()+1}-${datenow.getDate()}`;//one year from now
+    const leaveTypeId: number = getLeaveTypeId('US - Personal'); //only US personal category being used for testing
 
     return {
         "empNumber": employeeNumber, 
-        "leaveTypeId": 4, //US-Personal
+        leaveTypeId , 
         fromDate, 
         toDate, 
         "entitlement": leaveCount //total number of leaves
@@ -31,8 +61,9 @@ function getLeaveEntitlementData(employeeNumber: number, leaveCount: number) {
  */
 async function addPersonalLeavesToEmployee(employeeNumber: number, leaveCount: number): Promise<void> {    
     const adminAuthJSONLocation: string = await getValidAuthJSONPath();
-    const data = getLeaveEntitlementData(employeeNumber, leaveCount);
-    
+    const data = getAddLeaveEntitlementJSON(employeeNumber, leaveCount);
+    baseLogger.info(`adding personal leaves data to employee #${employeeNumber} :: JSON - ${JSON.stringify(data)}`);
+
     const requestContext:APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
     const apiResponse: APIResponse = 
         await requestContext.post('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/leave/leave-entitlements', {
@@ -58,12 +89,29 @@ async function addPersonalLeavesToEmployee(employeeNumber: number, leaveCount: n
 async function addPersonalLeavesToBaseEmployee(leaveCount: number): Promise<void> {    
     const employeeDataFilePath: string = getEmployeeDataFilePath();
     const employeeData: string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
-    const employeeDetails: JSON = JSON.parse(employeeData);
+    const employeeDetails: EmployeeDetailsType = JSON.parse(employeeData);
     
     const employeeNumber: number = employeeDetails?.employeeNumber;
 
-    addPersonalLeavesToEmployee(employeeNumber, leaveCount);
+    await addPersonalLeavesToEmployee(employeeNumber, leaveCount);
 }
 
 
-export {addPersonalLeavesToEmployee, addPersonalLeavesToBaseEmployee} 
+/**This is a function which return the balance leaves of a user.
+ * For now, we are using only 'US - Personal' category leaves for testing
+ * Unlike other functions, this API can be called by using USER context (instead of ADMIN context)
+ * Due to this we are expecting test case functions to provide current page object.
+ * Using page object, we will get APIRequestContext to make API calls of get/post..etc
+ * @returns number (representing balance count of leaves)
+ */
+async function getCurrentLeavesBalanceCount(page: Page): Promise<number> {
+   const getBalanceAPIResponse: APIResponse = await page.request.get('web/index.php/api/v2/leave/leave-balance/leave-type/4');
+   if(!getBalanceAPIResponse.ok()) throw new Error(`Unable to get leave balance from API. Response code - ${getBalanceAPIResponse.status()} and text - ${await getBalanceAPIResponse.text()}`);
+
+   const leaveBalance : LeaveBalanceResponseType = await getBalanceAPIResponse.json();
+
+   return leaveBalance.data.balance.balance; 
+}
+
+
+export {addPersonalLeavesToEmployee, addPersonalLeavesToBaseEmployee, getCurrentLeavesBalanceCount} 
