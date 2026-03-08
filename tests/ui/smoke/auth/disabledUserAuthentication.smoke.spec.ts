@@ -2,6 +2,9 @@ import {test, expect, Response, Locator} from "../../../base";
 import LoginPage from "../../../../pages/LoginPage";
 import { addNewESSUser } from "../../../../utils/users-manager.util";
 
+/**
+ * ID from Test Cases (spreadsheet): TC_LOGIN_009
+ */
 test('Login with Disabled User Account', async ({page}) => {
     const navResponse: Response | null = await page.goto('web/index.php/auth/login');
     expect(navResponse).toBeTruthy();
