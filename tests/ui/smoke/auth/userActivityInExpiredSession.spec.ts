@@ -1,9 +1,9 @@
 import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
 
 /**
- * ID from Test Cases (spreadsheet): TC_LOGIN_011
+ * ID from Test Cases (spreadsheet): TC_LOGIN_012
  */
-test('User Session Expired - Re-login enforced on User Action', async ({essUserAuthPage, essUserAuthContext, logger}) => {
+test('User Session Expired - Re-login enforced on User Action', async ({essUserAuthPage, essUserAuthContext}) => {
    
    //extracting domain name from page URL
    const domainMatchArray: RegExpMatchArray | [] = essUserAuthPage.url().match(/[://]\/\/(.+[.com])\/.*/i) ?? [];

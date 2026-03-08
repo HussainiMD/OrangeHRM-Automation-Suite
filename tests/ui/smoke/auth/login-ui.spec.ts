@@ -1,0 +1,14 @@
+import {test, expect, Response, Locator} from "../../../base";
+
+/**
+ * ID from Test Cases (spreadsheet): TC_LOGIN_017
+ */
+test('Is Password Field getting masked', async ({page}) => {
+    const navResponse: Response | null = await page.goto('web/index.php/auth/login');
+    expect(navResponse).toBeTruthy();
+
+    const passwordLocator: Locator = page.locator('input[name="password"]');
+    await expect(passwordLocator).toHaveCount(1);
+
+    await expect(passwordLocator).toHaveAttribute('type', 'password');
+})
