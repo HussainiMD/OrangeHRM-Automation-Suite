@@ -1,9 +1,7 @@
 import {request, APIRequestContext, APIResponse, Page} from "../tests/base";
 import baseLogger from "./logger";
 import { getValidAuthJSONPath } from "./auth-manager.utils";
-import { getEmployeeDataFilePath } from "./users-manager.util";
-import { EmployeeDetailsType } from "./types/EmployeeDetailsType";
-import fs from "fs";
+import { getTestEmployeeNumber } from "./users-manager.util";
 
 const baseURL: string = process.env.base_url ?? 'https://opensource-demo.orangehrmlive.com';
 
@@ -86,13 +84,8 @@ async function addPersonalLeavesToEmployee(employeeNumber: number, leaveCount: n
 /**To the base user for testing purpose, this function is used to add leaves
  * @returns void
  */
-async function addPersonalLeavesToBaseEmployee(leaveCount: number): Promise<void> {    
-    const employeeDataFilePath: string = getEmployeeDataFilePath();
-    const employeeData: string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
-    const employeeDetails: EmployeeDetailsType = JSON.parse(employeeData);
-    
-    const employeeNumber: number = employeeDetails?.employeeNumber;
-
+async function addPersonalLeavesToBaseEmployee(leaveCount: number): Promise<void> {        
+    const employeeNumber: number = getTestEmployeeNumber();
     await addPersonalLeavesToEmployee(employeeNumber, leaveCount);
 }
 

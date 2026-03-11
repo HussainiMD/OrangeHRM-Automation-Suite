@@ -1,3 +1,6 @@
+import {request, APIRequestContext, APIResponse} from "../tests/base";
+
+const baseURL: string = process.env.base_url ?? 'https://opensource-demo.orangehrmlive.com';
 
 /**Implictly process is supposed to have the environment variables already available
  * @returns a boolean value of the function result
@@ -12,3 +15,11 @@ export function isCredentialsEnvValid() : boolean {
     return true;
 }
 
+/**Verify that application under test is UP and Running
+ * @returns boolean value. "true" means AUT is good for use
+ */
+export async function isAUTReadyForTesting(): Promise<boolean> {
+    const requestContext : APIRequestContext = await request.newContext({baseURL});
+    const response: APIResponse = await requestContext.get('/web/index.php/auth/login');
+    return response.ok();
+}

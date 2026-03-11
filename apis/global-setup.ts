@@ -1,7 +1,7 @@
 import fs from "fs";
 import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
-import { getEmployeeDataFilePath, addTestEmployee, addNewESSUser } from "../utils/users-manager.util";
+import { getTestEmployeeDataFilePath, addTestEmployee, addNewESSUser } from "../utils/users-manager.util";
 import { addPersonalLeavesToBaseEmployee } from "../utils/leave-management.util";
 import { doCleanUp } from "./global-cleanup";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
@@ -32,7 +32,7 @@ async function extractAndSaveEmployeeDetails(): Promise<void> {
     baseLogger.info(`employeeNumber generated for test employee is ${employeeNumber}`);
     
     //put it in a file so that multiple worker threads can access data
-    const employeeDataFilePath:string = getEmployeeDataFilePath();
+    const employeeDataFilePath:string = getTestEmployeeDataFilePath();
     const data: EmployeeDetailsType = {employeeNumber};
     fs.writeFileSync(employeeDataFilePath, JSON.stringify(data), {encoding:'utf-8'});
 }
@@ -52,14 +52,22 @@ function attachCrashHandlers() {
     });
 }
 
+
+
+
 //Playwright expects only ONE default module, hence the work around
 export default async (): Promise<void> => {
-    baseLogger.info(`doing the Global Setup now...`);
-    attachCrashHandlers();
-
+    
     // ensure credentials are provided before starting the actual test suite execution    
     if(!validationsUtil.isCredentialsEnvValid())        
         throw new Error('Unable to read BASE URL, User Name and Password from environment file');
+
+    const isAUTReady: boolean = await validationsUtil.isAUTReadyForTesting();
+    if(!isAUTReady)
+        throw new Error(`Application Under Test (AUT) is NOT accessible for test suite to continue with global setup`);
+
+    baseLogger.info(`doing the Global Setup now...`);
+    attachCrashHandlers();
 
     await extractAndSaveEmployeeDetails();
     

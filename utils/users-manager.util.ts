@@ -27,7 +27,28 @@ interface SearchUserResponseMetaDataType {
 /**utility function to share path so that exact path configuration remains here with the owner file
  * @returns string representing the path
 */
-const getEmployeeDataFilePath = ():string => employeeDataFilePath;
+const getTestEmployeeDataFilePath = (): string => employeeDataFilePath;
+
+
+/**utility function which is to return employee number (auto generated). This function caches the data once it extracts from file system
+ * @returns number (employee number)
+ */
+const getTestEmployeeNumber = (() => {
+    let empNumber: number;//become private memeber
+    return () => {
+        if(!empNumber) {
+            try {
+                const testEmployeeDataStr: string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
+                const testEmployeeData:EmployeeDetailsType = JSON.parse(testEmployeeDataStr);
+                empNumber = testEmployeeData?.employeeNumber;
+            }
+            catch(err) {
+                throw new Error(`Something went wrong while trying to extract employee data from the file system - ${err}`);
+            } 
+        }
+        return empNumber;
+    }
+})();//IIFE
 
 
 /**Here we will be adding a test employee 
@@ -49,7 +70,7 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
         if(!addEmployeeResponse.ok()) 
             throw new Error(`add test employee API returned response with status ${addEmployeeResponse.status()}`);
 
-        const newEmployeeRecord:AddEmployeeResponseDataType = await addEmployeeResponse.json();         
+        const newEmployeeRecord:AddEmployeeResponseDataType = await addEmployeeResponse.json();                
         return newEmployeeRecord.data;        
     } catch(err) {
         baseLogger.warn('Unable to add test employee data to orange hrm');
@@ -63,9 +84,10 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
  * If employee is deleted then all related users (login ids) will also be deleted
  * @returns nothing/void. Throws exception if operation fails
 */
-async function deleteTestEmployee(empId:number): Promise<void> {
+async function deleteTestEmployee(empId?:number): Promise<void> {
     const adminAuthJSONLocation: string = await getValidAuthJSONPath();
-    
+    if(!empId) empId = getTestEmployeeNumber();
+
     //using admin credentials for operation
     const apiRequestContext: APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
     const apiResponse: APIResponse = await apiRequestContext.delete('/web/index.php/api/v2/pim/employees', {
@@ -100,17 +122,8 @@ async function addNewESSUser(name: string, isEnabled:boolean = true) : Promise<U
         }
 
         //extract employee number from file system, which is expected to be present before this code starts executes
-        let testEmployeeNumber:number;
-
-        try {
-            const testEmployeeDataStr: string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
-            const testEmployeeData:EmployeeDetailsType = JSON.parse(testEmployeeDataStr);
-            testEmployeeNumber = testEmployeeData?.employeeNumber;
-            baseLogger.info(`using employee number ${testEmployeeNumber} for adding new user`);
-        }
-        catch(err) {
-            throw new Error(`Something went wrong while trying to extract employee data from the file system - ${err}`);
-        }    
+        const testEmployeeNumber:number = getTestEmployeeNumber()
+        baseLogger.info(`using employee number ${testEmployeeNumber} for adding new user`);  
 
         const addUserResp:APIResponse = await apiRequestContext.post(`/web/index.php/api/v2/admin/users`, {
             headers: {
@@ -166,4 +179,4 @@ async function doesUserExists(name: string): Promise<boolean> {
 
 }
 
-export {getEmployeeDataFilePath, addTestEmployee, deleteTestEmployee, addNewESSUser} 
+export {getTestEmployeeDataFilePath, getTestEmployeeNumber, addTestEmployee, deleteTestEmployee, addNewESSUser} 

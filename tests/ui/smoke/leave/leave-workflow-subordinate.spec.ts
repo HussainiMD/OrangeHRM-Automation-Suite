@@ -49,6 +49,8 @@ test('Verify Employee User applied leaves shows up in his leave history', async 
 
     const fromDateLocator:Locator = fromDateSectionLocator.locator('input.oxd-input');
 
+    //TO DO: Issue with Saturday & Sunday being chosen
+
     const today: Date = new Date();
     const todayDateStr: string = `${today.getFullYear()}-${today.getDate()+2}-${today.getMonth()+1}`;
 
@@ -70,7 +72,7 @@ test('Verify Employee User applied leaves shows up in his leave history', async 
 
     /*This arbitrary wait time is needed as backend is laggy in reflecting changes through API*/
     await essUserAuthPage.waitForTimeout(1000);
-
+    
     const leaveCountAfterApply: number = await getCurrentLeavesBalanceCount(essUserAuthPage);//utility api being called
     expect(leaveCountAfterApply).toBeGreaterThan(0);
 

@@ -1,5 +1,4 @@
-import {getEmployeeDataFilePath, deleteTestEmployee} from "../utils/users-manager.util";
-import { EmployeeDetailsType } from "../utils/types/EmployeeDetailsType";
+import {getTestEmployeeDataFilePath, deleteTestEmployee} from "../utils/users-manager.util";
 import fs from "fs";
 import path from "path";
 import baseLogger from "../utils/logger";
@@ -7,11 +6,9 @@ import baseLogger from "../utils/logger";
 let isCleanUpDone: boolean = false; //clean up must be idempondent
 
 async function cleanUPTestEmployee(): Promise<void> {
-    const employeeDataFilePath:string = getEmployeeDataFilePath();
-    const employeeDetails:string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
-    const employee:EmployeeDetailsType = JSON.parse(employeeDetails);
-
-    await deleteTestEmployee(employee?.employeeNumber);    
+    const employeeDataFilePath:string = getTestEmployeeDataFilePath();
+    if(fs.existsSync(employeeDataFilePath)) 
+        await deleteTestEmployee();        
 }
 
 /**Delete the folder recursively and forcefully
