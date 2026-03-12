@@ -1,5 +1,10 @@
 import {test, Response, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
 import { getCurrentLeavesBalanceCount } from "../../../../utils/leave-management.util";
+import { addPersonalLeavesToBaseEmployee } from "../../../../utils/leave-management.util";
+
+test.beforeAll(async () => {
+    await addPersonalLeavesToBaseEmployee(10);
+})
 
 
 /**

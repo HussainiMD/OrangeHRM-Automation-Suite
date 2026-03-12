@@ -4,7 +4,7 @@ import baseLogger from "./logger";
 
 const adminAuthJsonPath: string = `./storage/admin-auth-${process.pid}.json`;
 let isAuthLockMonitorStarted: boolean = false;
-
+let globalAPIRequestContext: APIRequestContext;
 
 /** Logic below can be better understood if we look at context:
  *  For a given worker thread, we should have ONLY one AUTH token. Even expired token management should not voilate this rule   
@@ -13,7 +13,9 @@ let isAuthLockMonitorStarted: boolean = false;
  */
 
 async function refreshAdminAuthState(): Promise<void> {     
-    if(!isAuthLockMonitorStarted) isAuthLockMonitorStarted = true;
+    if(isAuthLockMonitorStarted) return;
+    
+    isAuthLockMonitorStarted = true;
     baseLogger.info(`PID: ${process.pid} - Starting the process for a new Auth token`);
     
     const apiReqContext: APIRequestContext = await request.newContext({
@@ -57,35 +59,53 @@ async function refreshAdminAuthState(): Promise<void> {
  */
 
 async function getExistingAuthValidationCode(): Promise<number> {
-        const apiRequestContext:APIRequestContext = await request.newContext({
-            baseURL: process.env.base_URL,
-            storageState: adminAuthJsonPath
-        });
-
         /** This API call will fail if made from expired/non authenticated context. 
          * We are fetching only 1 record (limit=1) for FASTER execution 
          * Below logic is a PRO-ACTIVE step instead of REACTIVE with interception of response. It helps avoiding failure of tests.
          */
-        const apiResponse:APIResponse = await apiRequestContext.get('/web/index.php/api/v2/admin/users?limit=1');
+        try {
+            const apiResponse:APIResponse = await globalAPIRequestContext.get('/web/index.php/api/v2/admin/users?limit=1');
 
-        const apiRespStatus:number = apiResponse.status();        
-        baseLogger.info(`PID: ${process.pid} - Got response code ${apiRespStatus} while accessing URL-${apiResponse.url()}`);
-        
-        apiRequestContext.dispose(); // no need to do "await" as we trust it to happen. This helps increase script execution time
-        return apiRespStatus;
+            const apiRespStatus:number = apiResponse.status();        
+            baseLogger.info(`PID: ${process.pid} - Got response code ${apiRespStatus} while accessing URL-${apiResponse.url()}`);
+                    
+            return apiRespStatus;
+        } catch(err) {
+            baseLogger.warn(err);
+            return 409;
+        }
+}
+
+
+/*add or update the local-global context */
+async function addUpdateContext() {
+    baseLogger.info(`Refreshing local globalAPIRequestContext reference`);
+    globalAPIRequestContext = await request.newContext({
+            baseURL: process.env.base_URL,
+            storageState: adminAuthJsonPath
+    });
+}
+
+/*clean up*/
+export async function disposeAdminContext() {
+    baseLogger.info(`Going to dispose of the Admin User Context`);
+    if(globalAPIRequestContext)
+        await globalAPIRequestContext.dispose();
 }
 
 
 
 /**
  * This will verify if the existing auth context is still active & valid.
- * If not, then it will refresh the auth before returning the auth json location
- * @returns a string with value of path referring the pre authenticated json
+ * If not, then it will refresh the auth before returning the context
+ * @returns a valid APIRequestContext
  */
-export async function getValidAuthJSONPath(): Promise<string> {   
+export async function getValidAdminRequestContext(): Promise<APIRequestContext> {   
     let isAuthNeeded: boolean = true;
 
     if(fs.existsSync(adminAuthJsonPath)) { 
+        baseLogger.info(`found admin auth json path: ${adminAuthJsonPath}`);
+        if(!globalAPIRequestContext) await addUpdateContext();
         const apiRespStatus = await getExistingAuthValidationCode();
         if(apiRespStatus == 200) isAuthNeeded = false;
         else baseLogger.info('Doing Re-Auth as current authentication (context) expired');
@@ -93,13 +113,16 @@ export async function getValidAuthJSONPath(): Promise<string> {
 
     if(isAuthNeeded) {        
         try {
-            await refreshAdminAuthState();                
+            /*dispose & create a fresh context */ 
+            await disposeAdminContext();
+            await refreshAdminAuthState();               
+            await addUpdateContext();           
         } catch(err) {
             baseLogger.warn(err);
             throw err;
         } 
     } else baseLogger.info('No need of Auth as current authentication is valid');
 
-    return adminAuthJsonPath;
+    return globalAPIRequestContext;
 }
 

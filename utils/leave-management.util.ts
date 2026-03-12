@@ -1,9 +1,7 @@
-import {request, APIRequestContext, APIResponse, Page} from "../tests/base";
+import { APIRequestContext, APIResponse, Page} from "../tests/base";
 import baseLogger from "./logger";
-import { getValidAuthJSONPath } from "./auth-manager.utils";
+import { getValidAdminRequestContext } from "./auth-manager.utils";
 import { getTestEmployeeNumber } from "./users-manager.util";
-
-const baseURL: string = process.env.base_url ?? 'https://opensource-demo.orangehrmlive.com';
 
 interface LeaveBalanceResponseType {
     data : {
@@ -57,12 +55,11 @@ function getAddLeaveEntitlementJSON(employeeNumber: number, leaveCount: number) 
 /**function to add leaves to an employee identified with employee number (not employee id which is provided by user)
  * @returns void
  */
-async function addPersonalLeavesToEmployee(employeeNumber: number, leaveCount: number): Promise<void> {    
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
+async function addPersonalLeavesToEmployee(employeeNumber: number, leaveCount: number): Promise<void> {        
     const data = getAddLeaveEntitlementJSON(employeeNumber, leaveCount);
     baseLogger.info(`adding personal leaves data to employee #${employeeNumber} :: JSON - ${JSON.stringify(data)}`);
 
-    const requestContext:APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
+    const requestContext:APIRequestContext = await getValidAdminRequestContext();
     const apiResponse: APIResponse = 
         await requestContext.post('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/leave/leave-entitlements', {
             headers: {

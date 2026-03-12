@@ -1,16 +1,15 @@
 "use strict";
-import {APIRequestContext, APIResponse, request} from "../tests/base";
+import {APIRequestContext, APIResponse} from "../tests/base";
 import fs from "fs";
 import path from "path";
 import UserType from "../tests/types/UserType";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
 import { EmployeeDetailsType } from "./types/EmployeeDetailsType";
-import {getValidAuthJSONPath} from "../utils/auth-manager.utils";
+import { getValidAdminRequestContext } from "../utils/auth-manager.utils";
 import { duplicateUserError } from "../tests/errors/duplicate-user-error";
 import baseLogger from "./logger";
 
-const baseURL: string = process.env.base_url ?? 'https://opensource-demo.orangehrmlive.com';
 const employeeDataFilePath: string = path.join('storage', 'test-employee-global.json');
 
 interface AddEmployeeResponseDataType {
@@ -54,11 +53,9 @@ const getTestEmployeeNumber = (() => {
 /**Here we will be adding a test employee 
  * @returns a record of employee
 */
-async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
-
+async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {   
     //using admin credentials for operation
-    const requestContext:APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
+    const requestContext:APIRequestContext = await getValidAdminRequestContext();
     try {
         const addEmployeeResponse:APIResponse = await requestContext.post('/web/index.php/api/v2/pim/employees', {
                 headers: { 'Content-Type': 'application/json'},
@@ -84,12 +81,11 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
  * If employee is deleted then all related users (login ids) will also be deleted
  * @returns nothing/void. Throws exception if operation fails
 */
-async function deleteTestEmployee(empId?:number): Promise<void> {
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
+async function deleteTestEmployee(empId?:number): Promise<void> {    
     if(!empId) empId = getTestEmployeeNumber();
 
     //using admin credentials for operation
-    const apiRequestContext: APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
+    const apiRequestContext: APIRequestContext = await getValidAdminRequestContext();
     const apiResponse: APIResponse = await apiRequestContext.delete('/web/index.php/api/v2/pim/employees', {
             headers: { 'Content-Type': 'application/json'},
             data: {
@@ -108,46 +104,42 @@ async function deleteTestEmployee(empId?:number): Promise<void> {
  * @returns a record of user
 */
 async function addNewESSUser(name: string, isEnabled:boolean = true) : Promise<UserType> {    
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
-
     //using admin credentials for operation
-    const apiRequestContext:APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});
-    try {        
-        const exists = await doesUserExists(name);
-        baseLogger.info(`does "${name}" user exists? ${exists}`);
-        if(exists) {
-            const msg: string = `${name} user already exists. Each user name has to be unique. Please try with a different name`;
-            baseLogger.warn(msg);
-            throw new duplicateUserError(msg);
-        }
-
-        //extract employee number from file system, which is expected to be present before this code starts executes
-        const testEmployeeNumber:number = getTestEmployeeNumber()
-        baseLogger.info(`using employee number ${testEmployeeNumber} for adding new user`);  
-
-        const addUserResp:APIResponse = await apiRequestContext.post(`/web/index.php/api/v2/admin/users`, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: {
-                "username": name,
-                "password": process.env.ess_user_password,
-                "status": isEnabled,
-                "userRoleId": 2,
-                "empNumber": testEmployeeNumber
-            }
-        });
-
-        baseLogger.info(`add user request API response status is ${addUserResp.status()}`);
-        if(!addUserResp.ok()) throw new Error(`Add user request has failed :: ${await addUserResp.text()}`);
-        
-        return {
-            name,
-            "password": "tester123"
-        }
-    } finally {
-        await apiRequestContext.dispose(); //no need to wait as it happens async
+    const apiRequestContext:APIRequestContext = await getValidAdminRequestContext();
+         
+    const exists = await doesUserExists(name);
+    baseLogger.info(`does "${name}" user exists? ${exists}`);
+    if(exists) {
+        const msg: string = `${name} user already exists. Each user name has to be unique. Please try with a different name`;
+        baseLogger.warn(msg);
+        throw new duplicateUserError(msg);
     }
+
+    //extract employee number from file system, which is expected to be present before this code starts executes
+    const testEmployeeNumber:number = getTestEmployeeNumber()
+    baseLogger.info(`using employee number ${testEmployeeNumber} for adding new user`);  
+    const password: string = process.env.ess_user_password ?? 'tester123';
+
+    const addUserResp:APIResponse = await apiRequestContext.post(`/web/index.php/api/v2/admin/users`, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: {
+            "username": name,
+            password,
+            "status": isEnabled,
+            "userRoleId": 2,
+            "empNumber": testEmployeeNumber
+        }
+    });
+
+    baseLogger.info(`add user request API response status is ${addUserResp.status()}`);
+    if(!addUserResp.ok()) throw new Error(`Add user request has failed :: ${await addUserResp.text()}`);
+    
+    return {
+        name,
+        password
+    } 
 }
 
 
@@ -155,10 +147,8 @@ async function addNewESSUser(name: string, isEnabled:boolean = true) : Promise<U
  * @returns a boolean result
 */
 async function doesUserExists(name: string): Promise<boolean> {     
-    const adminAuthJSONLocation: string = await getValidAuthJSONPath();
-
     //using admin credentials for operation
-    const apiRequestContext:APIRequestContext = await request.newContext({baseURL, storageState: adminAuthJSONLocation});  
+    const apiRequestContext:APIRequestContext = await getValidAdminRequestContext();  
     try {
         const apiResponse:APIResponse = await apiRequestContext.get(`/web/index.php/api/v2/admin/users?limit=50&offset=0&username=${name}&sortField=u.userName&sortOrder=ASC`);
                 
@@ -173,9 +163,7 @@ async function doesUserExists(name: string): Promise<boolean> {
     } catch(err) {
         baseLogger.warn(err);
         return false;
-    }
-
-    return false;
+    }    
 
 }
 

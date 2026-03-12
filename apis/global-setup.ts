@@ -2,7 +2,6 @@ import fs from "fs";
 import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
 import { getTestEmployeeDataFilePath, addTestEmployee, addNewESSUser } from "../utils/users-manager.util";
-import { addPersonalLeavesToBaseEmployee } from "../utils/leave-management.util";
 import { doCleanUp } from "./global-cleanup";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
@@ -19,7 +18,7 @@ dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: 
  * We are creating test employee only once through global setup. Then sharing employee number through file system "employee data file path".
  * NOTE: Though we are doing add only once, there are chances that test employee gets deleted by orange hrm team's clean up cron job. We are ignoring that risk for now
  */
-async function extractAndSaveEmployeeDetails(): Promise<void> {
+async function extractAndSaveTestEmployeeDetails(): Promise<void> {
     const newEmployeeData:BasicEmployeeType = {
                         "firstName": "playwright",
                         "middleName": "",
@@ -38,6 +37,7 @@ async function extractAndSaveEmployeeDetails(): Promise<void> {
 }
 
 
+/*do clean up even when node js process exits unusually*/
 function attachCrashHandlers() {
     process.on('exit', async () => {
         await doCleanUp();
@@ -53,9 +53,7 @@ function attachCrashHandlers() {
 }
 
 
-
-
-//Playwright expects only ONE default module, hence the work around
+/*Playwright expects only ONE default module, hence the work around*/
 export default async (): Promise<void> => {
     
     // ensure credentials are provided before starting the actual test suite execution    
@@ -69,12 +67,11 @@ export default async (): Promise<void> => {
     baseLogger.info(`doing the Global Setup now...`);
     attachCrashHandlers();
 
-    await extractAndSaveEmployeeDetails();
+    await extractAndSaveTestEmployeeDetails();
     
     const userName: string = process.env.ess_user_name ?? '';
     try {        
-        await addNewESSUser(userName);
-        await addPersonalLeavesToBaseEmployee(10);//if add user fail, we do not want to continue
+        await addNewESSUser(userName);        
     } catch(err) {
         if(err instanceof duplicateUserError) baseLogger.warn(`User with ${userName} already exists in the backend`);
         await doCleanUp(); //we want to do clean up regardless, so that subsequent test suit execution gets a clean slate

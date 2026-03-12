@@ -9,6 +9,10 @@ interface ESSUserType {
     essUserAuthPage: Page
 }
 
+/**When compared with Admin Auth fixture, here we have a different approach.
+ * In Admin fixture, we are relying on the Auth manager (and storage state auth json) for context. It ensures only ONE session on server to be used
+ * Instead of auth json approach, here we are NOT re-using the session. Here we provide with fresh logged in page (with new context and seperate session on server side)
+ */
 const test = base.extend<ESSUserType>({
     essUserAuthContext: async ({browser}, use) => {
        const context: BrowserContext = await browser.newContext();

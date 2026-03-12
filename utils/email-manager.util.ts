@@ -1,13 +1,10 @@
-import { request, APIResponse, APIRequestContext } from "../tests/base";
+import { APIResponse, APIRequestContext } from "../tests/base";
 import { getTestEmployeeNumber } from "./users-manager.util";
-import { getValidAuthJSONPath } from "./auth-manager.utils";
+import { getValidAdminRequestContext } from "./auth-manager.utils";
 import baseLogger from "./logger";
 
-const baseURL: string = process.env.base_url ?? 'https://opensource-demo.orangehrmlive.com';
-
-async function updateEmailConfiguration(data: object): Promise<void> {
-    const storageState: string = await getValidAuthJSONPath();
-    const requestContext: APIRequestContext = await request.newContext({ baseURL, storageState });
+async function updateEmailConfiguration(data: object): Promise<void> {    
+    const requestContext: APIRequestContext = await getValidAdminRequestContext();
     const updateEmailConfigResponse: APIResponse = await requestContext.put('/web/index.php/api/v2/admin/email-configuration', {
         headers: {
             "Content-Type": "application/json"
@@ -18,11 +15,10 @@ async function updateEmailConfiguration(data: object): Promise<void> {
     if(!updateEmailConfigResponse.ok()) {
         const msg: string = `Unable to update email configuration for adding SMTP server details - API Response is ${updateEmailConfigResponse.status()} & text message - ${await updateEmailConfigResponse.text()}`;
         baseLogger.warn(msg);
-        await requestContext.dispose();
+        
         throw msg;
     }
 
-    await requestContext.dispose();
 }
 
 /**To add SMTP configuration
@@ -86,8 +82,7 @@ export async function addTestEmailToTestEmployee(): Promise<void> {
         "otherEmail": null
     }
 
-    const storageState: string = await getValidAuthJSONPath();
-    const requestContext: APIRequestContext = await request.newContext({baseURL, storageState});
+    const requestContext: APIRequestContext = await getValidAdminRequestContext();
     const response: APIResponse = await requestContext.put(`https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/pim/employee/${empNumber}/contact-details`, {
         headers: {
             "Content-Type": "application/json"

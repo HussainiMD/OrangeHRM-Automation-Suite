@@ -1,5 +1,5 @@
-import {test as base, BrowserContext, Page} from "../tests/base";
-import { getValidAuthJSONPath } from "../utils/auth-manager.utils";
+import {test as base, BrowserContext, Page, APIRequestContext} from "../tests/base";
+import { getValidAdminRequestContext } from "../utils/auth-manager.utils";
 
 interface AdminUserType {
     adminUserAuthContext: BrowserContext,
@@ -15,9 +15,11 @@ interface AdminUserType {
 const test = base.extend<AdminUserType>({
     adminUserAuthContext: async ({browser}, use) => {
         
+        const reqContext: APIRequestContext =  await getValidAdminRequestContext();//Get context from Auth Manager and use it
+        
          /* Here browser context is created only for valid/active auth*/
         const adminUserContext: BrowserContext = await browser.newContext({
-            storageState: await getValidAuthJSONPath()            
+            storageState: await reqContext.storageState()            
         });   
                
         await use(adminUserContext);
