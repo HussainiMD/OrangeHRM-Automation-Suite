@@ -8,6 +8,6 @@ test('Verify Supervisor/Manager User has access to Leaves module', async ({admin
     expect(navResponse).toBeTruthy();   
     
     const leaveBtnLocators:Locator = adminUserAuthPage.locator('.oxd-main-menu-item--name').filter({hasText: 'Leave'});
-    const btnCount:number = await leaveBtnLocators.count()
+    const btnCount:number = await leaveBtnLocators.count();
     expect(btnCount).toBeGreaterThanOrEqual(1);
 })

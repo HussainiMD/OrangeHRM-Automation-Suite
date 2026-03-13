@@ -10,10 +10,14 @@ test('Login with Disabled User Account', async ({page}) => {
     expect(navResponse).toBeTruthy();
 
     const newUserName: string = `disabled_user_${Math.random()*100}`; //randomizing just enough
+    /*We are using base test employee to add a new user. There can be multiple user profiles to same employee */
     const {name:username, password} = await addNewESSUser(newUserName, false);
 
     const loginPage:LoginPage = new LoginPage(page);
     await loginPage.signInWithCredentials({username, password});
+
+    /*extra check as sometimes it is taking more time especially during parellel executions*/
+    await page.waitForSelector('.orangehrm-login-form > .orangehrm-login-error');
 
     const alterMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');
     expect(await alterMsgContentLocator.count()).toBe(1);

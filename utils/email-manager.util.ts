@@ -30,8 +30,8 @@ export async function configureEmailWithSMTP(): Promise<void> {
             "sentAs": "admin@mail.com",
             "smtpHost": "sandbox.smtp.mailtrap.io",
             "smtpPort": 2525,
-            "smtpUsername": "4112eef58bbcdd",
-            "smtpPassword": "6225a86e87503c",
+            "smtpUsername": process.env.mailtrap_smtp_user_name ?? "3b00825412776d", //"4112eef58bbcdd",
+            "smtpPassword": process.env.mailtrap_smtp_user_Password ?? "82f05d4b6c59f3", //"6225a86e87503c",
             "smtpAuthType": "login",
             "smtpSecurityType": "none"
     };
@@ -66,9 +66,8 @@ export async function resetEmailConfiguration(): Promise<void> {
 /**add test Email to the test employee 
  * @returns void
  */
-export async function addTestEmailToTestEmployee(): Promise<void> {
-    const empNumber: number = getTestEmployeeNumber();
-    const workEmail: string = "playwright-test@mailslurp.biz";   
+export async function addTestEmailToTestEmployee(workEmail: string): Promise<void> {
+    const empNumber: number = getTestEmployeeNumber();    
     const data = {
         "street1": "",
         "street2": "",

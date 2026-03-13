@@ -1,6 +1,5 @@
-import { Locator, Page } from "../tests/base";
+import { Locator, Page, Response, expect } from "../tests/base";
 import credentials from "../tests/types/credentials";
-
 
 export default class LoginPage {
     private userNameSelector:string = 'input[name="username"]';
@@ -11,18 +10,30 @@ export default class LoginPage {
     constructor(page:Page) {
         this.page = page;
     }
+ 
+   /*unlike other pages, we are making this optional. Because in many test scenarios, default redirection is to login page*/ 
+   async navigateToLoginPage(): Promise<void> {
+        const response: Response | null = await this.page.goto('/web/index.php/auth/login');
+        if(!response || !response.ok()) 
+            throw new Error(`Unable to navigate to login page`);        
+    }
+    
 
     async signInWithCredentials({username, password}: credentials) {        
         const userNameInput:Locator = this.page.locator(this.userNameSelector);
+        await expect(userNameInput).toBeEnabled();
         await userNameInput.fill(username);
 
         const passwordInput:Locator = this.page.locator(this.passwordSelector);
+        await expect(passwordInput).toBeEnabled();
         await passwordInput.fill(password);
 
-        await this.page.waitForTimeout(2000);
+        // await this.page.waitForTimeout(2000);
         const loginBtn:Locator = this.page.locator(this.loginBtnSelector);
+        await expect(loginBtn).toBeEnabled();
         await loginBtn.click();
-        await this.page.waitForTimeout(2000);
+        await this.page.waitForLoadState('networkidle');
+        // await this.page.waitForTimeout(2000);
     }
 
 

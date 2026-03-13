@@ -2,6 +2,7 @@ import {test, expect, Response, Locator} from "../../../base";
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_017
+ * Indirect way of testing. HTML element with type password are automatically masked by browsers
  */
 test('Is Password Field getting masked', async ({page}) => {
     const navResponse: Response | null = await page.goto('web/index.php/auth/login');

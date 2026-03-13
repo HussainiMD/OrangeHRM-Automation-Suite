@@ -1,4 +1,4 @@
-import {test as base, BrowserContext, Page, Response, expect} from "../tests/base";
+import {test as base, BrowserContext, Page} from "../tests/base";
 import LoginPage from "../pages/LoginPage";
 
 const username: string = process.env.ess_user_name??'';
@@ -20,13 +20,11 @@ const test = base.extend<ESSUserType>({
        await context.close();
     },
     essUserAuthPage: async ({essUserAuthContext}, use) => {
-        const page: Page = await essUserAuthContext.newPage();
-        const navResponse:Response | null = await page.goto('/web/index.php/auth/login')
-        expect(navResponse).toBeTruthy();
-        
+        const page: Page = await essUserAuthContext.newPage();        
         const loginPage: LoginPage = new LoginPage(page);
-        await loginPage.signInWithCredentials({username, password});
-        await page.waitForLoadState("networkidle");
+        await loginPage.navigateToLoginPage();
+
+        await loginPage.signInWithCredentials({username, password});        
 
         await use(page);
 

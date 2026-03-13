@@ -9,7 +9,7 @@ test('Login with Invalid Username and / or Password', async ({page}) => {
     const navResponse: Response|null = await page.goto('web/index.php/auth/login');
     expect(navResponse).toBeTruthy();
 
-    const username: string = `invalid_user_${randomUUID()}`;
+    const username: string = `invalid_user_${randomUUID()}`.slice(0, 40);//ensuring user length restrictions
     const password: string = 'does_not_exist';
 
     const loginPage:LoginPage = new LoginPage(page);

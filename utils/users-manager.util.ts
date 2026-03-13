@@ -78,7 +78,8 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
 
 
 /**This function helps to delete an employee by empNumber
- * If employee is deleted then all related users (login ids) will also be deleted
+ * If employee is deleted then all related users (login ids) will also be deleted.
+ * This test suite uses this simple logic for clean up. All users are linked to SINGLE test employee.
  * @returns nothing/void. Throws exception if operation fails
 */
 async function deleteTestEmployee(empId?:number): Promise<void> {    
@@ -100,7 +101,8 @@ async function deleteTestEmployee(empId?:number): Promise<void> {
 }
 
 
-/**This function helps to create a non admin (ESS) user 
+/**This function helps to create a non admin (ESS) user
+ * Whole test suite uses single test employee. But multiple user profiles linked to single test user. This is IMPORTANT to remember 
  * @returns a record of user
 */
 async function addNewESSUser(name: string, isEnabled:boolean = true) : Promise<UserType> {    
