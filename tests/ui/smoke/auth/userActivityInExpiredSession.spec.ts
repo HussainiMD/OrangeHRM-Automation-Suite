@@ -1,7 +1,7 @@
 import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
 
 /**
- * ID from Test Cases (spreadsheet): TC_LOGIN_012
+ * ID from Test Cases (spreadsheet): TC_LOGIN_013
  */
 test('User Session Expired - Re-login enforced on User Action', async ({essUserAuthPage, essUserAuthContext}) => {
    

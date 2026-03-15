@@ -38,8 +38,9 @@ function getLeaveTypeId(byName: string): number {
  */
 function getAddLeaveEntitlementJSON(employeeNumber: number, leaveCount: number) {
     const datenow = new Date();
-    const fromDate: string = `${datenow.getFullYear()}-${datenow.getMonth()+1}-${datenow.getDate()}`;// +1 for month because in JS, month starts with 0
-    const toDate: string = `${datenow.getFullYear()+1}-${datenow.getMonth()+1}-${datenow.getDate()}`;//one year from now
+    /* remember, month starts with 0, which means adding leaves from one month before current date*/
+    const fromDate: string = `${datenow.getFullYear()}-${datenow.getMonth()}-${datenow.getDate()}`;
+    const toDate: string = `${datenow.getFullYear()+1}-${datenow.getMonth()}-${datenow.getDate()}`;//one year from now
     const leaveTypeId: number = getLeaveTypeId('US - Personal'); //only US personal category being used for testing
 
     return {

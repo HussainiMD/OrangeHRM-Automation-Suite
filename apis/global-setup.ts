@@ -2,6 +2,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import * as validationsUtil from "../utils/env-validations.utils";
 import { getTestEmployeeDataFilePath, addTestEmployee, addNewESSUser } from "../utils/users-manager.util";
+import { addPersonalLeavesToBaseEmployee } from "../utils/leave-management.util";
 import { doCleanUp } from "./global-cleanup";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
@@ -70,6 +71,7 @@ export default async (): Promise<void> => {
     await extractAndSaveTestEmployeeDetails();
     
     const userName: string = process.env.ess_user_name ?? '';
+    
     try {        
         await addNewESSUser(userName);        
     } catch(err) {
@@ -77,6 +79,13 @@ export default async (): Promise<void> => {
         await doCleanUp(); //we want to do clean up regardless, so that subsequent test suit execution gets a clean slate
         throw err; //stop test exectuion if set up fails
     } 
+
+    try {
+        await addPersonalLeavesToBaseEmployee(10);
+    } catch(err) {
+        baseLogger.warn(`Unable to add personal leaves to base employee due to this issue - ${JSON.stringify(err)}. Continuing with global set up as this issue is NOT a blocker for test suite`);
+        /*we are not blocking execution as it should NOT be blocked. Hence not throwing error */
+    }
         
     baseLogger.info(`finished the Global Setup`);   
 }

@@ -31,7 +31,9 @@ export default defineConfig({
     baseURL: 'https://opensource-demo.orangehrmlive.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure'//crucial for UI test debugging when failures happen. !!! SUPER IMPORTANT !!!
   },
   globalSetup: '../apis/global-setup',
   globalTeardown: '../apis/global-cleanup',
@@ -39,17 +41,17 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'staging-chrome',
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
-      name: 'firefox',
+      name: 'staging-firefox',
       use: { ...devices['Desktop Firefox'] },
     },
 
     {
-      name: 'webkit',
+      name: 'staging-webkit',
       use: { ...devices['Desktop Safari'] },
     },
 

@@ -3,7 +3,7 @@ import LoginPage from "../../../../pages/LoginPage";
 import { randomUUID } from "node:crypto";
 
 /**
- * ID from Test Cases (spreadsheet): TC_LOGIN_008
+ * ID from Test Cases (spreadsheet): TC_LOGIN_009
  */
 test('Login with Invalid Username and / or Password', async ({page}) => {
     const navResponse: Response|null = await page.goto('web/index.php/auth/login');
