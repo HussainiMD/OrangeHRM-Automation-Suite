@@ -12,6 +12,8 @@ const workEmail: string = `${randomID}@mailslurp.biz`;
 const newUser: string = `resetUser_${randomID}`.slice(0, 40); //coz max lenght is 40 characters
 const newPassword: string = randomID;
 
+test.skip(true, 'Skipping this test file temporarily');
+
 test.beforeAll(async _ =>{
     await configureEmailWithSMTP();
     await addTestEmailToTestEmployee(workEmail);

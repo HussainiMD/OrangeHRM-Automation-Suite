@@ -88,9 +88,10 @@ async function addUpdateContext() {
 
 /*clean up*/
 export async function disposeAdminContext() {
-    baseLogger.info(`Going to dispose of the Admin User Context`);
-    if(globalAPIRequestContext)
+    if(globalAPIRequestContext) {
+        baseLogger.info(`Going to dispose of the Admin User Context`);
         await globalAPIRequestContext.dispose();
+    }
 }
 
 

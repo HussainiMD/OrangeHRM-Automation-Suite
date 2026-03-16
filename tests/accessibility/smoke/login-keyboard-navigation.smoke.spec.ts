@@ -1,4 +1,5 @@
 import {test, expect, Response, Page, Locator} from "../../base";
+import UserMenu from "../../../pages/components/UserMenu";
 import { getESSUserCredentials } from "../../../utils/users-manager.util";
 import credentials from "../../types/credentials";
 
@@ -19,6 +20,10 @@ async function doPageFills(page: Page): Promise<void> {
     await page.keyboard.type(password);
 }
 
+function logoutUser(page:Page): void {
+    const userMenu: UserMenu = new UserMenu(page);
+    userMenu.logOut(); //not waiting to save time
+}
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_024
@@ -30,6 +35,7 @@ test('Enter Key Submission for login page; password field', async ({page}) => {
     await page.waitForLoadState('load');//extra check for test case stability
     /*typical use of page.url() does NOT help here as history api based URL changes are not being detected */
     await expect(page).toHaveURL(dashboardURLRegEx);
+    logoutUser(page);
 })
 
 test('Enter Key Submission for login page; login button', async ({page}) => {
@@ -38,6 +44,7 @@ test('Enter Key Submission for login page; login button', async ({page}) => {
     await page.keyboard.press('Enter');
     await page.waitForLoadState('load');
     await expect(page).toHaveURL(dashboardURLRegEx);    
+    logoutUser(page);
 })
 
 test('Use SPACE BAR Key Submission for login page', async ({page}) => {
@@ -46,4 +53,5 @@ test('Use SPACE BAR Key Submission for login page', async ({page}) => {
     await page.keyboard.press('Space');
     await page.waitForLoadState('load');
     await expect(page).toHaveURL(dashboardURLRegEx);    
+    logoutUser(page);
 })
