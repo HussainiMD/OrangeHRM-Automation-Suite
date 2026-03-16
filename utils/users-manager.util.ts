@@ -6,6 +6,7 @@ import UserType from "../tests/types/UserType";
 import BasicEmployeeType from "../tests/types/BasicEmployeeType";
 import EmployeeType from "../tests/types/EmployeeType";
 import { EmployeeDetailsType } from "./types/EmployeeDetailsType";
+import credentials from "../tests/types/credentials";
 import { getValidAdminRequestContext } from "../utils/auth-manager.utils";
 import { duplicateUserError } from "../tests/errors/duplicate-user-error";
 import baseLogger from "./logger";
@@ -169,4 +170,13 @@ async function doesUserExists(name: string): Promise<boolean> {
 
 }
 
-export {getTestEmployeeDataFilePath, getTestEmployeeNumber, addTestEmployee, deleteTestEmployee, addNewESSUser} 
+
+function getESSUserCredentials(): credentials {
+    const username: string = process.env.ess_user_name ?? "";
+    const password: string = process.env.ess_user_password ?? "";
+
+    return { username, password};
+}
+
+
+export {getTestEmployeeDataFilePath, getTestEmployeeNumber, getESSUserCredentials, addTestEmployee, deleteTestEmployee, addNewESSUser} 
