@@ -3,11 +3,17 @@ import { Page, Response, Locator, expect } from "../tests/base";
 export default class ResetPasswordPage {
     private page: Page;
 
-    constructor(page: Page) {
+    private constructor(page: Page) {
         this.page = page;        
     }
 
-    async navigateToPasswordResetPage(url: string) {
+    static async create(page:Page, url: string): Promise<ResetPasswordPage> {
+        const instance: ResetPasswordPage = new ResetPasswordPage(page);
+        await instance.navigateToPasswordResetPage(url);
+        return instance;
+    }
+
+    private async navigateToPasswordResetPage(url: string) {
         const response: Response | null = await this.page.goto(url);
         if(!response || !response.ok()) 
             throw new Error(`Unable to navigate to page (${url}) for accessing reset password page`);

@@ -4,6 +4,8 @@ import { addNewESSUser } from "../../../../utils/users-manager.util";
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_010
+ * Verifes the full flow of adding a new user as disabled. Then asserting login error at login page.
+ * created disabled user -> attempt to login with user credentials
  */
 test('Login with Disabled User Account', async ({page}) => {
     const navResponse: Response | null = await page.goto('web/index.php/auth/login');

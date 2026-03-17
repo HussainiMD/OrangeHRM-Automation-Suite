@@ -2,6 +2,9 @@ import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_006
+ * Verifies the ESS user (normal profile) user has limited access to Leaves module in side navigation of AUT
+ * Allowed Access - My leaves section
+ * Restricted Acess - Configure, Leave List and Assign Leave
  */
 test('Verify Sub-ordinate Employee User has LIMITED access to Leaves module', async ({essUserAuthPage}) => {    
     const leaveBtnLocator: Locator = essUserAuthPage.locator('.oxd-main-menu-item--name').filter({hasText: 'Leave'});

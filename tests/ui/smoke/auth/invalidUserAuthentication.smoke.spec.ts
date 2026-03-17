@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_009
+ * Verifies the login with non existent user credentials. Asserts the error message shown on page to user
  */
 test('Login with Invalid Username and / or Password', async ({page}) => {
     const navResponse: Response|null = await page.goto('web/index.php/auth/login');

@@ -28,12 +28,10 @@ export default class LoginPage {
         await expect(passwordInput).toBeEnabled();
         await passwordInput.fill(password);
 
-        // await this.page.waitForTimeout(2000);
         const loginBtn:Locator = this.page.locator(this.loginBtnSelector);
         await expect(loginBtn).toBeEnabled();
         await loginBtn.click();
         await this.page.waitForLoadState('networkidle');
-        // await this.page.waitForTimeout(2000);
     }
 
 

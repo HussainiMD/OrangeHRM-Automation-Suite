@@ -26,6 +26,7 @@ interface MailtrapMessageType {
  * @return - string containing URL for account recovery
  */
 export async function getPasswordResetLinkFromEmail(workEmail: string): Promise<string> {
+    /* Single-use context per call — only one test currently uses this utility. Refactor to shared context if reuse increases.*/
     const reqContext: APIRequestContext = await request.newContext({baseURL});    
     const emailData: MailtrapMessageType = await queryAPIandExtractRelevantEmail(reqContext, workEmail);
 
@@ -59,13 +60,24 @@ export async function getPasswordResetLinkFromEmail(workEmail: string): Promise<
 }
 
 
-/**helper function to query acutal mailtrap end point for all messages that are unread
+/*Test this regex code later..suggested by Claude as my RegEx is leaky of bugs*/
+
+//const escapedURL = autURL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+//const regEx = new RegExp(`${escapedURL}.+?(<br\\s*/?>|$)`, 'i');
+//const regEx = new RegExp(`(${escapedURL}[^\\s<]+)`, 'i');
+//const match = regEx.exec(emailBody);
+//const passwordResetLink = match?.[1];
+
+ 
+
+
+/**helper function to query acutal mailtrap end point for all messages 
  * from the recieved emails list, filter by work email (which is unique)
  * @returns - email (relevant) meta data
  */
 async function queryAPIandExtractRelevantEmail(reqContext: APIRequestContext, workEmail: string): Promise<MailtrapMessageType> {
 
-    const apiResponse: APIResponse = await reqContext.get(`https://mailtrap.io/api/accounts/${mailtrapAccountId}/inboxes/${mailtrapInboxId}/messages?is_read=false`, {
+    const apiResponse: APIResponse = await reqContext.get(`/api/accounts/${mailtrapAccountId}/inboxes/${mailtrapInboxId}/messages`, {
         headers: {
             'Api-Token' : mailtrapAPIToken
         }

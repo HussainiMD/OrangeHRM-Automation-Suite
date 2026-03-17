@@ -7,7 +7,7 @@ export default class ForgotPasswordPage {
         this.page = page;        
     }
 
-    static async create(page: Page) {
+    static async create(page: Page): Promise<ForgotPasswordPage> {
         const instance: ForgotPasswordPage = new ForgotPasswordPage(page);
         await instance.navigateToLoginPage();
         return instance

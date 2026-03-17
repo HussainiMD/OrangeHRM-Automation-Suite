@@ -2,6 +2,9 @@ import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_013
+ * Verifies the AUT behavior if the session expires.
+ * This scenario is emulated by deleting the cookies after successful login
+ * Here is the complete flow: Login as ESS user -> clear cookies (AUT domain) -> Click on My Info to trigger a login verification
  */
 test('User Session Expired - Re-login enforced on User Action', async ({essUserAuthPage, essUserAuthContext}) => {
    

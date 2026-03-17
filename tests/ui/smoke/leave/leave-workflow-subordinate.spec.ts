@@ -113,23 +113,27 @@ Response> {
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_007
+ * Verifies the Leave application flow: 
+ * Ensure Leaves are available for chosen category -> Chose weekdays -> Click apply -> Verify API status (triggered behind the scenes)
  */
 test('Verify Employee applied leaves shows up in his leave history', async ({essUserAuthPage, logger}) => {
     const leaveDates: DatesObj = getValidStartEndDatesForLeave();
     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates);
     
-    expect.soft(applyLeavesAPIResponse.ok()).toBeTruthy();  
+    expect(applyLeavesAPIResponse.ok()).toBeTruthy();  
 })
 
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_008
+ * Verifies the Leave application flow for INVALID dates: 
+ * Ensure Leaves are available for chosen category -> Chose weekends (invalid) -> Click apply -> Verify API status (triggered behind the scenes)
  * */
 test('Verify weekends/invalid leave application is rejected', async ({essUserAuthPage, logger}) => {
     const leaveDates: DatesObj = getInvalidStartEndDatesForLeave();
     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates);
     
-    expect.soft(applyLeavesAPIResponse.ok()).toBeFalsy();  
+    expect(applyLeavesAPIResponse.ok()).toBeFalsy();  
 })
 
 
