@@ -6,17 +6,18 @@ import UserMenu from "../../../../pages/components/UserMenu";
  * Verifies if the valid Admin (role) user can login. 
  * Assertion happens with access to user drop down menu on top-right of the page
  */
-test('user can login, see profile button, and logout', async ({adminUserAuthPage, logger}) => {       
-    const navResponse: Response |null = await adminUserAuthPage.goto('https://opensource-demo.orangehrmlive.com/web/index.php', {waitUntil: "networkidle"});
-    expect(navResponse).toBeTruthy();
+test('user can login, see profile button, and logout', async ({adminUserAuthPage}) => {       
+    const navResponse: Response |null = await adminUserAuthPage.goto('/web/index.php');    
+    expect(navResponse?.ok()).toBe(true);
 
     const topHeaderLocator: Locator = adminUserAuthPage.locator('.oxd-topbar-header');
     await expect(topHeaderLocator).toBeVisible();
     
     const dropDown:Locator = topHeaderLocator.locator("span[class $= 'userdropdown-tab']");
-    expect(await dropDown.count()).toBe(1);    
+    await expect(dropDown).toHaveCount(1);   //have wait and retries in built when compared to dropdown.count() option
     
-    logger.info('done with testing after login..going to logout')
-    const userMenu:UserMenu = new UserMenu(adminUserAuthPage);
-    await userMenu.logOut();    
+    await test.step('Logout User', async () => {
+        const userMenu:UserMenu = new UserMenu(adminUserAuthPage);
+        await userMenu.logOut();    
+    })
 });
