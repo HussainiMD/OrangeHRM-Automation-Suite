@@ -7,8 +7,8 @@ import { randomUUID } from "node:crypto";
  * Verifies the login with non existent user credentials. Asserts the error message shown on page to user
  */
 test('Login with Invalid Username and / or Password', async ({page}) => {
-    const navResponse: Response|null = await page.goto('web/index.php/auth/login');
-    expect(navResponse).toBeTruthy();
+    const navResponse: Response|null = await page.goto('/web/index.php/auth/login');
+    expect(navResponse?.ok()).toBe(true);
 
     const username: string = `invalid_user_${randomUUID()}`.slice(0, 40);//ensuring user length restrictions
     const password: string = 'does_not_exist';
@@ -17,9 +17,5 @@ test('Login with Invalid Username and / or Password', async ({page}) => {
     await loginPage.signInWithCredentials({username, password});
 
     const alterMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');
-    expect(await alterMsgContentLocator.count()).toBe(1);
-
-    let alterMsgContent:string  = (await alterMsgContentLocator.textContent()) ?? '';//if returns null then we will treat it as empty
-
-    expect(alterMsgContent).toMatch(/credentials/i);//RegEx to match keyword
+    await expect(alterMsgContentLocator).toHaveText(/credentials/i);//RegEx to match keyword
 })

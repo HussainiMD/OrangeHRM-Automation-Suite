@@ -7,20 +7,14 @@ import {test, expect, Response} from "../../../../fixtures/essUser-auth.fixture"
  * Here is the complete flow: Login as ESS user -> clear cookies (AUT domain) -> Reload the page to trigger a login verification
  */
 test('User Session Expired Automatically - Re-login Required', async ({essUserAuthPage, essUserAuthContext}) => {
-   
-   //extracting domain name from page URL
-   const domainMatchArray: RegExpMatchArray | [] = essUserAuthPage.url().match(/[://]\/\/(.+[.com])\/.*/i) ?? [];
-   expect(domainMatchArray.length).toBeGreaterThan(0);
-
-   const domain: string = domainMatchArray[1] ?? '';   
+   const domain: string = (new URL(essUserAuthPage.url())).hostname;   
    
    /**Similating session expiry by clearing cookies */ 
    await essUserAuthContext.clearCookies({domain});
    
    const navResponse: Response | null = await essUserAuthPage.reload();
-   expect(navResponse).toBeTruthy();
-   await essUserAuthPage.waitForLoadState('networkidle');
-   
-   expect(essUserAuthPage.url()).toContain('/auth/login');   
+   expect(navResponse?.ok()).toBe(true);
+   /*session expiry should redirect to login */
+   await expect(essUserAuthPage).toHaveURL(/\/auth\/login/i);
 })
 

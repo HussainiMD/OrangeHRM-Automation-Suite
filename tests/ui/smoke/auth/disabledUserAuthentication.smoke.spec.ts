@@ -10,7 +10,7 @@ import { randomUUID } from "crypto";
  */
 test('Login with Disabled User Account', async ({page}) => {
     const navResponse: Response | null = await page.goto('/web/index.php/auth/login');
-    expect(navResponse?.status()).toBe(200);
+    expect(navResponse?.ok()).toBe(true);
 
     const newUserName: string = `disabled_user_${randomUUID()}`.slice(0, 40); //max allowed is 40 chars
     /*We are using base test employee to add a new user. There can be multiple user profiles to same employee */
@@ -23,7 +23,6 @@ test('Login with Disabled User Account', async ({page}) => {
     await page.waitForSelector('.orangehrm-login-form > .orangehrm-login-error');
 
     const alterMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');        
-    const alterMsgContent:string  = (await alterMsgContentLocator.textContent()) ?? '';//if returns null then we will treat it as empty
     
-    expect(alterMsgContent).toMatch(/disabled/i);//RegEx to match keyword    
+    await expect(alterMsgContentLocator).toHaveText(/disabled/i);//RegEx to match keyword    
 })

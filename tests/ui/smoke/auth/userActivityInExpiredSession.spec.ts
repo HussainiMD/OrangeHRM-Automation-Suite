@@ -8,11 +8,7 @@ import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
  */
 test('User Session Expired - Re-login enforced on User Action', async ({essUserAuthPage, essUserAuthContext}) => {
    
-   //extracting domain name from page URL
-   const domainMatchArray: RegExpMatchArray | [] = essUserAuthPage.url().match(/[://]\/\/(.+[.com])\/.*/i) ?? [];
-   expect(domainMatchArray.length).toBeGreaterThan(0);
-
-   const domain: string = domainMatchArray[1] ?? '';   
+   const domain: string = new URL(essUserAuthPage.url()).hostname;   
    
    /**Similating session expiry by clearing cookies */ 
    await essUserAuthContext.clearCookies({domain});
@@ -21,8 +17,7 @@ test('User Session Expired - Re-login enforced on User Action', async ({essUserA
    const myInfoBtnLocator: Locator = essUserAuthPage.locator('.oxd-sidepanel a.oxd-main-menu-item').filter({hasText: 'My Info'});
    await expect(myInfoBtnLocator).toBeEnabled();
    await myInfoBtnLocator.click();
-   await essUserAuthPage.waitForLoadState('networkidle');
-   
-   expect(essUserAuthPage.url()).toContain('/auth/login');   
+   /*session expiry should redirect to login */
+   await expect(essUserAuthPage).toHaveURL(/\/auth\/login/i); //does regex match with wait and auto retries after click()
 })
 

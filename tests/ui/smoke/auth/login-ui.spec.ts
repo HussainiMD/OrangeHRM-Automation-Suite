@@ -6,11 +6,10 @@ import {test, expect, Response, Locator} from "../../../base";
  * Indirect way of testing. HTML element with type password are automatically masked by browsers
  */
 test('Is Password Field getting masked', async ({page}) => {
-    const navResponse: Response | null = await page.goto('web/index.php/auth/login');
-    expect(navResponse).toBeTruthy();
+    const navResponse: Response | null = await page.goto('/web/index.php/auth/login');    
+    expect(navResponse?.ok()).toBe(true);
 
-    const passwordLocator: Locator = page.locator('input[name="password"]');
-    await expect(passwordLocator).toHaveCount(1);
+    const passwordLocator: Locator = page.locator('input[name="password"]');    
 
     await expect(passwordLocator).toHaveAttribute('type', 'password');
 })

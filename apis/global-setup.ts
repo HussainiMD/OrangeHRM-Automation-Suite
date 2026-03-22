@@ -80,6 +80,7 @@ export default async (): Promise<void> => {
         throw err; //stop test exectuion if set up fails
     } 
 
+    /*We do NOT want to abort test case execution, hence optional stuff goes here in this try block*/
     try {
         await addPersonalLeavesToBaseEmployee(10);
     } catch(err) {

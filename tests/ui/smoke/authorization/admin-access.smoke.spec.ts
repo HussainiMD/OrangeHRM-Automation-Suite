@@ -7,15 +7,14 @@ import UserMenu from "../../../../pages/components/UserMenu";
  * Verifies the Admin (profile) user has access to Admin module in side navigation of AUT
  */
 test('Verify Admin Users has access to Admin module', async ({adminUserAuthPage}) => {        
-    const navResponse: Response | null = await adminUserAuthPage.goto('/web/index.php', {waitUntil: "networkidle"});
-    expect(navResponse).toBeTruthy();    
+    const navResponse: Response | null = await adminUserAuthPage.goto('/web/index.php', {waitUntil: "networkidle"});    
+    expect(navResponse?.ok()).toBe(true);
 
-    const sideNavLocator: Locator = adminUserAuthPage.locator('.oxd-sidepanel');
-    await expect(sideNavLocator).toBeVisible();
-    
-    const adminLocator:Locator = sideNavLocator.locator('.oxd-main-menu-item--name').filter({hasText: 'Admin'});
-    expect(await adminLocator.count()).toBeGreaterThanOrEqual(1);
+    const sideNavLocator: Locator = adminUserAuthPage.locator('.oxd-sidepanel');       
+    const adminLocator:Locator = sideNavLocator.locator('.oxd-main-menu-item--name').filter({hasText: 'Admin'});    
+    await expect(adminLocator).not.toHaveCount(0)
 
+    /*log out the user */
     const userMenu: UserMenu = new UserMenu(adminUserAuthPage);
     await userMenu.logOut();
 })
