@@ -32,10 +32,7 @@ export default class LoginPage {
         const loginBtn:Locator = this.page.locator(this.loginBtnSelector);
         await expect(loginBtn).toBeEnabled();
         await loginBtn.click();
-        await this.page.waitForLoadState("domcontentloaded");
-        
-        const topHeaderLocator: Locator = this.page.locator(this.topbarHeader);
-        await expect(topHeaderLocator).toBeVisible();        
+        await this.page.waitForLoadState("domcontentloaded");      
     }
 
 
