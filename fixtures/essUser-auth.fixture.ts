@@ -1,4 +1,4 @@
-import {test as base, BrowserContext, Page} from "../tests/base";
+import {test as base, expect, BrowserContext, Page} from "../tests/base";
 import LoginPage from "../pages/LoginPage";
 
 const username: string = process.env.ess_user_name??'';
@@ -25,6 +25,7 @@ const test = base.extend<ESSUserType>({
         await loginPage.navigateToLoginPage();
 
         await loginPage.signInWithCredentials({username, password});        
+        await expect(page).toHaveURL(/dashboard/i); // auth gate
 
         await use(page);
 

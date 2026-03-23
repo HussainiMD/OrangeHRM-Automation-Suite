@@ -5,6 +5,7 @@ export default class LoginPage {
     private userNameSelector:string = 'input[name="username"]';
     private passwordSelector:string = 'input[name="password"]';
     private loginBtnSelector:string = '.orangehrm-login-action > button[type="submit"]';
+    private topbarHeader:string = '.oxd-topbar-header';
     private page:Page;
 
     constructor(page:Page) {
@@ -31,7 +32,10 @@ export default class LoginPage {
         const loginBtn:Locator = this.page.locator(this.loginBtnSelector);
         await expect(loginBtn).toBeEnabled();
         await loginBtn.click();
-        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForLoadState("domcontentloaded");
+        
+        const topHeaderLocator: Locator = this.page.locator(this.topbarHeader);
+        await expect(topHeaderLocator).toBeVisible();        
     }
 
 

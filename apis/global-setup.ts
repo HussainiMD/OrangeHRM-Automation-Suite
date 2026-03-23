@@ -41,7 +41,8 @@ async function extractAndSaveTestEmployeeDetails(): Promise<void> {
 /*do clean up even when node js process exits unusually*/
 function attachCrashHandlers() {
     process.on('exit', async () => {
-        await doCleanUp();
+        // sync-only operations here, or just log. so no point in calling doCleanUP() function
+        baseLogger.info('Process exiting - cleanup should have already run');
     });
 
     process.on('SIGINT', async () => {

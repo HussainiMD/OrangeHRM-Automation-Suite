@@ -2,6 +2,7 @@ import fs from "fs";
 import { APIRequestContext, APIResponse, request } from "../tests/base";
 import baseLogger from "./logger";
 
+const baseURL:string = process.env.base_url ?? 'https://opensource-demo.orangehrmlive.com';
 const adminAuthJsonPath: string = `./storage/admin-auth-${process.pid}.json`;
 let isAuthLockMonitorStarted: boolean = false;
 let globalAPIRequestContext: APIRequestContext;
@@ -19,7 +20,7 @@ async function refreshAdminAuthState(): Promise<void> {
     baseLogger.info(`PID: ${process.pid} - Starting the process for a new Auth token`);
     
     const apiReqContext: APIRequestContext = await request.newContext({
-         baseURL: process.env.base_url        
+         baseURL      
     });
 
     try {
@@ -81,7 +82,7 @@ async function getExistingAuthValidationCode(): Promise<number> {
 async function addUpdateContext() {
     baseLogger.info(`Refreshing local globalAPIRequestContext reference`);
     globalAPIRequestContext = await request.newContext({
-            baseURL: process.env.base_URL,
+            baseURL,
             storageState: adminAuthJsonPath
     });
 }

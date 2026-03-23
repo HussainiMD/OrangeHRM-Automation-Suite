@@ -62,7 +62,7 @@ async function addPersonalLeavesToEmployee(employeeNumber: number, leaveCount: n
 
     const requestContext:APIRequestContext = await getValidAdminRequestContext();
     const apiResponse: APIResponse = 
-        await requestContext.post('https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/leave/leave-entitlements', {
+        await requestContext.post('/web/index.php/api/v2/leave/leave-entitlements', {
             headers: {
                 'Content-Type': 'application/json'
             },
