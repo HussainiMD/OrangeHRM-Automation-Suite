@@ -20,7 +20,8 @@ async function refreshAdminAuthState(): Promise<void> {
     baseLogger.info(`PID: ${process.pid} - Starting the process for a new Auth token`);
     
     const apiReqContext: APIRequestContext = await request.newContext({
-         baseURL      
+         baseURL,
+         timeout: parseInt(process.env.api_timeout ?? '30000')      
     });
 
     try {
@@ -83,7 +84,8 @@ async function addUpdateContext() {
     baseLogger.info(`Refreshing local globalAPIRequestContext reference`);
     globalAPIRequestContext = await request.newContext({
             baseURL,
-            storageState: adminAuthJsonPath
+            storageState: adminAuthJsonPath,
+            timeout: parseInt(process.env.api_timeout ?? '30000')
     });
 }
 

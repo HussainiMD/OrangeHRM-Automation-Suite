@@ -19,7 +19,10 @@ export function isCredentialsEnvValid() : boolean {
  * @returns boolean value. "true" means AUT is good for use
  */
 export async function isAUTReadyForTesting(): Promise<boolean> {
-    const requestContext : APIRequestContext = await request.newContext({baseURL});
+    const requestContext : APIRequestContext = await request.newContext({
+        baseURL,
+        timeout: parseInt(process.env.api_timeout ?? '30000')
+    });
     const response: APIResponse = await requestContext.get('/web/index.php/auth/login');
     return response.ok();
 }

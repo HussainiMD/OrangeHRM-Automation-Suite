@@ -27,7 +27,10 @@ interface MailtrapMessageType {
  */
 export async function getPasswordResetLinkFromEmail(workEmail: string): Promise<string> {
     /* Single-use context per call — only one test currently uses this utility. Refactor to shared context if reuse increases.*/
-    const reqContext: APIRequestContext = await request.newContext({baseURL});    
+    const reqContext: APIRequestContext = await request.newContext({
+        baseURL,
+        timeout: parseInt(process.env.api_timeout ?? '30000')
+    });    
     const emailData: MailtrapMessageType = await queryAPIandExtractRelevantEmail(reqContext, workEmail);
 
     if(!emailData?.html_path || emailData.html_path.length == 0) 
