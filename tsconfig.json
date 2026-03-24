@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",        // safer for Playwright
+    "moduleResolution": "node",  // explicit, no surprises
+    "esModuleInterop": true,  //needed for pino
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["**/*.ts", "tests", "pages", "utils"]
+}

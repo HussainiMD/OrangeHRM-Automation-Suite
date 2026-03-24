@@ -2,7 +2,23 @@
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 
+const globalImportRestrictions = [
+  { name: '@playwright/test', message: '@playwright/test is allowed only inside base.ts or tests.' },
+  { name: 'axios', message: 'Use Playwright request fixture instead.' },
+];
+
+//here order is important as defaults are over riden by specifics
 export default [
+  // avoid linting of compiled output and dependencies
+  {
+    ignores: [
+      'node_modules/**',
+      'test-results/**',
+      'playwright-report/**',
+      'dist/**',
+      '**/*.js',        // ignores eslint.config.js itself too
+    ],
+  },
   // 1. Global config for all TS files
   {
     files: ['**/*.ts'],
@@ -11,6 +27,7 @@ export default [
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
+        project: './tsconfig.json',
       },
     },
     plugins: {
@@ -30,17 +47,15 @@ export default [
                 argsIgnorePattern: '^_',
             },
       ],  
+      //if we miss to await on a promise then linter will show error
+      '@typescript-eslint/no-floating-promises': 'error',
+      //adding await on Non Promise should also be warned
+      '@typescript-eslint/await-thenable': 'error',
       // Forbidden imports
       'no-restricted-imports': [
         'error',
         {
-          paths: [
-            {
-              name: '@playwright/test',
-              message: '@playwright/test is allowed only inside base.ts or tests.',
-            },           
-            { name: 'axios', message: 'Use Playwright request fixture instead.' },
-          ],
+          paths: globalImportRestrictions,
         },
       ],
 
@@ -54,7 +69,7 @@ export default [
     files: ['tests/base.ts', 'config/playwright.config.ts'],
     rules: {
       'no-restricted-imports': 'off',
-      'no-console': 'off',
+      'no-console': 'off'
     },
   },
 
@@ -67,11 +82,7 @@ export default [
       {
         paths: [
           // Keep the global restrictions too
-          {
-            name: '@playwright/test',
-            message: '@playwright/test is allowed only inside base.ts or tests.',
-          },
-          { name: 'axios', message: 'Use Playwright request fixture instead.' },
+          ...globalImportRestrictions,          
           // Spec-specific restriction
           { name: 'fs', message: 'Do not use fs in tests. Use fixtures.' },
         ],
