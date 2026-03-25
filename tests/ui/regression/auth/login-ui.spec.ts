@@ -1,4 +1,8 @@
 import {test, expect, Response, Locator} from "../../../base";
+import { AxeResults } from 'axe-core';
+import LoginPage from "../../../../pages/LoginPage";
+import AxeBuilder from '@axe-core/playwright';
+import { randomUUID } from "node:crypto";
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_018
@@ -8,6 +12,8 @@ import {test, expect, Response, Locator} from "../../../base";
 test('Is Password Field getting masked', async ({page}) => {
     const navResponse: Response | null = await page.goto('/web/index.php/auth/login');    
     expect(navResponse?.ok()).toBe(true);
+    const loginLayoutLocator: Locator = page.locator('.orangehrm-login-layout');
+    await expect(loginLayoutLocator).toBeVisible();
 
     const passwordLocator: Locator = page.locator('input[name="password"]');    
 
@@ -42,4 +48,49 @@ test('Ensure OrangeHRM Logo is being Displayed', async ({page, logger}) => {
          caret: "hide",        
          maxDiffPixelRatio: 0.02 
     });
+})
+
+
+/**
+ * ID from Test Cases (spreadsheet): TC_LOGIN_030
+ * Verifies the login with non existent user credentials. Asserts the error message shown on page to user
+ */
+test('Error Message Display Format verification', async ({page, logger}) => {
+    const alertContentCSS: string = '.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text';
+    const navResponse: Response|null = await page.goto('/web/index.php/auth/login');
+    expect(navResponse?.ok()).toBe(true);
+
+    const username: string = `invalid_user_${randomUUID()}`.slice(0, 40);//ensuring user length restrictions
+    const password: string = 'does_not_exist';
+
+    const loginPage:LoginPage = new LoginPage(page);
+    await loginPage.signInWithCredentials({username, password});
+    const alterMsgContentLocator:Locator = page.locator(alertContentCSS);
+    await expect(alterMsgContentLocator).toBeVisible();
+    
+    const results: AxeResults = await new AxeBuilder({ page })
+    .include(alertContentCSS)
+    .withTags(['wcag2aa'])//withRules(['color-contrast'])  ensures contrast rules included
+    .analyze();
+
+    if(results.violations.length > 0) {
+        const consolidatedVoilations = results.violations.map(voilation => {
+            return {
+                id: voilation.id,
+                impact: voilation.impact,
+                description: voilation.description,
+                nodes: voilation.nodes.map(node => {
+                    return {
+                        html: node.html,
+                        failureSummary: node.failureSummary
+                    }
+                })
+            }
+        });
+
+         logger.warn(`color contrast voilations: ${JSON.stringify(consolidatedVoilations)}`);
+    }
+    else logger.info(`No color contrast voilations found`);
+
+    expect(results.violations.length).toBe(0);   
 })
