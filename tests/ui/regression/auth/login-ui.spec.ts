@@ -1,5 +1,5 @@
 import {test, expect, Response, Locator, Page} from "../../../base";
-import { AxeResults, Result } from 'axe-core';
+import { Result } from 'axe-core';
 import LoginPage from "../../../../pages/LoginPage";
 import AxeBuilder from '@axe-core/playwright';
 import { randomUUID } from "node:crypto";
@@ -63,7 +63,8 @@ test('Ensure OrangeHRM Logo is being Displayed', async ({page, logger}) => {
  * Verifies the login with non existent user credentials. Asserts the error message shown on page to user
  */
 test('Login error message should meet WCAG 2.1 AA accessibility standards', async ({page, logger}) => {
-    const alertContentCSS: string = '.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text';
+    const alertContainerCSS: string = '.orangehrm-login-form > .orangehrm-login-error';
+    const alertContentCSS: string = `${alertContainerCSS} p.oxd-alert-content-text`;
     const navResponse: Response|null = await page.goto('/web/index.php/auth/login');
     expect(navResponse?.ok()).toBe(true);
 
@@ -100,5 +101,6 @@ test('Login error message should meet WCAG 2.1 AA accessibility standards', asyn
     else logger.info(`No Accessibility violations found`);
 
     expect(importantViolations.length).toBe(0);   
-    await expect(alertMsgContentLocator).toHaveAttribute('role', /alert|status/); // for screen readers announcement
+    const alertMsgErrorLocator: Locator = page.locator(`${alertContainerCSS} .oxd-alert--error`);
+    await expect(alertMsgErrorLocator).toHaveAttribute('role', /alert|status/); // for screen readers announcement
 })
