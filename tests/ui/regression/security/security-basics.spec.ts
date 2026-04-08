@@ -49,3 +49,29 @@ test('Verifying User Credentials NOT getting exposed as clear text', async ({pag
     expect(foundUsername).toBe(false);
     expect(foundPassword).toBe(false);
 })
+
+
+/**
+ * ID from Test Cases (spreadsheet): TC_LOGIN_039
+ * Verifies if user credentials are being logged in clear text in browser console
+ */
+test('Network Request - Password Encryption', async ({page, logger}) => {
+    let foundUsername: boolean = false;
+    let foundPassword: boolean = false;
+
+    page.on('console', (msg) => {
+        logger.warn(`message type - ${msg.type()} | text - ${msg.text()}`);
+        if(!foundUsername) foundUsername = msg.text().includes(username);
+        if(!foundPassword) foundPassword = msg.text().includes(password);        
+    })
+
+    const loginPage: LoginPage = new LoginPage(page);
+    await loginPage.navigateToLoginPage();
+
+    await loginPage.signInWithCredentials({username, password});  
+    /*This is necessary as we want to capture all the redirects and resource load request in above monitoring using page.on()*/
+    await page.waitForLoadState("networkidle");
+
+    expect(foundUsername).toBe(false);
+    expect(foundPassword).toBe(false);
+})
