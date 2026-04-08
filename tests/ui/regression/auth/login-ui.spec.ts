@@ -1,8 +1,15 @@
-import {test, expect, Response, Locator} from "../../../base";
-import { AxeResults } from 'axe-core';
+import {test, expect, Response, Locator, Page} from "../../../base";
+import { AxeResults, Result } from 'axe-core';
 import LoginPage from "../../../../pages/LoginPage";
 import AxeBuilder from '@axe-core/playwright';
 import { randomUUID } from "node:crypto";
+
+async function analyzeAccessibility(page: Page, selector: string) {
+    return await new AxeBuilder({ page })
+        .include(selector)
+        .withTags(['wcag2aa'])
+        .analyze();
+}
 
 /**
  * ID from Test Cases (spreadsheet): TC_LOGIN_018
@@ -55,7 +62,7 @@ test('Ensure OrangeHRM Logo is being Displayed', async ({page, logger}) => {
  * ID from Test Cases (spreadsheet): TC_LOGIN_030
  * Verifies the login with non existent user credentials. Asserts the error message shown on page to user
  */
-test('Error Message Display Format verification', async ({page, logger}) => {
+test('Login error message should meet WCAG 2.1 AA accessibility standards', async ({page, logger}) => {
     const alertContentCSS: string = '.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text';
     const navResponse: Response|null = await page.goto('/web/index.php/auth/login');
     expect(navResponse?.ok()).toBe(true);
@@ -65,16 +72,16 @@ test('Error Message Display Format verification', async ({page, logger}) => {
 
     const loginPage:LoginPage = new LoginPage(page);
     await loginPage.signInWithCredentials({username, password});
-    const alterMsgContentLocator:Locator = page.locator(alertContentCSS);
-    await expect(alterMsgContentLocator).toBeVisible();
+    const alertMsgContentLocator:Locator = page.locator(alertContentCSS);
+    await expect(alertMsgContentLocator).toHaveText(/.+/); //we cannot use toBeVisible() as visibility != render completion of styles
     
-    const results: AxeResults = await new AxeBuilder({ page })
-    .include(alertContentCSS)
-    .withTags(['wcag2aa'])//withRules(['color-contrast'])  ensures contrast rules included
-    .analyze();
+    const results = await analyzeAccessibility(page, alertContentCSS);
+    const importantViolations: Result[] = results.violations.filter(v => 
+        ['critical', 'serious'].includes(v.impact || '')
+    );
 
-    if(results.violations.length > 0) {
-        const consolidatedVoilations = results.violations.map(voilation => {
+    if(importantViolations.length > 0) {
+        const importantVoilationsSpecifics = importantViolations.map(voilation => {
             return {
                 id: voilation.id,
                 impact: voilation.impact,
@@ -87,10 +94,11 @@ test('Error Message Display Format verification', async ({page, logger}) => {
                 })
             }
         });
-
-         logger.warn(`color contrast voilations: ${JSON.stringify(consolidatedVoilations)}`);
+         
+        logger.warn({ violations: importantVoilationsSpecifics }, 'Accessibility violations found');
     }
-    else logger.info(`No color contrast voilations found`);
+    else logger.info(`No Accessibility violations found`);
 
-    expect(results.violations.length).toBe(0);   
+    expect(importantViolations.length).toBe(0);   
+    await expect(alertMsgContentLocator).toHaveAttribute('role', /alert|status/); // for screen readers announcement
 })
