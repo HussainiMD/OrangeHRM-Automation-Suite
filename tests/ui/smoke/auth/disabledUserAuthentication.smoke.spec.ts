@@ -9,14 +9,13 @@ import { randomUUID } from "crypto";
  * created disabled user -> attempt to login with user credentials
  */
 test('Login with Disabled User Account', async ({page}) => {
-    const navResponse: Response | null = await page.goto('/web/index.php/auth/login');
-    expect(navResponse?.ok()).toBe(true);
-
+    const loginPage:LoginPage = new LoginPage(page);
+    await loginPage.navigateToLoginPage();
+    
     const newUserName: string = `disabled_user_${randomUUID()}`.slice(0, 40); //max allowed is 40 chars
     /*We are using base test employee to add a new user. There can be multiple user profiles to same employee */
     const {name:username, password} = await addNewESSUser(newUserName, false);
-
-    const loginPage:LoginPage = new LoginPage(page);
+    
     await loginPage.signInWithCredentials({username, password});
 
     /*extra check as sometimes it is taking more time especially during parellel executions*/

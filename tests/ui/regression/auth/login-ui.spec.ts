@@ -65,13 +65,12 @@ test('Ensure OrangeHRM Logo is being Displayed', async ({page, logger}) => {
 test('Login error message should meet WCAG 2.1 AA accessibility standards', async ({page, logger}) => {
     const alertContainerCSS: string = '.orangehrm-login-form > .orangehrm-login-error';
     const alertContentCSS: string = `${alertContainerCSS} p.oxd-alert-content-text`;
-    const navResponse: Response|null = await page.goto('/web/index.php/auth/login');
-    expect(navResponse?.ok()).toBe(true);
+    const loginPage:LoginPage = new LoginPage(page);
+    await loginPage.navigateToLoginPage();
 
     const username: string = `invalid_user_${randomUUID()}`.slice(0, 40);//ensuring user length restrictions
     const password: string = 'does_not_exist';
-
-    const loginPage:LoginPage = new LoginPage(page);
+    
     await loginPage.signInWithCredentials({username, password});
     const alertMsgContentLocator:Locator = page.locator(alertContentCSS);
     await expect(alertMsgContentLocator).toHaveText(/.+/); //we cannot use toBeVisible() as visibility != render completion of styles

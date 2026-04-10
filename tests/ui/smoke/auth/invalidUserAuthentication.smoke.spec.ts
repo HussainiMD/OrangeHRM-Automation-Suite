@@ -10,13 +10,12 @@ const password: string = process.env.ess_user_password??'';
  * Verifies the login with non existent user credentials. Asserts the error message shown on page to user
  */
 test('Login with Invalid Username and / or Password', async ({page}) => {
-    const navResponse: Response|null = await page.goto('/web/index.php/auth/login');
-    expect(navResponse?.ok()).toBe(true);
+    const loginPage:LoginPage = new LoginPage(page);
+    await loginPage.navigateToLoginPage();    
 
     const username: string = `invalid_user_${randomUUID()}`.slice(0, 40);//ensuring user length restrictions
     const password: string = 'does_not_exist';
-
-    const loginPage:LoginPage = new LoginPage(page);
+    
     await loginPage.signInWithCredentials({username, password});
 
     const alterMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');
@@ -35,11 +34,9 @@ test('Verify Case Sensitivity of Password', async ({page}) => {
         if(char.match(/[A-Z]/)) return char.toLowerCase();
         return char;
     }).join('');
-    
-    const navResponse: Response|null = await page.goto('/web/index.php/auth/login');
-    expect(navResponse?.ok()).toBe(true);
-
+        
     const loginPage:LoginPage = new LoginPage(page);
+    await loginPage.navigateToLoginPage();
     await loginPage.signInWithCredentials({username, password: flippedCasePassword});
 
     const alterMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');
