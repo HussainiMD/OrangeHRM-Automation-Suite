@@ -1,4 +1,4 @@
-import {test, expect, Response, Locator} from "../../../base";
+import {test, expect, Locator} from "../../../base";
 import LoginPage from "../../../../pages/LoginPage";
 import { addNewESSUser } from "../../../../utils/users-manager.util";
 import { randomUUID } from "crypto";

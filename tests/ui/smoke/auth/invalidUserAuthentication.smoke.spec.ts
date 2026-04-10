@@ -1,4 +1,4 @@
-import {test, expect, Response, Locator} from "../../../base";
+import {test, expect, Locator} from "../../../base";
 import LoginPage from "../../../../pages/LoginPage";
 import { randomUUID } from "node:crypto";
 
