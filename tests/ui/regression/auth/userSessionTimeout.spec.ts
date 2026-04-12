@@ -13,8 +13,8 @@ test('User Session Expired Automatically - Re-login Required', async ({essUserAu
    await essUserAuthContext.clearCookies({domain});
    
    const navResponse: Response | null = await essUserAuthPage.reload();
-   expect(navResponse?.ok()).toBe(true);
+   expect(navResponse?.ok(),'Navigation to the login page has failed').toBe(true);
    /*session expiry should redirect to login */
-   await expect(essUserAuthPage).toHaveURL(/\/auth\/login/i);
+   await expect(essUserAuthPage, 'Page URL is not referring to login page').toHaveURL(/\/auth\/login/i);
 })
 

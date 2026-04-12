@@ -10,7 +10,7 @@ test('Browser Back Button After Login', async ({essUserAuthPage}) => {
     /*BUG: up on back button, app is going to login page despite active session. Ideally it should go to dashboard page*/
     test.fail(true, 'Known bug in the app. Developers are to be notified'); //marking it as failure as this test case will fail all the time till fixed
     await essUserAuthPage.goBack();   
-    await expect(essUserAuthPage).toHaveURL(dashboardURLRegEx);
+    await expect(essUserAuthPage, 'Page URL is not what is expected').toHaveURL(dashboardURLRegEx);
 });
 
 
@@ -20,5 +20,5 @@ test('Browser Back Button After Login', async ({essUserAuthPage}) => {
 */
 test('Refresh Page After Login', async ({essUserAuthPage}) => {    
     await essUserAuthPage.reload();    
-    await expect(essUserAuthPage).toHaveURL(dashboardURLRegEx);
+    await expect(essUserAuthPage, 'Page URL is not what is expected').toHaveURL(dashboardURLRegEx);
 });

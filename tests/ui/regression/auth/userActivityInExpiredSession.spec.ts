@@ -15,9 +15,9 @@ test('User Session Expired - Re-login enforced on User Action', async ({essUserA
    
    /*Clicking on UI element after session is expired, it automatically redirects user to login page*/
    const myInfoBtnLocator: Locator = essUserAuthPage.locator('.oxd-sidepanel a.oxd-main-menu-item').filter({hasText: 'My Info'});
-   await expect(myInfoBtnLocator).toBeEnabled();
+   await expect(myInfoBtnLocator, 'MyInfo button is not enabled').toBeEnabled();
    await myInfoBtnLocator.click();
    /*session expiry should redirect to login */
-   await expect(essUserAuthPage).toHaveURL(/\/auth\/login/i); //does regex match with wait and auto retries after click()
+   await expect(essUserAuthPage, 'Page URL is not referring to login page').toHaveURL(/\/auth\/login/i); //does regex match with wait and auto retries after click()
 })
 

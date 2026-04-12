@@ -7,7 +7,7 @@ import UserMenu from "../../../../pages/components/UserMenu";
  */
 test('Verify ESS Users has NO access to Admin module', async ({essUserAuthPage}) => {    
     const adminLocator:Locator = essUserAuthPage.locator('.oxd-main-menu-item--name').filter({hasText: 'Admin'});    
-    await expect(adminLocator).toHaveCount(0);//Should NOT be visible to non admin (ESS) user
+    await expect(adminLocator, 'Admin button is not visible').toHaveCount(0);//Should NOT be visible to non admin (ESS) user
 
     const userMenu: UserMenu = new UserMenu(essUserAuthPage);
     await userMenu.logOut();

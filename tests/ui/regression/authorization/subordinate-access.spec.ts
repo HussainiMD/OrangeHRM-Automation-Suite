@@ -9,21 +9,21 @@ import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
 test('Verify Sub-ordinate Employee User has LIMITED access to Leaves module', async ({essUserAuthPage}) => {    
     const leaveBtnLocator: Locator = essUserAuthPage.locator('.oxd-main-menu-item--name').filter({hasText: 'Leave'});    
     // await expect(leaveBtnLocator).not.toHaveCount(0);//ensuring that leave btn is there before clicking
-    await expect(leaveBtnLocator).toBeVisible();
+    await expect(leaveBtnLocator, 'leave button is not visible').toBeVisible();
     await leaveBtnLocator.click();    
     
     const navItems: Locator = essUserAuthPage.getByRole('navigation', { name: /Topbar/i }).locator('.oxd-topbar-body-nav-tab-item');       
-    await expect(navItems).not.toHaveCount(0);
+    await expect(navItems, 'There are NO top level navigation items').not.toHaveCount(0);
 
     const configureBtn: Locator = navItems.filter({hasText: 'Configure '});    
-    await expect(configureBtn).toHaveCount(0);
+    await expect(configureBtn, 'Configure Button is not available').toHaveCount(0);
 
     const leaveListBtn: Locator = navItems.filter({hasText: 'Leave List'});    
-    await expect(leaveListBtn).toHaveCount(0);
+    await expect(leaveListBtn, 'Leave list button is not available').toHaveCount(0);
 
     const assignLeaveBtn: Locator = navItems.filter({hasText: 'Assign Leave'});    
-    await expect(assignLeaveBtn).toHaveCount(0);
+    await expect(assignLeaveBtn, 'Assign Leave button is not available').toHaveCount(0);
 
     const myLeaveBtn: Locator = navItems.filter({hasText: 'My Leave'});    
-    await expect(myLeaveBtn).not.toHaveCount(0);
+    await expect(myLeaveBtn, 'My Leave Button is not available').not.toHaveCount(0);
 })

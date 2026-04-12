@@ -21,7 +21,7 @@ test('Login with Disabled User Account', async ({page}) => {
     /*extra check as sometimes it is taking more time especially during parellel executions*/
     await page.waitForSelector('.orangehrm-login-form > .orangehrm-login-error');
 
-    const alterMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');        
+    const alertMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');        
     
-    await expect(alterMsgContentLocator).toHaveText(/disabled/i);//RegEx to match keyword    
+    await expect(alertMsgContentLocator, 'User alert message is NOT clear').toHaveText(/disabled/i);//RegEx to match keyword    
 })

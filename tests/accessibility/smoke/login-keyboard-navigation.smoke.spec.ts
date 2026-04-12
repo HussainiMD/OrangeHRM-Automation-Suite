@@ -8,10 +8,10 @@ const dashboardURLRegEx: RegExp = /dashboard/i;
 async function doPageFills(page: Page): Promise<void> {
     /*important to wait untill page loads completly as it does auto focus to user name field */
     const navResponse: Response | null = await page.goto('/web/index.php/auth/login', {waitUntil: 'networkidle'});
-    expect(navResponse).toBeTruthy();
+    expect(navResponse, 'Navigation to the login page has failed').toBeTruthy();
     const loginLocator: Locator = page.locator('.orangehrm-login-button');//extra check for test case stability
-    await expect(loginLocator).toBeVisible();
-    await expect(loginLocator).toBeEnabled();
+    await expect(loginLocator, 'login button is not visible').toBeVisible();
+    await expect(loginLocator, 'login button is not enabled').toBeEnabled();
     
     const {username, password}: credentials = getESSUserCredentials();
     
@@ -34,7 +34,7 @@ test('Enter Key Submission for login page; password field', async ({page}) => {
     await page.keyboard.press('Enter');
     await page.waitForLoadState('load');//extra check for test case stability
     /*typical use of page.url() does NOT help here as history api based URL changes are not being detected */
-    await expect(page).toHaveURL(dashboardURLRegEx);
+    await expect(page, 'page URL did not match expectation').toHaveURL(dashboardURLRegEx);
     await logoutUser(page);
 })
 
@@ -43,7 +43,7 @@ test('Enter Key Submission for login page; login button', async ({page}) => {
     await page.keyboard.press('Tab');
     await page.keyboard.press('Enter');
     await page.waitForLoadState('load');
-    await expect(page).toHaveURL(dashboardURLRegEx);    
+    await expect(page, 'page URL did not match expectation').toHaveURL(dashboardURLRegEx);    
     await logoutUser(page);
 })
 
@@ -52,6 +52,6 @@ test('Use SPACE BAR Key Submission for login page', async ({page}) => {
     await page.keyboard.press('Tab');
     await page.keyboard.press('Space');
     await page.waitForLoadState('load');
-    await expect(page).toHaveURL(dashboardURLRegEx);    
+    await expect(page, 'page URL did not match expectation').toHaveURL(dashboardURLRegEx);    
     await logoutUser(page);
 })

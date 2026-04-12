@@ -48,19 +48,19 @@ function getInvalidStartEndDatesForLeave(): DatesObj {
 async function runTest(page: Page, logger: pino.Logger, leaveDates: DatesObj): Promise<
 Response> {
     const navResponse : Response | null = await page.goto('/web/index.php/leave/applyLeave');
-    expect(navResponse?.ok()).toBe(true);
+    expect(navResponse?.ok(),'Navigation to the apply leaves page has failed').toBe(true);
     
     const cardContainer: Locator = page.locator('.orangehrm-card-container');
-    await expect(cardContainer).toBeVisible();
+    await expect(cardContainer, 'Main container of leave application is not visible').toBeVisible();
 
     const applyLeaveSection: Locator = cardContainer.locator('.orangehrm-main-title').filter({hasText: 'Apply Leave'});
-    await expect(applyLeaveSection).not.toHaveCount(0);
+    await expect(applyLeaveSection, 'Apply leave button is not available').not.toHaveCount(0);
     
     const formLocator: Locator = page.locator('.orangehrm-card-container .oxd-form');
-    await expect(formLocator).toHaveCount(1);
+    await expect(formLocator, 'Apply leave form is not available').toHaveCount(1);
     
     const leaveTypeLocator: Locator = formLocator.locator('.oxd-input-group .oxd-select-text');
-    await expect(leaveTypeLocator).toBeVisible();
+    await expect(leaveTypeLocator, 'leave type text is not visible').toBeVisible();
     
     await leaveTypeLocator.focus();
     await leaveTypeLocator.click();
@@ -76,13 +76,13 @@ Response> {
         page.keyboard.press('Enter')
     ]) as [Response, void];
     
-    expect(urlResponse.ok()).toBe(true);    
+    expect(urlResponse.ok(), 'leave balance API response is NOT ok').toBe(true);    
 
     const leaveBalanceLocator: Locator = formLocator.locator('.orangehrm-leave-balance-text');
-    await expect(leaveBalanceLocator).toBeVisible();//ensure it is there before reading text
+    await expect(leaveBalanceLocator, 'Leave Balance text is not visible').toBeVisible();//ensure it is there before reading text
     const leaveBalance: string | null  = await leaveBalanceLocator.textContent();    
     const leaveCountBeforeApply: number = parseFloat(leaveBalance?? '0');
-    expect(leaveCountBeforeApply).toBeGreaterThan(0);
+    expect(leaveCountBeforeApply, 'leave count before apply is zero').toBeGreaterThan(0);
 
     logger.info(`Total available leaves "before applying" are ${leaveCountBeforeApply}`);
 
@@ -90,18 +90,18 @@ Response> {
     const fromDateSectionLocator: Locator = dateInputsLocator.filter({hasText: 'From Date'});
 
     const fromDateLocator:Locator = fromDateSectionLocator.locator('input.oxd-input');   
-    await expect(fromDateLocator).toBeEnabled();
+    await expect(fromDateLocator, 'from date button is not enabled').toBeEnabled();
     await fromDateLocator.fill(leaveDates.todayDateStr);
     await fromDateLocator.blur();
 
     const toDateSectionLocator: Locator = dateInputsLocator.filter({hasText: 'To Date'});
     const toDateLocator:Locator = toDateSectionLocator.locator('input.oxd-input');
-    await expect(toDateLocator).toBeEnabled();
+    await expect(toDateLocator, 'to date button is not enabled').toBeEnabled();
     await toDateLocator.fill(leaveDates.tomorrowDateStr);
     await toDateLocator.blur();
 
     const submitBtnLocator: Locator = formLocator.locator('button[type="submit"]');
-    await expect(submitBtnLocator).toHaveCount(1);    
+    await expect(submitBtnLocator, 'Submit button is not available or multiple options are there').toHaveCount(1);    
 
     /*We are monitoring the underlying API which does a POST call. Because submission of request & monitoring has to be in parellel, we are using Promise.all() */
     const [leaveRequestAPIResponse] = await Promise.all([
@@ -124,7 +124,7 @@ test('Verify Employee applied leaves shows up in his leave history', async ({ess
     const leaveDates: DatesObj = getValidStartEndDatesForLeave();
     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates);
     
-    expect(applyLeavesAPIResponse.ok()).toBe(true);  
+    expect(applyLeavesAPIResponse.ok(), 'apply leaves API response in not ok').toBe(true);  
 })
 
 
@@ -137,7 +137,7 @@ test('Verify weekends/invalid leave application is rejected', async ({essUserAut
     const leaveDates: DatesObj = getInvalidStartEndDatesForLeave();
     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates);
     
-    expect(applyLeavesAPIResponse.ok()).toBe(false);  
+    expect(applyLeavesAPIResponse.ok(), 'apply leaves API response is not ok').toBe(false);  
 })
 
 

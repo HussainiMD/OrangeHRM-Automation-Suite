@@ -8,11 +8,11 @@ import UserMenu from "../../../../pages/components/UserMenu";
  */
 test('Verify Admin Users has access to Admin module', async ({adminUserAuthPage}) => {        
     const navResponse: Response | null = await adminUserAuthPage.goto('/web/index.php', {waitUntil: "networkidle"});    
-    expect(navResponse?.ok()).toBe(true);
+    expect(navResponse?.ok(),'Navigation to the default/home page has failed').toBe(true);
 
     const sideNavLocator: Locator = adminUserAuthPage.locator('.oxd-sidepanel');       
     const adminLocator:Locator = sideNavLocator.locator('.oxd-main-menu-item--name').filter({hasText: 'Admin'});    
-    await expect(adminLocator).not.toHaveCount(0)
+    await expect(adminLocator, 'Admin button is not visible').not.toHaveCount(0)
 
     /*log out the user */
     const userMenu: UserMenu = new UserMenu(adminUserAuthPage);

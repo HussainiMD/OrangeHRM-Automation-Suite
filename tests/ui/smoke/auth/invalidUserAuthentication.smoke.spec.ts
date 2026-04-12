@@ -18,8 +18,8 @@ test('Login with Invalid Username and / or Password', async ({page}) => {
     
     await loginPage.signInWithCredentials({username, password});
 
-    const alterMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');
-    await expect(alterMsgContentLocator).toHaveText(/credentials/i);//RegEx to match keyword
+    const alertMsgContentLocator:Locator = page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text');
+    await expect(alertMsgContentLocator, 'User alert message is not clear').toHaveText(/credentials/i);//RegEx to match keyword
 })
 
 

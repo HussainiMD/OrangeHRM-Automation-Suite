@@ -10,14 +10,14 @@ const password: string = process.env.ess_user_password??'';
  */
 test('Security (HTTPS) Protocol Verification of base URL', async ({page}) => {
     const navResponse: Response | null = await page.goto('/');
-    expect(navResponse?.ok()).toBe(true);    
-    await expect(page).toHaveURL(/^https/, {ignoreCase: true});//starts with https    
+    expect(navResponse?.ok(),'Navigation to the default home page has failed').toBe(true);    
+    await expect(page, 'URL is not secure; missing HTTPS').toHaveURL(/^https/, {ignoreCase: true});//starts with https    
 
     /*Verifying SSL details */
     const securityDetails = await navResponse?.securityDetails();
     if (!securityDetails) throw new Error('No security details returned — possibly non-HTTPS or non-Chromium browser');
-    expect(securityDetails?.issuer).toBeDefined();
-    expect(securityDetails?.protocol).toContain('TLS');
+    expect(securityDetails?.issuer, 'SSL certificate issues is not available').toBeDefined();
+    expect(securityDetails?.protocol, 'Secure protocol information is not available').toContain('TLS');
 })
 
 
@@ -46,8 +46,8 @@ test('Verifying User Credentials NOT getting exposed as clear text', async ({pag
     /*This is necessary as we want to capture all the redirects and resource load request in above monitoring using page.on()*/
     await page.waitForLoadState("networkidle");
 
-    expect(foundUsername).toBe(false);
-    expect(foundPassword).toBe(false);
+    expect(foundUsername, 'request URL should not have user name (credentials) in clear text').toBe(false);
+    expect(foundPassword, 'request URL should not have password (credentials) in clear text').toBe(false);
 })
 
 
@@ -72,6 +72,6 @@ test('Network Request - Password Encryption', async ({page, logger}) => {
     /*This is necessary as we want to capture all the redirects and resource load request in above monitoring using page.on()*/
     await page.waitForLoadState("networkidle");
 
-    expect(foundUsername).toBe(false);
-    expect(foundPassword).toBe(false);
+    expect(foundUsername,'request URL should not have user name (credentials) in clear text').toBe(false);
+    expect(foundPassword, 'request URL should not have password (credentials) in clear text').toBe(false);
 })
