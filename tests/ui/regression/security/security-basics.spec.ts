@@ -59,8 +59,7 @@ test('Network Request - Password Encryption', async ({page, logger}) => {
     let foundUsername: boolean = false;
     let foundPassword: boolean = false;
 
-    page.on('console', (msg) => {
-        logger.warn(`message type - ${msg.type()} | text - ${msg.text()}`);
+    page.on('console', (msg) => {        
         if(!foundUsername) foundUsername = msg.text().includes(username);
         if(!foundPassword) foundPassword = msg.text().includes(password);        
     })
@@ -75,3 +74,69 @@ test('Network Request - Password Encryption', async ({page, logger}) => {
     expect(foundUsername,'request URL should not have user name (credentials) in clear text').toBe(false);
     expect(foundPassword, 'request URL should not have password (credentials) in clear text').toBe(false);
 })
+
+
+/**
+ * ID from Test Cases (spreadsheet): TC_LOGIN_072
+ * Verifies the brute force attempts using invalid user credentials. Asserts the page has adequate protection
+ */
+test.describe('Security: Brute Force Protection', () => {
+  test.describe.configure({ retries: 0 });  
+
+  test('Rate Limiting on Login Attempts - should enforce protection on repeated failed logins', async ({ page}) => {
+    /*BUG: there is no basic protection for serious attacks like DDOS which needs to be fixed by engineering team*/
+    test.fail(true, 'Known bug in the app. Developers are to be notified'); //marking it as failure as this test case will fail all the time till fixed
+    const MAX_ATTEMPTS: number = 20;
+
+    const loginPage:LoginPage = new LoginPage(page);
+    await loginPage.navigateToLoginPage();
+
+    const username = 'invalid_user';
+    const password = 'wrong_password';
+
+    let lockDetected = false;
+    let rateLimitDetected = false;
+    let delays: number[] = [];
+
+    for (let i = 1; i <= MAX_ATTEMPTS; i++) {
+      const start = performance.now();
+
+      //wait for auth/validate api response along with hitting submit button. Hence clubbed in Promise.all()
+      const [response] = await Promise.all([
+        page.waitForResponse(
+            resp => resp.url().includes('/auth/validate') 
+        ), 
+        loginPage.signInWithCredentials({username, password})
+      ]);
+     
+      const duration = performance.now() - start;
+      delays.push(duration);
+
+      const errorText = await page.locator('.orangehrm-login-form > .orangehrm-login-error p.oxd-alert-content-text').textContent();
+      
+      // Detect lockout / captcha / throttling message
+      if ((/locked|too many|captcha|blocked/i).test(errorText || '')) {
+        lockDetected = true;
+        break;
+      }
+
+      // Detect HTTP 429 (Too Many Requests) via response      
+      if (response.status() === 429) {
+        rateLimitDetected = true;
+        break;
+      }
+    }
+
+    // --- Assertions ---
+    expect(lockDetected || rateLimitDetected,
+      'No brute-force protection detected after repeated failed attempts'
+    ).toBeTruthy();
+
+    /* Optional: detect increasing delay (progressive throttling). We are finding if at least one delay is 1.5X times previous delay*/
+    const hasDelayIncrease = delays.some((d, i) => i > 0 && d > delays[i - 1] * 1.5);
+
+    expect(hasDelayIncrease,
+      'No progressive delay detected in login attempts'
+    ).toBeTruthy();
+  });
+});
