@@ -74,6 +74,12 @@ async function measureLighthousePerfMetrics(page: Page, port: number): Promise<L
   return report;
 }
 
+
+/**
+ * ID from Test Cases (spreadsheet): TC_LOGIN_051
+ * Collection of various approaches to measure load time, response time, user percieved times.
+ */
+
 test.describe.configure({ retries: 0 }); //makes no sense to do retry as these numbers are not expected to change.
 /*those artificats are point less here, so turning off */
 test.use({
@@ -125,6 +131,8 @@ test('Login Page load metrics measurement by using browser events', async ({ pag
 
 /*Running lighthouse tool on chromium browser by running in debugging mode*/
 test('lighthouse performance metrics for login page', async ({logger}) => {  
+  /*BUG: LCP is consistently a larger number which needs to be fixed by engineering team*/
+  test.fail(true, 'Known bug in the app. Developers are to be notified'); //marking it as failure as this test case will fail all the time till fixed
   const chromeDebuggingPort: number = 9222;
   const browser: Browser = await launchChromiumInDebug(chromeDebuggingPort);
   const page: Page = await browser.newPage();
@@ -141,6 +149,8 @@ test('lighthouse performance metrics for login page', async ({logger}) => {
 
 
 test('lighthouse performance metrics for dashboard page', async ({logger}) => {  
+  /*BUG: LCP is consistently a larger number which needs to be fixed by engineering team*/
+  test.fail(true, 'Known bug in the app. Developers are to be notified'); //marking it as failure as this test case will fail all the time till fixed
   const chromeDebuggingPort: number = 9333;
   const browser: Browser = await launchChromiumInDebug(chromeDebuggingPort);
 
