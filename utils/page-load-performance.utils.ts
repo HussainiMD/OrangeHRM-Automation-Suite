@@ -7,8 +7,7 @@ import { PageLoadPerfMetricsType } from './types/PageLoadPerfMetricsType';
  * Page state - fully loaded with all resources
  * LCP - largest content full paint. Painting starts after resources are loaded. It it a complex & parellel process. Of all we are finding the largest paint time. Only chromium browsers support this metric
  */
-export async function measurePagePerformance( page: Page, testInfo: TestInfo, url: string): Promise<PageLoadPerfMetricsType> {
-  const browserName = testInfo.project.name; // chromium / firefox / webkit
+export async function measurePagePerformance( page: Page, browserName: string, testInfo: TestInfo, url: string): Promise<PageLoadPerfMetricsType> { 
 
   const start = performance.now();//performance.now() instead of date.now() for machine time agnostic and more precision
   await page.goto(url);

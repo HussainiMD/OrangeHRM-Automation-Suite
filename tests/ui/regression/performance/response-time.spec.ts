@@ -111,9 +111,10 @@ test('Login and Dashboard Page Response Time', async ({page, logger}) => {
  * Here LCP - Largest Contentful paint time is measured only for Chromium browsers
  * as load & DomContentLoad times means only for resource loading, we are measuring LCP as a better option to see user interaction time (percieved)
 */
-test('Login Page load metrics measurement by using browser events', async ({ page, logger }, testInfo) => {  
+test('Login Page load metrics measurement by using browser events', async ({ page, browserName, logger }, testInfo) => {  
   const pageMetrics: PageLoadPerfMetricsType = await measurePagePerformance(
     page,
+    browserName,
     testInfo,
     '/web/index.php/auth/login'    
   );
