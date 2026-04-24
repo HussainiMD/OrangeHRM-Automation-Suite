@@ -55,7 +55,7 @@ test('Verifying User Credentials NOT getting exposed as clear text', async ({pag
  * ID from Test Cases (spreadsheet): TC_LOGIN_039
  * Verifies if user credentials are being logged in clear text in browser console
  */
-test('Network Request - Password Encryption', async ({page, logger}) => {
+test('Network Request - Password Encryption', async ({page}) => {
     let foundUsername: boolean = false;
     let foundPassword: boolean = false;
 
