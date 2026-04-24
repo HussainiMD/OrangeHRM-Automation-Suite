@@ -3,6 +3,7 @@
     "target": "ES2022",
     "module": "CommonJS",        // safer for Playwright
     "moduleResolution": "node",  // explicit, no surprises
+    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,  //needed for pino
     "types": ["node"],
     "strict": true,
