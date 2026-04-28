@@ -55,6 +55,9 @@ export class AddEmployeePage {
     await this.firstNameInput.fill(name);
   }
 
+  async fillLastName(lastName: string): Promise<void> {
+    await this.lastNameInput.fill(lastName);
+  }
 
   async clickSave(): Promise<void> {
     await this.saveButton.click();
