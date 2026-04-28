@@ -126,5 +126,26 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
     // Verify that First Name field displays validation error
     await expect(addEmployeePage.getFirstNameFieldError(), 'First Name field should display Required error message').toBeVisible();    
   });
+
+  
+  /**
+   * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_005
+   * Verifies that Employee ID is auto populated with add employee form is loaded   
+   */
+  test("TC_PIM_USER_ADD_005 - Add New User Form Validation - Verify Employee ID is auto-populated", async ({adminUserAuthPage}) => {
+     
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
+
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), 'PIM navigation item should be visible').toBeVisible();    
+    await navigationPage.navigateToPim();    
+
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await pimEmployeeListPage.navigateToAddEmployee();    
+
+    // check if employee id is populated
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    await expect(addEmployeePage.getEmployeeID()).not.toBeEmpty();
+  });
 });
 

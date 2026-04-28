@@ -9,7 +9,8 @@ export class AddEmployeePage {
   private readonly lastNameContainer: Locator;
   private readonly midNameInput: Locator;
   private readonly midNameContainer: Locator;
-  
+  private readonly employeeIDInput: Locator;
+  private readonly employeeIDContainer: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -20,7 +21,8 @@ export class AddEmployeePage {
     this.lastNameContainer = page.locator('.oxd-form .oxd-input-group').filter({ has: page.locator('input[name="lastName"]') });
     this.midNameInput = page.locator('input[name="middleName"]').first();
     this.midNameContainer = page.locator('.oxd-form .oxd-input-group').filter({ has: page.locator('input[name="middleName"]') }).first();
-   
+    this.employeeIDContainer =  page.locator('.oxd-form .orangehrm-employee-form .oxd-input-group').filter({ hasText: 'Employee Id'});
+    this.employeeIDInput = this.employeeIDContainer.locator('input.oxd-input');
   }
 
   getSaveButton(): Locator {
@@ -41,6 +43,10 @@ export class AddEmployeePage {
 
   getMidNameFieldError(): Locator {
     return this.midNameContainer.locator("span.oxd-input-field-error-message").first();
+  }
+
+  getEmployeeID(): Locator {
+    return this.employeeIDInput;
   }
 
   async clickSaveWithoutFillingForm(): Promise<void> {
