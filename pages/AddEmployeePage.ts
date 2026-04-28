@@ -7,6 +7,9 @@ export class AddEmployeePage {
   private readonly firstNameContainer: Locator;
   private readonly lastNameInput: Locator;
   private readonly lastNameContainer: Locator;
+  private readonly midNameInput: Locator;
+  private readonly midNameContainer: Locator;
+  
 
   constructor(page: Page) {
     this.page = page;
@@ -15,6 +18,9 @@ export class AddEmployeePage {
     this.firstNameContainer = page.locator('.oxd-form .oxd-input-group').filter({ has: page.locator('input[name="firstName"]') }).first();
     this.lastNameInput = page.locator('input[name="lastName"]');
     this.lastNameContainer = page.locator('.oxd-form .oxd-input-group').filter({ has: page.locator('input[name="lastName"]') });
+    this.midNameInput = page.locator('input[name="middleName"]').first();
+    this.midNameContainer = page.locator('.oxd-form .oxd-input-group').filter({ has: page.locator('input[name="middleName"]') }).first();
+   
   }
 
   getSaveButton(): Locator {
@@ -33,6 +39,10 @@ export class AddEmployeePage {
     return this.lastNameContainer.locator("span.oxd-input-field-error-message").first();
   }
 
+  getMidNameFieldError(): Locator {
+    return this.midNameContainer.locator("span.oxd-input-field-error-message").first();
+  }
+
   async clickSaveWithoutFillingForm(): Promise<void> {
     await this.saveButton.click();
   }
@@ -40,6 +50,11 @@ export class AddEmployeePage {
   async fillFirstName(firstName: string): Promise<void> {
     await this.firstNameInput.fill(firstName);
   }
+
+  async fillMidName(name: string): Promise<void> {
+    await this.firstNameInput.fill(name);
+  }
+
 
   async clickSave(): Promise<void> {
     await this.saveButton.click();
