@@ -45,6 +45,10 @@ export class AddEmployeePage {
     return this.midNameContainer.locator("span.oxd-input-field-error-message").first();
   }
 
+  getEmployeeIdFieldError(): Locator {
+    return this.employeeIDContainer.locator("span.oxd-input-field-error-message").first();
+  }
+
   getEmployeeID(): Locator {
     return this.employeeIDInput;
   }

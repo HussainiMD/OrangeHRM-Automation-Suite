@@ -9,6 +9,7 @@ import EmployeeType from "../tests/types/EmployeeType";
 import { EmployeeDetailsType } from "../utils/types/EmployeeDetailsType";
 import { duplicateUserError } from "../tests/errors/duplicate-user-error";
 import baseLogger from "../utils/logger";
+import { randomInt } from "crypto";
 
 dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
 
@@ -20,20 +21,23 @@ dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: 
  * NOTE: Though we are doing add only once, there are chances that test employee gets deleted by orange hrm team's clean up cron job. We are ignoring that risk for now
  */
 async function extractAndSaveTestEmployeeDetails(): Promise<void> {
+    const employeeId = `${randomInt(1000, 10000)}`;//random 4 digit
     const newEmployeeData:BasicEmployeeType = {
                         "firstName": "playwright",
                         "middleName": "",
-                        "lastName": "employee_007"                
+                        "lastName": "employee_007",
+                        employeeId                 
     };
 
     const employeeDetails:EmployeeType = await addTestEmployee(newEmployeeData); 
     
     const employeeNumber = employeeDetails.empNumber;
-    baseLogger.info(`employeeNumber generated for test employee is ${employeeNumber}`);
+    
+    baseLogger.info(`Generated test employee details :: employee number - ${employeeNumber} & employee ID - ${employeeId}`);
     
     //put it in a file so that multiple worker threads can access data
     const employeeDataFilePath:string = getTestEmployeeDataFilePath();
-    const data: EmployeeDetailsType = {employeeNumber};
+    const data: EmployeeDetailsType = {employeeNumber, employeeId};
     fs.writeFileSync(employeeDataFilePath, JSON.stringify(data), {encoding:'utf-8'});
 }
 

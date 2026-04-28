@@ -30,25 +30,37 @@ interface SearchUserResponseMetaDataType {
 const getTestEmployeeDataFilePath = (): string => employeeDataFilePath;
 
 
-/**utility function which is to return employee number (auto generated). This function caches the data once it extracts from file system
- * @returns number (employee number)
+/**utility function which is to return employee details. This function caches the data once it extracts from file system
+ * @returns EmployeeDetailsType
  */
-const getTestEmployeeNumber = (() => {
-    let empNumber: number;//become private memeber
+const getTestEmployeeDetails = (() => {
+    let empDetails: EmployeeDetailsType;//become private memeber
     return () => {
-        if(!empNumber) {
+        if(!empDetails) {
             try {
                 const testEmployeeDataStr: string = fs.readFileSync(employeeDataFilePath, {encoding: 'utf-8'});
-                const testEmployeeData:EmployeeDetailsType = JSON.parse(testEmployeeDataStr);
-                empNumber = testEmployeeData?.employeeNumber;
+                empDetails = JSON.parse(testEmployeeDataStr);                
             }
             catch(err) {
                 throw new Error(`Something went wrong while trying to extract employee data from the file system - ${err}`);
             } 
         }
-        return empNumber;
+        return empDetails;
     }
 })();//IIFE
+
+
+
+/**utility function which is to return employee number (auto generated). 
+ * @returns number (employee number)
+ */
+const getTestEmployeeNumber = () => getTestEmployeeDetails().employeeNumber;
+
+
+/**utility function which is to return employee ID (optional, user provided). 
+ * @returns string
+ */
+const getTestEmployeeId = () => getTestEmployeeDetails().employeeId;
 
 
 /**Here we will be adding a test employee 
@@ -179,4 +191,4 @@ function getESSUserCredentials(): credentials {
 }
 
 
-export {getTestEmployeeDataFilePath, getTestEmployeeNumber, getESSUserCredentials, addTestEmployee, deleteTestEmployee, addNewESSUser} 
+export {getTestEmployeeDataFilePath, getTestEmployeeNumber, getTestEmployeeId, getESSUserCredentials, addTestEmployee, deleteTestEmployee, addNewESSUser} 

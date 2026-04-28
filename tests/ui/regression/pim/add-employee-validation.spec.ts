@@ -1,7 +1,8 @@
-import { test, expect } from "../../../../fixtures/admin-auth.fixture";
+import { test, expect, Locator } from "../../../../fixtures/admin-auth.fixture";
 import { AddEmployeePage } from "../../../../pages/AddEmployeePage";
 import { PimEmployeeListPage } from "../../../../pages/PimEmployeeListPage";
 import { NavigationPage } from "../../../../pages/NavigationPage";
+import { getTestEmployeeId } from "../../../../utils/users-manager.util";
 
 test.describe("PIM Module - Add Employee Form Validation", () => {
   /**
@@ -145,7 +146,58 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
 
     // check if employee id is populated
     const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
-    await expect(addEmployeePage.getEmployeeID()).not.toBeEmpty();
+    await expect(addEmployeePage.getEmployeeID(), 'Employee ID is expected to be auto populated').not.toBeEmpty();
+  });
+  
+  
+  /**
+   * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_006
+   * Verifies that Employee ID that is auto populated is editable  
+   */
+  test("TC_PIM_USER_ADD_006 - Add New User Form Validation - Verify auto populated Employee ID field is editable", async ({adminUserAuthPage}) => {
+     
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
+
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), 'PIM navigation item should be visible').toBeVisible();    
+    await navigationPage.navigateToPim();    
+
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await pimEmployeeListPage.navigateToAddEmployee();    
+
+    // check if employee id is updatable
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    const employeeIDInputLocator: Locator = addEmployeePage.getEmployeeID();
+    const currentEmployeeID = await employeeIDInputLocator.inputValue();    
+    //imitate user clicking an pressing key on keyboard
+    await employeeIDInputLocator.click();
+    await adminUserAuthPage.keyboard.press('9');
+    await expect(employeeIDInputLocator, 'Employee ID input field is NOT editable').not.toHaveValue(currentEmployeeID);
+  });
+  
+  /**
+   * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_007
+   * Verify if duplicate Employee ID is reported as error while saving form  
+   */
+  test("TC_PIM_USER_ADD_007 - Add New User Form Validation - Verify duplicate Employee ID is rejected", async ({adminUserAuthPage}) => {
+     
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
+
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), 'PIM navigation item should be visible').toBeVisible();    
+    await navigationPage.navigateToPim();    
+
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await pimEmployeeListPage.navigateToAddEmployee();    
+
+    // use existing test employee id to ensure that ID used is duplicate
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    const employeeIDInputLocator: Locator = addEmployeePage.getEmployeeID();    
+    const currentTestEmployeeId = getTestEmployeeId(); //re-using test employee id (already added employee)
+    await employeeIDInputLocator.fill(currentTestEmployeeId);
+
+    await addEmployeePage.clickSave();
+    await expect(addEmployeePage.getEmployeeIdFieldError(), "Employee ID field should display Required error message").toBeVisible();    
   });
 });
 
