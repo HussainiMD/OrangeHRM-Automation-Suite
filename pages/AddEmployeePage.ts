@@ -36,4 +36,12 @@ export class AddEmployeePage {
   async clickSaveWithoutFillingForm(): Promise<void> {
     await this.saveButton.click();
   }
+
+  async fillFirstName(firstName: string): Promise<void> {
+    await this.firstNameInput.fill(firstName);
+  }
+
+  async clickSave(): Promise<void> {
+    await this.saveButton.click();
+  }
 }
