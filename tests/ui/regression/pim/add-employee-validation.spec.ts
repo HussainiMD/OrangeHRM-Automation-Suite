@@ -10,23 +10,21 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
  * verifies if add employee form checks mandatory data inputs
  */
   test("TC_PIM_USER_ADD_001 - Add New User Form Validation", async ({ adminUserAuthPage }) => {
-    const page = adminUserAuthPage;
-
-    await page.goto('/web/index.php/dashboard/index');
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
-    const navigationPage = new NavigationPage(page);
+    const navigationPage = new NavigationPage(adminUserAuthPage);
     await expect(navigationPage.getPimNavItem(), "PIM navigation item should be visible in left sidebar").toBeVisible();
     
     await navigationPage.navigateToPim();
     
-    const pimEmployeeListPage = new PimEmployeeListPage(page);
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
     await expect(pimEmployeeListPage.getEmployeeListButton(), "Employee List button should be visible in top navigation").toBeVisible();
     
     await expect(pimEmployeeListPage.getAddEmployeeButton(), "Add Employee button should be visible in top navigation").toBeVisible();
     
     await pimEmployeeListPage.navigateToAddEmployee();
     
-    const addEmployeePage = new AddEmployeePage(page);
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);
     await expect(addEmployeePage.getSaveButton(), "Save button should be visible to confirm form loaded").toBeVisible();
     
     await addEmployeePage.clickSaveWithoutFillingForm();
@@ -37,7 +35,7 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
 
     await expect(addEmployeePage.getSaveButton(), "Form should still be visible after failed validation - form was not submitted").toBeVisible();
 
-    await expect(page, "URL should remain on Add Employee form page indicating form was not submitted").toHaveURL(/\/pim\/addEmployee/);    
+    await expect(adminUserAuthPage, "URL should remain on Add Employee form page indicating form was not submitted").toHaveURL(/\/pim\/addEmployee/);    
   });
 
   /**
