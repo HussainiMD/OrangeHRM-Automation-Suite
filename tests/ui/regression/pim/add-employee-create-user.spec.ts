@@ -64,5 +64,36 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     await expect(usernameFieldError, 'User Name field should display Required error message').toBeVisible();  
     await expect(passwordFieldErrpr, 'Password field should display Required error message').not.toHaveCount(0);  //covers both password and confirm password
   });
+  
+   /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_017
+    * verifies create user form accepts valid username 
+ */
+  test('Verify username accepts valid value in user form fields', async ({ adminUserAuthPage }) => {  
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
+    
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), "PIM navigation item should be visible in left sidebar").toBeVisible();
+    
+    await navigationPage.navigateToPim();
+    
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(pimEmployeeListPage.getEmployeeListButton(), "Employee List button should be visible in top navigation").toBeVisible();
+    
+    await expect(pimEmployeeListPage.getAddEmployeeButton(), "Add Employee button should be visible in top navigation").toBeVisible();
+    
+    await pimEmployeeListPage.navigateToAddEmployee();
+    
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    
+    await addEmployeePage.clickCreateLoginDetails();
+
+    await addEmployeePage.fillUserName('User_JohnTest');
+    await addEmployeePage.clickSave();
+
+    const usernameFieldError = addEmployeePage.getUsernameFieldError();    
+    // Verify that field displays validation error
+    await expect(usernameFieldError, 'User Name field should NOT display Required error message').not.toBeVisible();          
+  });
 
 })

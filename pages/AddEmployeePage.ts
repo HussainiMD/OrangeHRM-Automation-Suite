@@ -16,7 +16,10 @@ export class AddEmployeePage {
   private readonly createLoginContainer: Locator;
   private readonly createLoginSwitchContainer: Locator;
   private readonly userNameContainer: Locator;
+  private readonly userNameInput: Locator;
   private readonly passwordContainer: Locator;
+  private readonly passwordInput: Locator;
+  private readonly confirmPasswordInput: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -33,7 +36,10 @@ export class AddEmployeePage {
     this.createLoginContainer =  page.locator('.oxd-form > .orangehrm-employee-container');
     this.createLoginSwitchContainer = this.createLoginContainer.locator('.orangehrm-employee-form > .oxd-form-row').filter({hasText: /Create\s*Login/i});
     this.userNameContainer = this.createLoginContainer.locator('.oxd-input-group').filter({ hasText: /Username/i});
+    this.userNameInput = this.userNameContainer.locator('input.oxd-input');
     this.passwordContainer = this.createLoginContainer.locator('.oxd-input-group').filter({ hasText: /Password/i});
+    this.passwordInput = this.passwordContainer.first().locator('input[type="password"].oxd-input');
+    this.confirmPasswordInput = this.passwordContainer.last().locator('input[type="password"].oxd-input');
   }
 
   getSaveButton(): Locator {
@@ -90,6 +96,18 @@ export class AddEmployeePage {
 
   async fillLastName(lastName: string): Promise<void> {
     await this.lastNameInput.fill(lastName);
+  }
+
+  async fillUserName(name: string): Promise<void> {
+    await this.userNameInput.fill(name);
+  }
+
+  async fillPassword(value: string): Promise<void> {
+    await this.passwordInput.fill(value);
+  }
+
+  async fillConfirmPassword(value: string): Promise<void> {
+    await this.confirmPasswordInput.fill(value);
   }
 
   async attachProfilePhoto(pathToFile: string): Promise<void> {       
