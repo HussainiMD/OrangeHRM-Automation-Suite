@@ -20,6 +20,7 @@ export class AddEmployeePage {
   private readonly passwordContainer: Locator;
   private readonly passwordInput: Locator;
   private readonly confirmPasswordInput: Locator;
+  private readonly loginStatusContainer: Locator;  
 
   constructor(page: Page) {
     this.page = page;
@@ -35,11 +36,12 @@ export class AddEmployeePage {
     this.profilePhotoContainer = page.locator('.oxd-form .orangehrm-employee-image');
     this.createLoginContainer =  page.locator('.oxd-form > .orangehrm-employee-container');
     this.createLoginSwitchContainer = this.createLoginContainer.locator('.orangehrm-employee-form > .oxd-form-row').filter({hasText: /Create\s*Login/i});
-    this.userNameContainer = this.createLoginContainer.locator('.oxd-input-group').filter({ hasText: /Username/i});
+    this.userNameContainer = this.createLoginContainer.locator('.oxd-input-group').filter({hasText: /Username/i});
     this.userNameInput = this.userNameContainer.locator('input.oxd-input');
-    this.passwordContainer = this.createLoginContainer.locator('.oxd-input-group').filter({ hasText: /Password/i});
+    this.passwordContainer = this.createLoginContainer.locator('.oxd-input-group').filter({hasText: /Password/i});
     this.passwordInput = this.passwordContainer.first().locator('input[type="password"].oxd-input');
     this.confirmPasswordInput = this.passwordContainer.last().locator('input[type="password"].oxd-input');
+    this.loginStatusContainer = this.createLoginContainer.locator('.oxd-input-group').filter({hasText: /Status/i});    
   }
 
   getSaveButton(): Locator {
@@ -120,8 +122,13 @@ export class AddEmployeePage {
   }
 
   getLabelInCreateLoginForm(text: string): Locator {
-    const regEx = new RegExp(text, 'i');//cas insenstive matches
+    const regEx = new RegExp(text, 'i');//case insenstive matches
     return this.createLoginContainer.locator('.oxd-form-row .oxd-label').filter({hasText: regEx});
+  }
+
+  getLoginStatusInput(option: string): Locator {
+    const regEx = new RegExp(option, 'i');//case insensitive matches
+    return this.loginStatusContainer.locator('.oxd-radio-wrapper').filter({hasText: regEx}).locator('input[type="radio"]');;
   }
 
   async clickSave(): Promise<void> {

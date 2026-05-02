@@ -92,7 +92,7 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     await addEmployeePage.clickSave();
 
     const usernameFieldError = addEmployeePage.getUsernameFieldError();    
-    // Verify that field displays validation error
+    // Verify that field does NOT display validation error
     await expect(usernameFieldError, 'User Name field should NOT display Required error message').not.toBeVisible();          
   });
 
@@ -127,4 +127,31 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     await expect(usernameFieldError, 'User Name field should display duplicate user error message').toBeVisible();      
   });
 
+   /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_019
+    * verifies create user form login status is enabled
+ */
+  test.only('Verify new user login form is enabled by default', async ({ adminUserAuthPage }) => {  
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
+    
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), "PIM navigation item should be visible in left sidebar").toBeVisible();
+    
+    await navigationPage.navigateToPim();
+    
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(pimEmployeeListPage.getEmployeeListButton(), "Employee List button should be visible in top navigation").toBeVisible();
+    
+    await expect(pimEmployeeListPage.getAddEmployeeButton(), "Add Employee button should be visible in top navigation").toBeVisible();
+    
+    await pimEmployeeListPage.navigateToAddEmployee();
+    
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    
+    await addEmployeePage.clickCreateLoginDetails();
+    
+    const loginFormStatusInput = addEmployeePage.getLoginStatusInput('Enabled');
+   
+    await expect(loginFormStatusInput, 'In User form, status is NOT enabled by default').toBeChecked();      
+  });
 })
