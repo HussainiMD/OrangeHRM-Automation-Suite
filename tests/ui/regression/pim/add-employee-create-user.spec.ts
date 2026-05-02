@@ -96,4 +96,35 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     await expect(usernameFieldError, 'User Name field should NOT display Required error message').not.toBeVisible();          
   });
 
+   /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_018
+    * verifies create user form reject duplicate username 
+ */
+  test('Verify username rejects duplicate user if provided in user form fields', async ({ adminUserAuthPage }) => {  
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
+    
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), "PIM navigation item should be visible in left sidebar").toBeVisible();
+    
+    await navigationPage.navigateToPim();
+    
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(pimEmployeeListPage.getEmployeeListButton(), "Employee List button should be visible in top navigation").toBeVisible();
+    
+    await expect(pimEmployeeListPage.getAddEmployeeButton(), "Add Employee button should be visible in top navigation").toBeVisible();
+    
+    await pimEmployeeListPage.navigateToAddEmployee();
+    
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    
+    await addEmployeePage.clickCreateLoginDetails();
+
+    await addEmployeePage.fillUserName(process.env.ess_user_name ?? 'Admin');
+    await addEmployeePage.clickSave();
+
+    const usernameFieldError = addEmployeePage.getUsernameFieldError();    
+    // Verify that field displays validation error
+    await expect(usernameFieldError, 'User Name field should display duplicate user error message').toBeVisible();      
+  });
+
 })
