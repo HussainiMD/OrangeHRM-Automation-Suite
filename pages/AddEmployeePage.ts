@@ -38,6 +38,7 @@ export class AddEmployeePage {
     this.createLoginSwitchContainer = this.createLoginContainer.locator('.orangehrm-employee-form > .oxd-form-row').filter({hasText: /Create\s*Login/i});
     this.userNameContainer = this.createLoginContainer.locator('.oxd-input-group').filter({hasText: /Username/i});
     this.userNameInput = this.userNameContainer.locator('input.oxd-input');
+    //matches both password and confirm password comes under this container. Hence the use of first() and last()
     this.passwordContainer = this.createLoginContainer.locator('.oxd-input-group').filter({hasText: /Password/i});
     this.passwordInput = this.passwordContainer.first().locator('input[type="password"].oxd-input');
     this.confirmPasswordInput = this.passwordContainer.last().locator('input[type="password"].oxd-input');
@@ -77,7 +78,11 @@ export class AddEmployeePage {
   }
 
   getPasswordFieldError(): Locator {
-    return this.passwordContainer.locator(this.errorMsgSpan);
+    return this.passwordContainer.first().locator(this.errorMsgSpan);
+  }
+
+  getConfirmPasswordFieldError(): Locator {
+    return this.passwordContainer.last().locator(this.errorMsgSpan);
   }
 
   getEmployeeID(): Locator {

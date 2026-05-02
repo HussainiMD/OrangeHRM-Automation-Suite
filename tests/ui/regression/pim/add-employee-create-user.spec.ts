@@ -188,4 +188,37 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
 
     await expect(loginFormStatusInputEnabled, 'In User form, status should NOT be enabled after clicking on disabled').not.toBeChecked();    
   });
+  
+   /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_021
+    * verifies passowrd and confirm password field values are matching. It is n create user form.
+ */
+  test('Verify user form fields password and confirm passowrd are matching', async ({ adminUserAuthPage }) => {  
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
+    
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), "PIM navigation item should be visible in left sidebar").toBeVisible();
+    
+    await navigationPage.navigateToPim();
+    
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(pimEmployeeListPage.getEmployeeListButton(), "Employee List button should be visible in top navigation").toBeVisible();
+    
+    await expect(pimEmployeeListPage.getAddEmployeeButton(), "Add Employee button should be visible in top navigation").toBeVisible();
+    
+    await pimEmployeeListPage.navigateToAddEmployee();
+    
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    
+    await addEmployeePage.clickCreateLoginDetails();
+    const testPassword = 'password@123';
+    await addEmployeePage.fillPassword(testPassword);
+    await addEmployeePage.fillConfirmPassword(testPassword);
+    await addEmployeePage.clickSave();
+    
+    const confirmPasswordFieldErrpr = addEmployeePage.getConfirmPasswordFieldError();
+    // Verify that field does NOT displays validation error
+    await expect(confirmPasswordFieldErrpr, 'User Name field should display Required error message').not.toBeVisible(); 
+    await adminUserAuthPage.pause()     
+  });
 })
