@@ -126,7 +126,7 @@ export class AddEmployeePage {
     return this.createLoginContainer.locator('.oxd-form-row .oxd-label').filter({hasText: regEx});
   }
 
-  getLoginStatusInput(option: string): Locator {
+  getLoginStatusInputBy(option: string): Locator {
     const regEx = new RegExp(option, 'i');//case insensitive matches
     return this.loginStatusContainer.locator('.oxd-radio-wrapper').filter({hasText: regEx}).locator('input[type="radio"]');;
   }

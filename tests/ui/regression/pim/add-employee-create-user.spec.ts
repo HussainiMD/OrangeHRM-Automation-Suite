@@ -131,7 +131,7 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_019
     * verifies create user form login status is enabled
  */
-  test.only('Verify new user login form is enabled by default', async ({ adminUserAuthPage }) => {  
+  test('Verify new user login form is enabled by default', async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -150,8 +150,42 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     
     await addEmployeePage.clickCreateLoginDetails();
     
-    const loginFormStatusInput = addEmployeePage.getLoginStatusInput('Enabled');
+    const loginFormStatusInput = addEmployeePage.getLoginStatusInputBy('Enabled');
    
     await expect(loginFormStatusInput, 'In User form, status is NOT enabled by default').toBeChecked();      
+  });
+  
+   /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_020
+    * Verify if the form allow user login status to disabled
+ */
+  test('Verify new user login form is enabled by default but allows user to disable it', async ({ adminUserAuthPage, logger }) => {  
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
+    
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), "PIM navigation item should be visible in left sidebar").toBeVisible();
+    
+    await navigationPage.navigateToPim();
+    
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(pimEmployeeListPage.getEmployeeListButton(), "Employee List button should be visible in top navigation").toBeVisible();
+    
+    await expect(pimEmployeeListPage.getAddEmployeeButton(), "Add Employee button should be visible in top navigation").toBeVisible();
+    
+    await pimEmployeeListPage.navigateToAddEmployee();
+    
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    
+    await addEmployeePage.clickCreateLoginDetails();
+    
+    const loginFormStatusInputEnabled = addEmployeePage.getLoginStatusInputBy('Enabled');
+   
+    await expect(loginFormStatusInputEnabled, 'In User form, status is NOT enabled by default').toBeChecked();    
+    const loginFormStatusInputDisabled = addEmployeePage.getLoginStatusInputBy('Disabled');  
+    
+    await loginFormStatusInputDisabled.focus();
+    await adminUserAuthPage.keyboard.press('Space');
+
+    await expect(loginFormStatusInputEnabled, 'In User form, status should NOT be enabled after clicking on disabled').not.toBeChecked();    
   });
 })
