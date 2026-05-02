@@ -5,8 +5,11 @@ export class NavigationPage {
   private readonly pimNavItem: Locator;
 
   constructor(page: Page) {
-    this.page = page;
-    this.pimNavItem = page.locator("text=PIM");
+    this.page = page;    
+    /*has fallback option to the primary locator. When app language text is changed, it uses fall back */
+    this.pimNavItem = page
+      .locator('a:has-text("PIM")')
+      .or(page.locator('a[href*="viewpim" i]'));//ignore case
   }
 
   getPimNavItem(): Locator {

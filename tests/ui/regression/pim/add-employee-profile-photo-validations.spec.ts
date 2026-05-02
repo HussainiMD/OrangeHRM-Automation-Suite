@@ -91,4 +91,5 @@ test.describe('PIM - Add Employee: profile photo validation', () => {
 
     await expect(addEmployeePage.getProfilePhotoLoadError(), "Error message for profile photo upload").toHaveText(/(?=.*size)(?=.*exceeded)/i); //match anywhere..look ahead pattern ?=
   });
+
 });

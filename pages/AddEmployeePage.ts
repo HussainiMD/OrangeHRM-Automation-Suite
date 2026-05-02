@@ -2,6 +2,7 @@ import { Locator, Page } from "../tests/base";
 
 export class AddEmployeePage {
   private readonly page: Page;
+  private readonly errorMsgSpan = "span.oxd-input-field-error-message";
   private readonly saveButton: Locator;
   private readonly firstNameInput: Locator;
   private readonly firstNameContainer: Locator;
@@ -12,6 +13,10 @@ export class AddEmployeePage {
   private readonly employeeIDInput: Locator;
   private readonly employeeIDContainer: Locator;
   private readonly profilePhotoContainer: Locator;
+  private readonly createLoginContainer: Locator;
+  private readonly createLoginSwitchContainer: Locator;
+  private readonly userNameContainer: Locator;
+  private readonly passwordContainer: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -25,6 +30,10 @@ export class AddEmployeePage {
     this.employeeIDContainer =  page.locator('.oxd-form .orangehrm-employee-form .oxd-input-group').filter({ hasText: 'Employee Id'});
     this.employeeIDInput = this.employeeIDContainer.locator('input.oxd-input');
     this.profilePhotoContainer = page.locator('.oxd-form .orangehrm-employee-image');
+    this.createLoginContainer =  page.locator('.oxd-form > .orangehrm-employee-container');
+    this.createLoginSwitchContainer = this.createLoginContainer.locator('.orangehrm-employee-form > .oxd-form-row').filter({hasText: /Create\s*Login/i});
+    this.userNameContainer = this.createLoginContainer.locator('.oxd-input-group').filter({ hasText: /Username/i});
+    this.passwordContainer = this.createLoginContainer.locator('.oxd-input-group').filter({ hasText: /Password/i});
   }
 
   getSaveButton(): Locator {
@@ -36,23 +45,31 @@ export class AddEmployeePage {
   }
 
   getFirstNameFieldError(): Locator {
-    return this.firstNameContainer.locator("span.oxd-input-field-error-message").first();
+    return this.firstNameContainer.locator(this.errorMsgSpan).first();
   }
 
   getLastNameFieldError(): Locator {
-    return this.lastNameContainer.locator("span.oxd-input-field-error-message").first();
+    return this.lastNameContainer.locator(this.errorMsgSpan).first();
   }
 
   getMidNameFieldError(): Locator {
-    return this.midNameContainer.locator("span.oxd-input-field-error-message").first();
+    return this.midNameContainer.locator(this.errorMsgSpan).first();
   }
 
   getEmployeeIdFieldError(): Locator {
-    return this.employeeIDContainer.locator("span.oxd-input-field-error-message").first();
+    return this.employeeIDContainer.locator(this.errorMsgSpan).first();
   }
 
   getProfilePhotoLoadError(): Locator {
-    return this.profilePhotoContainer.locator('.oxd-input-field-error-message');
+    return this.profilePhotoContainer.locator(this.errorMsgSpan);
+  }
+
+  getUsernameFieldError(): Locator {
+    return this.userNameContainer.locator(this.errorMsgSpan);
+  }
+
+  getPasswordFieldError(): Locator {
+    return this.passwordContainer.locator(this.errorMsgSpan);
   }
 
   getEmployeeID(): Locator {
@@ -77,6 +94,16 @@ export class AddEmployeePage {
 
   async attachProfilePhoto(pathToFile: string): Promise<void> {       
         await this.page.getByRole('button', { name: 'Choose File' }).setInputFiles(pathToFile);
+  }
+
+  async clickCreateLoginDetails() {    
+    const createLoginCheckbox = this.createLoginSwitchContainer.locator('.oxd-switch-wrapper');
+    await createLoginCheckbox.click();
+  }
+
+  getLabelInCreateLoginForm(text: string): Locator {
+    const regEx = new RegExp(text, 'i');//cas insenstive matches
+    return this.createLoginContainer.locator('.oxd-form-row .oxd-label').filter({hasText: regEx});
   }
 
   async clickSave(): Promise<void> {
