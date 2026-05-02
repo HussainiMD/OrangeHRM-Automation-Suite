@@ -191,7 +191,7 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
   
    /**
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_021
-    * verifies passowrd and confirm password field values are matching. It is n create user form.
+    * verifies passowrd and confirm password field values are matching. It is in create user form.
  */
   test('Verify user form fields password and confirm passowrd are matching', async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
@@ -218,7 +218,38 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     
     const confirmPasswordFieldErrpr = addEmployeePage.getConfirmPasswordFieldError();
     // Verify that field does NOT displays validation error
-    await expect(confirmPasswordFieldErrpr, 'User Name field should display Required error message').not.toBeVisible(); 
-    await adminUserAuthPage.pause()     
+    await expect(confirmPasswordFieldErrpr, 'User Name field should display Required error message').not.toBeVisible();        
+  });
+  
+   /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_022
+    * verifies error when passowrd and confirm password field values are not matching. It is in create user form.
+ */
+  test('Verify user error when form fields password and confirm passowrd are not matching', async ({ adminUserAuthPage }) => {  
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
+    
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), "PIM navigation item should be visible in left sidebar").toBeVisible();
+    
+    await navigationPage.navigateToPim();
+    
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(pimEmployeeListPage.getEmployeeListButton(), "Employee List button should be visible in top navigation").toBeVisible();
+    
+    await expect(pimEmployeeListPage.getAddEmployeeButton(), "Add Employee button should be visible in top navigation").toBeVisible();
+    
+    await pimEmployeeListPage.navigateToAddEmployee();
+    
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    
+    await addEmployeePage.clickCreateLoginDetails();
+    const testPassword = 'password@123';
+    await addEmployeePage.fillPassword(testPassword);
+    await addEmployeePage.fillConfirmPassword(testPassword + '4');//not using same password string
+    await addEmployeePage.clickSave();
+    
+    const confirmPasswordFieldErrpr = addEmployeePage.getConfirmPasswordFieldError();
+    // Verify that field does NOT displays validation error
+    await expect(confirmPasswordFieldErrpr, 'User Name field should display Required error message').toBeVisible();          
   });
 })
