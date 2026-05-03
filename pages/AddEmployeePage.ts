@@ -98,7 +98,7 @@ export class AddEmployeePage {
   }
 
   async fillMidName(name: string): Promise<void> {
-    await this.firstNameInput.fill(name);
+    await this.midNameInput.fill(name);
   }
 
   async fillLastName(lastName: string): Promise<void> {

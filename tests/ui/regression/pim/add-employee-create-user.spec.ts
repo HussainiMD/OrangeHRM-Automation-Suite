@@ -159,7 +159,7 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_020
     * Verify if the form allow user login status to disabled
  */
-  test('Verify new user login form is enabled by default but allows user to disable it', async ({ adminUserAuthPage, logger }) => {  
+  test('Verify new user login form is enabled by default but allows user to disable it', async ({ adminUserAuthPage}) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -251,5 +251,55 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     const confirmPasswordFieldErrpr = addEmployeePage.getConfirmPasswordFieldError();
     // Verify that field does NOT displays validation error
     await expect(confirmPasswordFieldErrpr, 'User Name field should display Required error message').toBeVisible();          
+  });
+
+   /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_024
+    * verifies error when passowrd and confirm password field values are not matching. It is in create user form.
+ */
+  test('Verify Successful creation of add new employee along with login credentials', async ({ adminUserAuthPage }) => {
+ 
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index'); 
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), 'PIM navigation item should be visible in the left sidebar').toBeVisible();
+ 
+    await navigationPage.navigateToPim(); 
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(pimEmployeeListPage.getEmployeeListButton(), 'Employee List button should be visible in the top navigation').toBeVisible();
+    await expect(pimEmployeeListPage.getAddEmployeeButton(),'Add Employee button should be visible in the top navigation').toBeVisible();
+    await pimEmployeeListPage.navigateToAddEmployee();
+ 
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);
+    await expect(addEmployeePage.getSaveButton(),'Save button should be visible confirming the Add Employee form is loaded').toBeVisible();
+ 
+    // Fill mandatory name fields
+    await addEmployeePage.fillFirstName('John');
+    await addEmployeePage.fillLastName('TestAuto');
+    await addEmployeePage.clickCreateLoginDetails(); 
+    // Username must be unique per run to avoid TC_PIM_USER_ADD_018 duplicate error
+    const uniqueUsername = `test_user_${Date.now()}`;//Date.now() returns a long unique number
+    await addEmployeePage.fillUserName(uniqueUsername); 
+    // Password: meets OrangeHRM strong password requirement (upper + lower + symbol + number)
+    const testPassword = 'Test@Pass1';
+    await addEmployeePage.fillPassword(testPassword);
+    await addEmployeePage.fillConfirmPassword(testPassword);
+ 
+    // Verify status radio defaults to Enabled before submitting
+    const loginStatusEnabled = addEmployeePage.getLoginStatusInputBy('Enabled');
+    await expect(loginStatusEnabled, 'Login Status should default to Enabled before form submission').toBeChecked();
+ 
+    await addEmployeePage.clickSave();
+ 
+    // ── Post-save assertions ────────────────────────────────────────────────── 
+    await expect( addEmployeePage.getFirstNameFieldError(), 'First Name field should NOT display a validation error after successful save' ).not.toBeVisible(); 
+    await expect( addEmployeePage.getLastNameFieldError(), 'Last Name field should NOT display a validation error after successful save'
+    ).not.toBeVisible(); 
+    await expect( addEmployeePage.getUsernameFieldError(), 'Username field should NOT display a validation error after successful save').not.toBeVisible(); 
+    await expect(addEmployeePage.getPasswordFieldError(), 'Password field should NOT display a validation error after successful save' ).not.toBeVisible(); 
+    await expect(addEmployeePage.getConfirmPasswordFieldError(), 'Confirm Password field should NOT display a validation error after successful save').not.toBeVisible();
+ 
+    // Successful save redirects to the employee profile page
+    await expect(adminUserAuthPage,'URL should change to the employee profile page after a successful save, confirming the record was created'
+    ).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/);
   });
 })
