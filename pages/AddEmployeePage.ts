@@ -95,6 +95,14 @@ export class AddEmployeePage {
     return this.employeeIDInput;
   }
 
+  getPasswordInput(): Locator {                                          
+    return this.passwordInput;
+  }
+ 
+  getConfirmPasswordInput(): Locator {                                   
+    return this.confirmPasswordInput;
+  }
+
   async clickSaveWithoutFillingForm(): Promise<void> {
     await this.saveButton.click();
   }
