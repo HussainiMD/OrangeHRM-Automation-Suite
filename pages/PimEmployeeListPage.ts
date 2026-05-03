@@ -7,7 +7,7 @@ export class PimEmployeeListPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.addEmployeeButton = page.locator("text=Add Employee");
+    this.addEmployeeButton = page.locator('.orangehrm-paper-container .oxd-button').filter({hasText: /Add/i});
     this.employeeListButton = page.locator("text=Employee List");
   }
 

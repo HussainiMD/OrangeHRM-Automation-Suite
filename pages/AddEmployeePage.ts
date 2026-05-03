@@ -59,6 +59,18 @@ export class AddEmployeePage {
     return this.page.locator('form');
   }
 
+  getFirstNameInput(): Locator {
+    return this.firstNameInput;
+  }
+ 
+  getLastNameInput(): Locator {
+    return this.lastNameInput;
+  }
+   
+  getUsernameInput(): Locator {
+    return this.userNameInput;
+  }
+
   getFirstNameFieldError(): Locator {
     return this.firstNameContainer.locator(this.errorMsgSpan).first();
   }
