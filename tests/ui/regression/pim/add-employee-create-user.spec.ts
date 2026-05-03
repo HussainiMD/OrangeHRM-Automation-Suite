@@ -302,4 +302,78 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     await expect(adminUserAuthPage,'URL should change to the employee profile page after a successful save, confirming the record was created'
     ).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/);
   });
+
+   /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_024
+    * verifies error when passowrd and confirm password field values are not matching. It is in create user form.
+ */
+ test('TC_PIM_USER_ADD_024 - Cancel discards invalid form data and returns to Employee List', async ({ adminUserAuthPage }) => {
+ 
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
+ 
+    // ── Navigation ────────────────────────────────────────────────────────────
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(
+      navigationPage.getPimNavItem(),
+      'PIM navigation item should be visible in the left sidebar'
+    ).toBeVisible();
+ 
+    await navigationPage.navigateToPim();
+ 
+    // ── PIM Employee List ─────────────────────────────────────────────────────
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(
+      pimEmployeeListPage.getEmployeeListButton(),
+      'Employee List button should be visible in the top navigation'
+    ).toBeVisible();
+ 
+    await expect(
+      pimEmployeeListPage.getAddEmployeeButton(),
+      'Add Employee button should be visible in the top navigation'
+    ).toBeVisible();
+ 
+    await pimEmployeeListPage.navigateToAddEmployee();
+ 
+    // ── Add Employee Form: enter invalid data ─────────────────────────────────
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);
+    await expect(
+      addEmployeePage.getSaveButton(),
+      'Save button should be visible confirming the Add Employee form is loaded'
+    ).toBeVisible();
+ 
+    // Intentionally leave First Name and Last Name empty (mandatory field violation)
+ 
+    // Toggle Create Login Details ON
+    await addEmployeePage.clickCreateLoginDetails();
+ 
+    // Enter a known-duplicate username — 'Admin' always exists in OrangeHRM demo
+    await addEmployeePage.fillUserName(process.env.ess_user_name ?? 'Admin');
+ 
+    // Enter mismatched passwords (client-side mismatch violation)
+    await addEmployeePage.fillPassword('Test@Pass1');
+    await addEmployeePage.fillConfirmPassword('Test@Pass1_MISMATCH');
+ 
+    // Confirm the Cancel button is reachable before acting on it
+    await expect(
+      addEmployeePage.getCancelButton(),
+      'Cancel button should be visible on the Add Employee form'
+    ).toBeVisible();
+ 
+    // ── Cancel ────────────────────────────────────────────────────────────────
+    await addEmployeePage.clickCancel();
+ 
+    // ── Post-cancel assertions ────────────────────────────────────────────────
+ 
+    // URL must resolve to the Employee List page — not stay on addEmployee
+    await expect(
+      adminUserAuthPage,
+      'Cancel should navigate away from the Add Employee form to the Employee List page'
+    ).toHaveURL(/\/pim\/viewEmployeeList/, { timeout: 10000 });
+ 
+    // The Add Employee form itself must no longer be in the DOM
+    await expect(
+      addEmployeePage.getFormElement(),
+      'Add Employee form should no longer be present in the DOM after Cancel'
+    ).not.toBeVisible();
+  });
 })

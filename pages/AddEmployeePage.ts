@@ -4,6 +4,7 @@ export class AddEmployeePage {
   private readonly page: Page;
   private readonly errorMsgSpan = "span.oxd-input-field-error-message";
   private readonly saveButton: Locator;
+  private readonly cancelButton: Locator;      
   private readonly firstNameInput: Locator;
   private readonly firstNameContainer: Locator;
   private readonly lastNameInput: Locator;
@@ -25,6 +26,7 @@ export class AddEmployeePage {
   constructor(page: Page) {
     this.page = page;
     this.saveButton = page.locator('button:has-text("Save")');
+    this.cancelButton = page.locator('button:has-text("Cancel")');
     this.firstNameInput = page.locator('input[name="firstName"]').first();
     this.firstNameContainer = page.locator('.oxd-form .oxd-input-group').filter({ has: page.locator('input[name="firstName"]') }).first();
     this.lastNameInput = page.locator('input[name="lastName"]');
@@ -47,6 +49,10 @@ export class AddEmployeePage {
 
   getSaveButton(): Locator {
     return this.saveButton;
+  }
+
+  getCancelButton(): Locator {                                          
+    return this.cancelButton;
   }
 
   getFormElement(): Locator {
@@ -138,5 +144,9 @@ export class AddEmployeePage {
 
   async clickSave(): Promise<void> {
     await this.saveButton.click();
+  }
+
+  async clickCancel(): Promise<void> {                                   
+    await this.cancelButton.click();
   }
 }
