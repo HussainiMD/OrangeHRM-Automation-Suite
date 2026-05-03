@@ -471,7 +471,7 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     await expect(
       adminUserAuthPage,
       'Form should redirect to employee profile page confirming successful submission'
-    ).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/, { timeout: 10000 });
+    ).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/);
  
     // ── Console password leak assertions ──────────────────────────────────────
     // Filter collected messages to find any that contain the plain-text password. Case insenstive filtering
