@@ -144,7 +144,7 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
 
     // check if employee id is populated
     const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
-    await expect(addEmployeePage.getEmployeeID(), 'Employee ID is expected to be auto populated').not.toBeEmpty();
+    await expect(addEmployeePage.getEmployeeIDInput(), 'Employee ID is expected to be auto populated').not.toBeEmpty();
   });
   
   
@@ -165,7 +165,7 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
 
     // check if employee id is updatable
     const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
-    const employeeIDInputLocator: Locator = addEmployeePage.getEmployeeID();
+    const employeeIDInputLocator: Locator = addEmployeePage.getEmployeeIDInput();
     const currentEmployeeID = await employeeIDInputLocator.inputValue();    
     //imitate user clicking an pressing key on keyboard
     await employeeIDInputLocator.click();
@@ -190,11 +190,35 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
 
     // use existing test employee id to ensure that ID used is duplicate
     const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
-    const employeeIDInputLocator: Locator = addEmployeePage.getEmployeeID();    
+    const employeeIDInputLocator: Locator = addEmployeePage.getEmployeeIDInput();    
     const currentTestEmployeeId = getTestEmployeeId(); //re-using test employee id (already added employee)
     await employeeIDInputLocator.fill(currentTestEmployeeId);
 
     await addEmployeePage.clickSave();
+    await expect(addEmployeePage.getEmployeeIdFieldError(), "Employee ID field should display Required error message").toBeVisible();    
+  });
+
+   /**
+   * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_028
+   * Verify if invalid Employee ID is reported as error while saving form  
+   */
+  test("TC_PIM_USER_ADD_028 - Add New User Form Validation - Verify invalid (format) Employee ID is rejected", async ({adminUserAuthPage}) => {
+    test.fail(true, 'Known bug in the app. Developers are to be notified');
+
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
+
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), 'PIM navigation item should be visible').toBeVisible();    
+    await navigationPage.navigateToPim();    
+
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await pimEmployeeListPage.navigateToAddEmployee();    
+    
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);    
+    const employeeIDInputLocator: Locator = addEmployeePage.getEmployeeIDInput();    
+    await employeeIDInputLocator.fill('.@$./^&');//invalid junk
+    await addEmployeePage.clickSave();
+    
     await expect(addEmployeePage.getEmployeeIdFieldError(), "Employee ID field should display Required error message").toBeVisible();    
   });
 });

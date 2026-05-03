@@ -91,7 +91,7 @@ export class AddEmployeePage {
     return this.passwordContainer.last().locator(this.errorMsgSpan);
   }
 
-  getEmployeeID(): Locator {
+  getEmployeeIDInput(): Locator {
     return this.employeeIDInput;
   }
 
