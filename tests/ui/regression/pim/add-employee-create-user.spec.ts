@@ -3,6 +3,9 @@ import { NavigationPage } from '../../../../pages/NavigationPage';
 import { PimEmployeeListPage } from '../../../../pages/PimEmployeeListPage';
 import { AddEmployeePage } from '../../../../pages/AddEmployeePage';
 
+// How long to hold the API response before releasing it (ms).
+// Long enough to assert button states; short enough not to slow the suite.
+const SUBMIT_INTERCEPT_DELAY_MS: number = 1000;
 
 test.describe('PIM - Add Employee: with new user form validation', () => {
   /**
@@ -254,57 +257,7 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     await expect(confirmPasswordFieldErrpr, 'User Name field should display Required error message').toBeVisible();          
   });
 
-   /**
-    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_024
-    * verifies error when passowrd and confirm password field values are not matching. It is in create user form.
- */
-  test('Verify Successful creation of add new employee along with login credentials', async ({ adminUserAuthPage }) => {
- 
-    await adminUserAuthPage.goto('/web/index.php/dashboard/index'); 
-    const navigationPage = new NavigationPage(adminUserAuthPage);
-    await expect(navigationPage.getPimNavItem(), 'PIM navigation item should be visible in the left sidebar').toBeVisible();
- 
-    await navigationPage.navigateToPim(); 
-    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
-    await expect(pimEmployeeListPage.getEmployeeListButton(), 'Employee List button should be visible in the top navigation').toBeVisible();
-    await expect(pimEmployeeListPage.getAddEmployeeButton(),'Add Employee button should be visible in the top navigation').toBeVisible();
-    await pimEmployeeListPage.navigateToAddEmployee();
- 
-    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);
-    await expect(addEmployeePage.getSaveButton(),'Save button should be visible confirming the Add Employee form is loaded').toBeVisible();
- 
-    // Fill mandatory name fields
-    await addEmployeePage.fillFirstName('John');
-    await addEmployeePage.fillLastName('TestAuto');
-    await addEmployeePage.clickCreateLoginDetails(); 
-    // Username must be unique per run to avoid TC_PIM_USER_ADD_018 duplicate error
-    const uniqueUsername = `test_user_${Date.now()}`;//Date.now() returns a long unique number
-    await addEmployeePage.fillUserName(uniqueUsername); 
-    // Password: meets OrangeHRM strong password requirement (upper + lower + symbol + number)
-    const testPassword = 'Test@Pass1';
-    await addEmployeePage.fillPassword(testPassword);
-    await addEmployeePage.fillConfirmPassword(testPassword);
- 
-    // Verify status radio defaults to Enabled before submitting
-    const loginStatusEnabled = addEmployeePage.getLoginStatusInputBy('Enabled');
-    await expect(loginStatusEnabled, 'Login Status should default to Enabled before form submission').toBeChecked();
- 
-    await addEmployeePage.clickSave();
- 
-    // ── Post-save assertions ────────────────────────────────────────────────── 
-    await expect( addEmployeePage.getFirstNameFieldError(), 'First Name field should NOT display a validation error after successful save' ).not.toBeVisible(); 
-    await expect( addEmployeePage.getLastNameFieldError(), 'Last Name field should NOT display a validation error after successful save'
-    ).not.toBeVisible(); 
-    await expect( addEmployeePage.getUsernameFieldError(), 'Username field should NOT display a validation error after successful save').not.toBeVisible(); 
-    await expect(addEmployeePage.getPasswordFieldError(), 'Password field should NOT display a validation error after successful save' ).not.toBeVisible(); 
-    await expect(addEmployeePage.getConfirmPasswordFieldError(), 'Confirm Password field should NOT display a validation error after successful save').not.toBeVisible();
- 
-    // Successful save redirects to the employee profile page
-    await expect(adminUserAuthPage,'URL should change to the employee profile page after a successful save, confirming the record was created'
-    ).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/);
-  });
-
-   /**
+ /**
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_024
     * Verify Cancel button discards invalid form data and returns to Employee List. It is in create user form.
  */
@@ -404,4 +357,108 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     await expect(adminUserAuthPage, 'Browser Back should navigate away from the Add Employee form to the Employee List page' ).toHaveURL(/\/pim\/viewEmployeeList/);
   });  
   
+ 
+})
+
+
+
+test.describe.serial('PIM - Add Employee test case that should run in series to avoid duplicate employee ID issue', () => {
+ /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_024
+    * verifies error when passowrd and confirm password field values are not matching. It is in create user form.
+ */
+  test('Verify Successful creation of add new employee along with login credentials', async ({ adminUserAuthPage }) => {
+ 
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index'); 
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect(navigationPage.getPimNavItem(), 'PIM navigation item should be visible in the left sidebar').toBeVisible();
+ 
+    await navigationPage.navigateToPim(); 
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect(pimEmployeeListPage.getEmployeeListButton(), 'Employee List button should be visible in the top navigation').toBeVisible();
+    await expect(pimEmployeeListPage.getAddEmployeeButton(),'Add Employee button should be visible in the top navigation').toBeVisible();
+    await pimEmployeeListPage.navigateToAddEmployee();
+ 
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);
+    await expect(addEmployeePage.getSaveButton(),'Save button should be visible confirming the Add Employee form is loaded').toBeVisible();
+ 
+    // Fill mandatory name fields
+    await addEmployeePage.fillFirstName('John');
+    await addEmployeePage.fillLastName('TestAuto');
+    await addEmployeePage.clickCreateLoginDetails(); 
+    // Username must be unique per run to avoid TC_PIM_USER_ADD_018 duplicate error
+    const uniqueUsername = `test_user_${Date.now()}`;//Date.now() returns a long unique number
+    await addEmployeePage.fillUserName(uniqueUsername); 
+    // Password: meets OrangeHRM strong password requirement (upper + lower + symbol + number)
+    const testPassword = 'Test@Pass1';
+    await addEmployeePage.fillPassword(testPassword);
+    await addEmployeePage.fillConfirmPassword(testPassword);
+ 
+    // Verify status radio defaults to Enabled before submitting
+    const loginStatusEnabled = addEmployeePage.getLoginStatusInputBy('Enabled');
+    await expect(loginStatusEnabled, 'Login Status should default to Enabled before form submission').toBeChecked();
+ 
+    await addEmployeePage.clickSave();
+ 
+    // ── Post-save assertions ────────────────────────────────────────────────── 
+    await expect( addEmployeePage.getFirstNameFieldError(), 'First Name field should NOT display a validation error after successful save' ).not.toBeVisible(); 
+    await expect( addEmployeePage.getLastNameFieldError(), 'Last Name field should NOT display a validation error after successful save'
+    ).not.toBeVisible(); 
+    await expect( addEmployeePage.getUsernameFieldError(), 'Username field should NOT display a validation error after successful save').not.toBeVisible(); 
+    await expect(addEmployeePage.getPasswordFieldError(), 'Password field should NOT display a validation error after successful save' ).not.toBeVisible(); 
+    await expect(addEmployeePage.getConfirmPasswordFieldError(), 'Confirm Password field should NOT display a validation error after successful save').not.toBeVisible();
+ 
+    // Successful save redirects to the employee profile page
+    await expect(adminUserAuthPage,'URL should change to the employee profile page after a successful save, confirming the record was created'
+    ).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/);
+  });
+
+  /**
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_048
+    * Verify Save and Cancel buttons are disabled while form submission is in progress. Form is for add employee
+ */
+  test('Verify Save and Cancel buttons are hidden while form submission is in progress', async ({ adminUserAuthPage }) => {
+ 
+    // Intercept & Add delay. OrangeHRM POSTs to this endpoint when the Add Employee form is submitted.    
+    await adminUserAuthPage.route('**/api/v2/pim/employees', async (route) => {
+        if (route.request().method() === 'POST')
+          await new Promise((resolve) => setTimeout(resolve, SUBMIT_INTERCEPT_DELAY_MS));
+        
+        await route.continue(); // release the original request unmodified
+      }
+    );
+ 
+    await adminUserAuthPage.goto('/web/index.php/dashboard/index');
+    const navigationPage = new NavigationPage(adminUserAuthPage);
+    await expect( navigationPage.getPimNavItem(), 'PIM navigation item should be visible in the left sidebar' ).toBeVisible();
+    await navigationPage.navigateToPim();
+    const pimEmployeeListPage = new PimEmployeeListPage(adminUserAuthPage);
+    await expect( pimEmployeeListPage.getAddEmployeeButton(), 'Add Employee button should be visible in the top navigation'
+    ).toBeVisible(); 
+    await pimEmployeeListPage.navigateToAddEmployee();
+    const addEmployeePage = new AddEmployeePage(adminUserAuthPage);
+    await expect( addEmployeePage.getSaveButton(), 'Save button should be visible confirming the Add Employee form is loaded' ).toBeVisible();
+ 
+    await addEmployeePage.fillFirstName('John');
+    await addEmployeePage.fillLastName('TestAuto');
+ 
+    await addEmployeePage.clickCreateLoginDetails();
+ 
+    const uniqueUsername = `test_user_${Date.now()}`;
+    await addEmployeePage.fillUserName(uniqueUsername);
+ 
+    const testPassword = 'Test@Pass1';
+    await addEmployeePage.fillPassword(testPassword);
+    await addEmployeePage.fillConfirmPassword(testPassword);
+     
+    await addEmployeePage.clickSave();
+    await expect( addEmployeePage.getSaveButton(), 'Save button should be hidden immediately after clicking to prevent double-submission' ).not.toBeVisible();
+    await expect( addEmployeePage.getCancelButton(), 'Cancel button should be hidden after Save is clicked to prevent cancelling an in-flight submission' ).not.toBeVisible();
+   
+    //  Release intercept and assert successful redirect. Unregister the route so the response flows through on any retry/redirect.
+    await adminUserAuthPage.unroute('**/api/v2/pim/employees');
+ 
+    await expect( adminUserAuthPage, 'App should redirect to employee profile page after submission completes — ' +
+      'confirms the intercepted request was released and processed correctly' ).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/);
+  });
 })

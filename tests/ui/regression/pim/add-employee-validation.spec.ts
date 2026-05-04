@@ -203,6 +203,7 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
    * Verify if invalid Employee ID is reported as error while saving form  
    */
   test("TC_PIM_USER_ADD_028 - Add New User Form Validation - Verify invalid (format) Employee ID is rejected", async ({adminUserAuthPage}) => {
+    test.slow();
     test.fail(true, 'Known bug in the app. Developers are to be notified');
 
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');    

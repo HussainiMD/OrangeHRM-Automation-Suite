@@ -88,7 +88,7 @@ test.describe('PIM - Add Employee: form responsiveness across viewports', () => 
      *   - Admin user is authenticated (adminUserAuthPage fixture)
      *   - Viewport is set to the profile under test before navigation
      */
-    test(`TC_PIM_USER_ADD_029 - Form is responsive and usable at ${viewport.label} (${viewport.width}×${viewport.height})`, async ({ adminUserAuthPage, logger }) => {
+    test(`TC_PIM_USER_ADD_029 - Form is responsive and usable at ${viewport.label} (${viewport.width}×${viewport.height})`, async ({ adminUserAuthPage }) => {
 
       // ── Set viewport before any navigation ─────────────────────────────
       await adminUserAuthPage.setViewportSize({

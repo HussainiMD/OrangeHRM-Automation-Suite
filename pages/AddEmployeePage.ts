@@ -25,8 +25,8 @@ export class AddEmployeePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.saveButton = page.locator('button:has-text("Save")');
-    this.cancelButton = page.locator('button:has-text("Cancel")');
+    this.saveButton = page.locator('.oxd-form-actions button').filter({hasText: "Save"});
+    this.cancelButton = page.locator('.oxd-form-actions button').filter({hasText: "Cancel"});
     this.firstNameInput = page.locator('input[name="firstName"]').first();
     this.firstNameContainer = page.locator('.oxd-form .oxd-input-group').filter({ has: page.locator('input[name="firstName"]') }).first();
     this.lastNameInput = page.locator('input[name="lastName"]');
