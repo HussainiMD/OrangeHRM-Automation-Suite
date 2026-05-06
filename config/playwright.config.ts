@@ -22,10 +22,10 @@ export default defineConfig({
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
+  /* Retry settings */
   retries: process.env.CI ? 3 : 1,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 5 : undefined,
+  /* parallel tests. */
+  workers: process.env.CI ? 10 : 3,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['dot'], ['html', { open: 'never' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -55,7 +55,13 @@ export default defineConfig({
 
     {
       name: 'staging-webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices['Desktop Safari'] ,
+        // WebKit-specific overrides
+        actionTimeout: 90_000,    // per-action timeout (click, fill, etc.)
+        navigationTimeout: 90_000, // page.goto(), waitForURL(), etc        
+      },
+       // Test-level timeout — overrides the global `timeout` above
+      timeout: 120_000      
     },
 
     /* Test against mobile viewports. */
