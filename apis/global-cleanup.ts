@@ -11,9 +11,13 @@ async function cleanUPTestEmployees(): Promise<void> {
     /*clean up global test employee Id*/
     const employeeDataFilePath:string = getTestEmployeeDataFilePath();
     if(fs.existsSync(employeeDataFilePath)) {
-        const empId: number = getTestEmployeeNumber();        
-        //keeping it isolated as we want this to happen mandatory. Rest of the test ID clean up is lesser priority
-        await deleteTestEmployee([empId]);      
+        try {
+            const empId: number = getTestEmployeeNumber();        
+            //keeping it isolated as we want this to happen mandatory. Rest of the test ID clean up is lesser priority
+            await deleteTestEmployee([empId]);      
+        } catch(err) {
+            baseLogger.warn(err)
+        }
     }
     else baseLogger.warn('Did NOT find the global test employee during clean up'); 
 
@@ -48,7 +52,11 @@ async function cleanUPTestEmployees(): Promise<void> {
         }
     }    
 
-    await deleteTestEmployee(allIds);       
+    try {
+        await deleteTestEmployee(allIds);       
+    } catch(err) {
+        baseLogger.warn(err);
+    }
 }
 
 /**Delete the folder recursively and forcefully

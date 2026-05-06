@@ -47,7 +47,7 @@ function getInvalidStartEndDatesForLeave(): DatesObj {
  * Utility function which has common code for test execution
  * This a good demonstration of UI + API validation mix for faster test case execution
  */
-async function runTest(page: Page, logger: pino.Logger, leaveDates: DatesObj): Promise<
+async function runTest(page: Page, logger: pino.Logger, leaveDates: DatesObj, browserName: string): Promise<
 Response> {
     const navResponse : Response | null = await page.goto('/web/index.php/leave/applyLeave');
     expect(navResponse?.ok(),'Navigation to the apply leaves page has failed').toBe(true);
@@ -77,6 +77,8 @@ Response> {
         ), 
         page.keyboard.press('Enter')
     ]) as [Response, void];
+    
+    if(!(/chrom/i).test(browserName)) await page.waitForLoadState("networkidle");
     
     expect(urlResponse.ok(), 'leave balance API response is NOT ok').toBe(true);    
 
@@ -122,9 +124,9 @@ Response> {
  * Verifies the Leave application flow: 
  * Ensure Leaves are available for chosen category -> Chose weekdays -> Click apply -> Verify API status (triggered behind the scenes)
  */
-test('Verify Employee applied leaves shows up in his leave history', async ({essUserAuthPage, logger}) => {
+test('Verify Employee applied leaves shows up in his leave history', async ({essUserAuthPage, logger, browserName}) => {
     const leaveDates: DatesObj = getValidStartEndDatesForLeave();
-    const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates);
+    const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
     
     expect(applyLeavesAPIResponse.ok(), 'apply leaves API response in not ok').toBe(true);  
 })
@@ -135,9 +137,9 @@ test('Verify Employee applied leaves shows up in his leave history', async ({ess
  * Verifies the Leave application flow for INVALID dates: 
  * Ensure Leaves are available for chosen category -> Chose weekends (invalid) -> Click apply -> Verify API status (triggered behind the scenes)
  * */
-test('Verify weekends/invalid leave application is rejected', async ({essUserAuthPage, logger}) => {
+test('Verify weekends/invalid leave application is rejected', async ({essUserAuthPage, logger, browserName}) => {
     const leaveDates: DatesObj = getInvalidStartEndDatesForLeave();
-    const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates);
+    const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
     
     expect(applyLeavesAPIResponse.ok(), 'apply leaves API response is not ok').toBe(false);  
 })
