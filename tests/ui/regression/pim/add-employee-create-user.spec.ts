@@ -3,10 +3,6 @@ import { NavigationPage } from '../../../../pages/NavigationPage';
 import { PimEmployeeListPage } from '../../../../pages/PimEmployeeListPage';
 import { AddEmployeePage } from '../../../../pages/AddEmployeePage';
 
-// How long to hold the API response before releasing it (ms).
-// Long enough to assert button states; short enough not to slow the suite.
-const SUBMIT_INTERCEPT_DELAY_MS: number = 1000;
-
 test.describe('PIM - Add Employee: with new user form validation', () => {
   /**
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_014
@@ -418,16 +414,6 @@ test.describe.serial('PIM - Add Employee test case that should run in series to 
     * Verify Save and Cancel buttons are disabled while form submission is in progress. Form is for add employee
  */
   test('Verify Save and Cancel buttons are hidden while form submission is in progress', async ({ adminUserAuthPage }) => {
- 
-    // Intercept & Add delay. OrangeHRM POSTs to this endpoint when the Add Employee form is submitted.    
-    await adminUserAuthPage.route('**/api/v2/pim/employees', async (route) => {
-        if (route.request().method() === 'POST')
-          await new Promise((resolve) => setTimeout(resolve, SUBMIT_INTERCEPT_DELAY_MS));
-        
-        await route.continue(); // release the original request unmodified
-      }
-    );
- 
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     const navigationPage = new NavigationPage(adminUserAuthPage);
     await expect( navigationPage.getPimNavItem(), 'PIM navigation item should be visible in the left sidebar' ).toBeVisible();
@@ -452,11 +438,8 @@ test.describe.serial('PIM - Add Employee test case that should run in series to 
     await addEmployeePage.fillConfirmPassword(testPassword);
      
     await addEmployeePage.clickSave();
-    await expect( addEmployeePage.getSaveButton(), 'Save button should be hidden immediately after clicking to prevent double-submission' ).not.toBeVisible();
-    await expect( addEmployeePage.getCancelButton(), 'Cancel button should be hidden after Save is clicked to prevent cancelling an in-flight submission' ).not.toBeVisible();
-   
-    //  Release intercept and assert successful redirect. Unregister the route so the response flows through on any retry/redirect.
-    await adminUserAuthPage.unroute('**/api/v2/pim/employees');
+    // loader or spinner forms overlay the action button avoiding user to do further actions
+    await expect(addEmployeePage.getFormLoader(), 'Loader / Spinner is not shown to the user after clicking save').toBeVisible();    
  
     await expect( adminUserAuthPage, 'App should redirect to employee profile page after submission completes — ' +
       'confirms the intercepted request was released and processed correctly' ).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/);

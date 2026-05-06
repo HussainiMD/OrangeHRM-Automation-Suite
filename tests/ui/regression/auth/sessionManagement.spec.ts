@@ -6,9 +6,10 @@ const dashboardURLRegEx: RegExp = /dashboard/i;
  * ID from Test Cases (spreadsheet): TC_LOGIN_025
  * Verifies the scenario where user clicks on browser back button after successful login to the AUT
 */
-test('Browser Back Button After Login', async ({essUserAuthPage}) => {    
+test('Browser Back Button After Login', async ({essUserAuthPage, browserName}) => {    
+    const webkitRegex = /webkit/i;
     /*BUG: up on back button, app is going to login page despite active session. Ideally it should go to dashboard page*/
-    test.fail(true, 'Known bug in the app. Developers are to be notified'); //marking it as failure as this test case will fail all the time till fixed
+    test.fail(!webkitRegex.test(browserName), 'Known bug in the app specific to firefox and chrome browsers. Developers are to be notified'); //marking it as failure as this test case will fail all the time till fixed
     await essUserAuthPage.goBack();   
     await expect(essUserAuthPage, 'Page URL is not what is expected').toHaveURL(dashboardURLRegEx);
 });

@@ -68,7 +68,7 @@ export const attachEmployeeInterceptor = (context: BrowserContext, testInfo: Tes
       };
 
       fs.appendFileSync(filePath, JSON.stringify(record) + '\n');
-      baseLogger.info(`Add Employee interceptor - captured employee number: ${empNumber}`);
+      baseLogger.info(`Add Employee interceptor - captured (backend) employee number: ${empNumber} & employee ID: ${employeeId}`);
     })().catch((err) => {
       baseLogger.warn(err, 'Add Employee interceptor - Unexpected error');
     });

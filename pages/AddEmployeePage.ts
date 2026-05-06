@@ -2,6 +2,7 @@ import { Locator, Page } from "../tests/base";
 
 export class AddEmployeePage {
   private readonly page: Page;
+  private readonly formLoader: Locator;
   private readonly errorMsgSpan = "span.oxd-input-field-error-message";
   private readonly saveButton: Locator;
   private readonly cancelButton: Locator;      
@@ -25,6 +26,7 @@ export class AddEmployeePage {
 
   constructor(page: Page) {
     this.page = page;
+    this.formLoader = page.locator('.oxd-form .oxd-form-loader');
     this.saveButton = page.locator('.oxd-form-actions button').filter({hasText: "Save"});
     this.cancelButton = page.locator('.oxd-form-actions button').filter({hasText: "Cancel"});
     this.firstNameInput = page.locator('input[name="firstName"]').first();
@@ -45,6 +47,10 @@ export class AddEmployeePage {
     this.passwordInput = this.passwordContainer.first().locator('input[type="password"].oxd-input');
     this.confirmPasswordInput = this.passwordContainer.last().locator('input[type="password"].oxd-input');
     this.loginStatusContainer = this.createLoginContainer.locator('.oxd-input-group').filter({hasText: /Status/i});    
+  }
+
+  getFormLoader(): Locator {
+    return this.formLoader;
   }
 
   getSaveButton(): Locator {

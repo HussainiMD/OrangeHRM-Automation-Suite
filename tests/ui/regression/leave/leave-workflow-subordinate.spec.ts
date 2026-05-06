@@ -10,12 +10,14 @@ interface DatesObj {
 function getValidStartEndDatesForLeave(): DatesObj {
     const today: Date = new Date();
     
-    /*Choose days from first week of the month */
+    /*Choose days from first week of the month. Looking to go for Monday & Tuesday */
     today.setDate(1);
     switch(today.getDay()) {
         case 0: today.setDate(2); //if sunday, go to next day       
         break;
         case 6: today.setDate(3); // if saturday, skip 2 days
+        break;
+        case 5: today.setDate(4); // if friday, skip 2 days
     }
     
     const todayDateStr: string = `${today.getFullYear()}-${today.getDate()}-${today.getMonth()+1}`;//month starts with 0, hence +1

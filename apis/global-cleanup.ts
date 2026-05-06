@@ -12,6 +12,7 @@ async function cleanUPTestEmployees(): Promise<void> {
     const employeeDataFilePath:string = getTestEmployeeDataFilePath();
     if(fs.existsSync(employeeDataFilePath)) {
         const empId: number = getTestEmployeeNumber();        
+        //keeping it isolated as we want this to happen mandatory. Rest of the test ID clean up is lesser priority
         await deleteTestEmployee([empId]);      
     }
     else baseLogger.warn('Did NOT find the global test employee during clean up'); 
