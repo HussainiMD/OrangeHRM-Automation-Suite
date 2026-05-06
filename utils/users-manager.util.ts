@@ -45,6 +45,7 @@ const getTestEmployeeDetails = (() => {
                 throw new Error(`Something went wrong while trying to extract employee data from the file system - ${err}`);
             } 
         }
+        
         return empDetails;
     }
 })();//IIFE
@@ -54,7 +55,7 @@ const getTestEmployeeDetails = (() => {
 /**utility function which is to return employee number (auto generated). 
  * @returns number (employee number)
  */
-const getTestEmployeeNumber = () => getTestEmployeeDetails().employeeNumber;
+const getTestEmployeeNumber = () => getTestEmployeeDetails().empNumber;
 
 
 /**utility function which is to return employee ID (optional, user provided). 
@@ -95,22 +96,25 @@ async function addTestEmployee(data:BasicEmployeeType): Promise<EmployeeType> {
  * This test suite uses this simple logic for clean up. All users are linked to SINGLE test employee.
  * @returns nothing/void. Throws exception if operation fails
 */
-async function deleteTestEmployee(empId?:number): Promise<void> {    
-    if(!empId) empId = getTestEmployeeNumber();
+async function deleteTestEmployee(empIds: Array<number>): Promise<void> {    
+    if(!empIds || empIds.length ==0) {
+        baseLogger.warn(`Got call for delete test employee with invalid IDs list - ${JSON.stringify(empIds)}`);
+        return;
+    }
 
     //using admin credentials for operation
     const apiRequestContext: APIRequestContext = await getValidAdminRequestContext();
     const apiResponse: APIResponse = await apiRequestContext.delete('/web/index.php/api/v2/pim/employees', {
             headers: { 'Content-Type': 'application/json'},
             data: {
-                ids: [empId]
+                ids: empIds
             }
         });
 
-    baseLogger.info(`delete employee (id:${empId}) API call resulted in response code ${apiResponse.status()}`);
+    baseLogger.info(`deleted employee(s) [ids:${empIds}] API call resulted in response code ${apiResponse.status()}`);
 
     if(!apiResponse.ok())
-        throw new Error(`Delete Employee for IDs "${empId}" has failed - status code: ${apiResponse.status()}. Here are the error details ${await apiResponse.text()}`);
+        throw new Error(`Delete Employees for IDs "${empIds}" has failed - status code: ${apiResponse.status()}. Here are the error details ${await apiResponse.text()}`);
 }
 
 

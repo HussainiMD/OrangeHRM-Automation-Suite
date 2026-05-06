@@ -1,5 +1,6 @@
 import {test as base, BrowserContext, Page, APIRequestContext} from "../tests/base";
 import { getValidAdminRequestContext } from "../utils/auth-manager.utils";
+import { attachEmployeeInterceptor } from "../tests/base";
 
 interface AdminUserType {
     adminUserAuthContext: BrowserContext,
@@ -13,7 +14,7 @@ interface AdminUserType {
  * Upon next retry, it will get a fresh context with valid login. So, at least one retry should be enabled at global level for ALL tests. 
  * */
 const test = base.extend<AdminUserType>({
-    adminUserAuthContext: async ({browser}, use) => {
+    adminUserAuthContext: async ({browser}, use, testInfo) => {
         
         const reqContext: APIRequestContext =  await getValidAdminRequestContext();//Get context from Auth Manager and use it
         
@@ -21,7 +22,9 @@ const test = base.extend<AdminUserType>({
         const adminUserContext: BrowserContext = await browser.newContext({
             storageState: await reqContext.storageState()            
         });   
-               
+
+        //Attach listener — on the context that actually handles all requests
+        attachEmployeeInterceptor(adminUserContext, testInfo);               
         await use(adminUserContext);
 
         await adminUserContext.close();

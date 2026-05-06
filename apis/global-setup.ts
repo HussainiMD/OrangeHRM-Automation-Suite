@@ -31,13 +31,13 @@ async function extractAndSaveTestEmployeeDetails(): Promise<void> {
 
     const employeeDetails:EmployeeType = await addTestEmployee(newEmployeeData); 
     
-    const employeeNumber = employeeDetails.empNumber;
+    const empNumber = employeeDetails.empNumber;
     
-    baseLogger.info(`Generated test employee details :: employee number - ${employeeNumber} & employee ID - ${employeeId}`);
+    baseLogger.info(`Generated test employee details :: employee number - ${empNumber} & employee ID - ${employeeId}`);
     
     //put it in a file so that multiple worker threads can access data
     const employeeDataFilePath:string = getTestEmployeeDataFilePath();
-    const data: EmployeeDetailsType = {employeeNumber, employeeId};
+    const data: EmployeeDetailsType = {empNumber, employeeId, test: 'global setup', timestamp: Date.now()};
     fs.writeFileSync(employeeDataFilePath, JSON.stringify(data), {encoding:'utf-8'});
 }
 
