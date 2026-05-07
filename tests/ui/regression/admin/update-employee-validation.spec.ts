@@ -100,3 +100,32 @@ test('Verify disabled user can login again after re-enabling', async ({ adminUse
     const myInfoBtn = freshPage.locator('.oxd-sidepanel a.oxd-main-menu-item').filter({ hasText: /My\s+Info/i });
     await expect(myInfoBtn, '"My Info" button not visible — login may have failed').toBeVisible();
 });
+
+/**
+ * ID from Test Cases (spreadsheet): TC_PIM_USER_STATUS_006
+ * Verify disabled user session is terminated if already logged in 
+ */
+test('Verify disabled user session is terminated if already logged in', async ({ adminUserAuthPage, browser }) => {
+    const username = `user_${randomUUID()}`.slice(0, 40);
+    const { password } = await addNewESSUser(username, true);
+
+     // Verify the re-enabled user can actually log in
+    const freshPage: Page = await getFreshcontextPage(browser);
+    const loginPage = new LoginPage(freshPage);
+    await loginPage.navigateToLoginPage();
+    await loginPage.signInWithCredentials({ username, password });
+    const essUserMyInfoBtn: Locator = freshPage.locator('.oxd-sidepanel a.oxd-main-menu-item').filter({ hasText: /My\s+Info/i });
+    await expect(essUserMyInfoBtn, '"My Info" button not visible — login may has failed').toBeVisible();
+
+    const resultRow = await navigateAndSearchUser(adminUserAuthPage, username);
+    await expect(resultRow, 'Expected exactly one matching user').toHaveCount(1);
+
+    const userListPage = new UserListPage(adminUserAuthPage);
+    await userListPage.getEditButtonFor(resultRow).click();
+
+    await toggleUserStatusAndSave(adminUserAuthPage);
+    await essUserMyInfoBtn.click(); //mimic user activity on the current page
+
+    expect(freshPage.url(), 'User is supposed to be logged out of the active session but he is NOT').toMatch(/auth\/login/i);
+    
+});
