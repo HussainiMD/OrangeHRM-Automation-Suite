@@ -134,7 +134,7 @@ test('Verify disabled user session is terminated if already logged in', async ({
  * ID from Test Cases (spreadsheet): TC_PIM_USER_STATUS_007
  * Verify disabled user cannot access any system modules via direct URL
  */
-test.only('Verify disabled user cannot access any system modules via direct URL', async ({ adminUserAuthPage, browser }) => {
+test('Verify disabled user cannot access any system modules via direct URL', async ({ adminUserAuthPage, browser }) => {
     const username = `user_${randomUUID()}`.slice(0, 40);
     const { password } = await addNewESSUser(username, true);
 
