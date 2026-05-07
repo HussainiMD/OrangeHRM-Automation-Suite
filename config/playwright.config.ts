@@ -27,7 +27,16 @@ export default defineConfig({
   /* parallel tests. */
   workers: process.env.CI ? 10 : 3,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['dot'], ['html', { open: 'never' }]],
+  reporter: [['dot'], ['html', { open: 'never' }], ["allure-playwright",  { 
+    resultsDir: "allure-results",
+    detail: true,           // includes before/after hooks in the report
+    suiteTitle: false,      // uses test title instead of file path as suite name
+    environmentInfo: {      // shows up on the Allure overview page
+        framework: "Playwright",
+        node_version: process.version,
+        os: process.platform,
+    } 
+  },]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */

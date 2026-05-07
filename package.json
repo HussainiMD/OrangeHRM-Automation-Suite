@@ -10,7 +10,8 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "playwright": "npx playwright test --config=config/playwright.config.ts",
-    "testscript": "npm run lint && npm run playwright --"
+    "testscript": "npm run lint && npm run playwright --",
+    "allure-report": "npx allure generate allure-results --output allure-report && npx allure open allure-report"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,7 @@
     "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.59.0",
     "@typescript-eslint/parser": "^8.59.0",
+    "allure-playwright": "^3.7.2",
     "eslint": "^10.2.1"
   },
   "dependencies": {
@@ -28,7 +30,7 @@
     "dotenv": "^17.4.2",
     "lighthouse": "^13.1.0",
     "mailtrap": "^4.5.1",
-    "nodemailer": "^8.0.6",
+    "nodemailer": "^7.0.7",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3"
   }
