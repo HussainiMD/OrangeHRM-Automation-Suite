@@ -1,0 +1,11 @@
+[15:17:39] INFO (8380): PID: 8380 - Starting the process for a new Auth token
+[15:17:41] INFO (8380): Refreshing local globalAPIRequestContext reference
+[15:17:42] INFO (8380): found admin auth json path: ./storage/admin-auth-8380.json
+[15:17:42] INFO (8380): PID: 8380 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:17:42] INFO (8380): No need of Auth as current authentication is valid
+[15:17:42] INFO (8380): found admin auth json path: ./storage/admin-auth-8380.json
+[15:17:43] INFO (8380): PID: 8380 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:17:43] INFO (8380): No need of Auth as current authentication is valid
+[15:17:43] INFO (8380): does "user_63776607-add4-4860-b28c-4774691bc35" user exists? false
+[15:17:43] INFO (8380): using employee number 221 for adding new user
+[15:17:43] INFO (8380): add user request API response status is 200

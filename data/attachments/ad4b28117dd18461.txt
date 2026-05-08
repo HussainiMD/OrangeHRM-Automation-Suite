@@ -1,0 +1,2 @@
+[15:28:54] INFO (27554): PID: 27554 - Starting the process for a new Auth token
+[15:28:58] INFO (27554): Refreshing local globalAPIRequestContext reference

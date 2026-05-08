@@ -1,0 +1,9 @@
+[15:17:03] INFO (5525): found admin auth json path: ./storage/admin-auth-5525.json
+[15:17:04] INFO (5525): PID: 5525 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:17:04] INFO (5525): No need of Auth as current authentication is valid
+[15:17:04] INFO (5525): found admin auth json path: ./storage/admin-auth-5525.json
+[15:17:04] INFO (5525): PID: 5525 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:17:04] INFO (5525): No need of Auth as current authentication is valid
+[15:17:04] INFO (5525): does "disabled_user_7c278058-9f02-4e21-a925-03" user exists? false
+[15:17:04] INFO (5525): using employee number 221 for adding new user
+[15:17:05] INFO (5525): add user request API response status is 200

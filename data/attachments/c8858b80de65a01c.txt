@@ -1,0 +1,11 @@
+[15:24:39] INFO (22150): PID: 22150 - Starting the process for a new Auth token
+[15:24:41] INFO (22150): Refreshing local globalAPIRequestContext reference
+[15:24:41] INFO (22150): found admin auth json path: ./storage/admin-auth-22150.json
+[15:24:42] INFO (22150): PID: 22150 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:24:42] INFO (22150): No need of Auth as current authentication is valid
+[15:24:42] INFO (22150): found admin auth json path: ./storage/admin-auth-22150.json
+[15:24:42] INFO (22150): PID: 22150 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:24:42] INFO (22150): No need of Auth as current authentication is valid
+[15:24:42] INFO (22150): does "user_9dc8fb10-ec22-4b88-904f-30a9753fe2c" user exists? false
+[15:24:42] INFO (22150): using employee number 221 for adding new user
+[15:24:43] INFO (22150): add user request API response status is 200
