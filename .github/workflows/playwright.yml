@@ -5,10 +5,16 @@ on:
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:        # manual trigger from GH UI
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed for gh-pages deployment
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -16,7 +22,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: lts/* # currently it is v22 not v24
+        node-version: '24' # currently v24 is on my machine
         cache: 'npm'
 
     - name: Install dependencies
