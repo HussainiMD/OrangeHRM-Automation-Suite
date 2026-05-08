@@ -1,3 +1,0 @@
-[16:31:31] INFO (11889): found admin auth json path: ./storage/admin-auth-11889.json
-[16:31:31] INFO (11889): PID: 11889 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[16:31:31] INFO (11889): No need of Auth as current authentication is valid
