@@ -32,7 +32,7 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Run Playwright tests
-      run: npm run testscript -- # picks script from package.json. By default runs all projects defined in config
+      run: npm run testscript  # picks script from package.json. By default runs all projects defined in config
       env: 
         base_url: ${{ secrets.BASE_URL }}
         api_timeout: ${{ secrets.API_TIMEOUT }}
@@ -68,9 +68,8 @@ jobs:
 
     - name: Generate Allure Report
       if: always()
-      run: |
-          npm install -g allure-commandline
-          allure generate allure-results --output allure-report      
+      run: npx --yes --package=allure-commandline allure generate allure-results --clean --output allure-report
+      # --package=allure-commandline tells npx which package to pull, allure is the actual binary to run. --yes skips the install confirmation prompt on CI.    
 
     - name: Upload Allure Report
       if: always()
@@ -81,7 +80,7 @@ jobs:
        retention-days: 14
 
     - name: Deploy Allure Report to GitHub Pages
-      if: always()
+      if: always() && github.event_name != 'pull_request'
       uses: peaceiris/actions-gh-pages@v4
       with:
        github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub injects it automatically
