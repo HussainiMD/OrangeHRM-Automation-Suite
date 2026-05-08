@@ -11,7 +11,7 @@ import { duplicateUserError } from "../tests/errors/duplicate-user-error";
 import baseLogger from "../utils/logger";
 import { randomInt } from "crypto";
 
-dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
+if(!process.env.CI) dotenv.config({path: './autCred.env', debug: true, encoding: 'utf-8', override: true});
 
 /** This is function to add a test employee which will be used to create user(s) across the test cases. 
  * Test Employee has to be present in orange hrm otherwise test cases will fail.
