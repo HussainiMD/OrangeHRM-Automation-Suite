@@ -1,0 +1,82 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:        # manual trigger from GH UI
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: lts/* # currently it is v22 not v24
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright tests
+      run: npm run testscript -- # picks script from package.json. By default runs all projects defined in config
+      env: 
+        base_url: ${{ secrets.BASE_URL }}
+        api_timeout: ${{ secrets.API_TIMEOUT }}
+        test_global_timeout: ${{ secrets.TEST_GLOBAL_TIMEOUT }}
+        test_expect_timeout: ${{ secrets.TEST_EXPECT_TIMEOUT }}
+        admin_user_name: ${{ secrets.ADMIN_USER_NAME }}
+        admin_password: ${{ secrets.ADMIN_PASSWORD }}
+        ess_user_name: ${{ secrets.ESS_USER_NAME }}
+        ess_user_password: ${{ secrets.ESS_USER_PASSWORD }}
+        test_employee_dir: ${{ secrets.TEST_EMPLOYEE_DIR }}
+        mailtrap_base_url: ${{ secrets.MAILTRAP_BASE_URL }}
+        mailtrap_api_token: ${{ secrets.MAILTRAP_API_TOKEN }}
+        mailtrap_smtp_user_name: ${{ secrets.MAILTRAP_SMTP_USER_NAME }}
+        mailtrap_smtp_user_Password: ${{ secrets.MAILTRAP_SMTP_USER_PASSWORD }}
+        mailtrap_account_id: ${{ secrets.MAILTRAP_ACCOUNT_ID }}
+        mailtrap_inbox_id: ${{ secrets.MAILTRAP_INBOX_ID }}
+
+    - name: Upload Playwright HTML report
+      if: always()                # upload even on test failure
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 14
+
+    - name: Upload test results (for Allure)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+       name: allure-results
+       path: allure-results/
+       retention-days: 14
+
+    - name: Generate Allure Report
+      if: always()
+      run: |
+          npm install -g allure-commandline
+          allure generate allure-results --clean -o allure-report
+
+    - name: Upload Allure Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+       name: allure-report
+       path: allure-report/
+       retention-days: 14
+
+    - name: Deploy Allure Report to GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+       github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub injects it automatically
+       publish_dir: ./allure-report
