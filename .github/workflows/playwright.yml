@@ -36,7 +36,7 @@ jobs:
         admin_password: ${{ secrets.ADMIN_PASSWORD }}
         ess_user_name: ${{ secrets.ESS_USER_NAME }}
         ess_user_password: ${{ secrets.ESS_USER_PASSWORD }}
-        test_employee_dir: ${{ secrets.TEST_EMPLOYEE_DIR }}
+        test_employee_dir: "storage"
         mailtrap_base_url: ${{ secrets.MAILTRAP_BASE_URL }}
         mailtrap_api_token: ${{ secrets.MAILTRAP_API_TOKEN }}
         mailtrap_smtp_user_name: ${{ secrets.MAILTRAP_SMTP_USER_NAME }}

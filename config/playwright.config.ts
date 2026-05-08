@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const actionTimeout: number = parseInt(process.env.test_expect_timeout ?? '60000') * 1.5;
+const navigationTimeout: number = parseInt(process.env.test_expect_timeout ?? '60000') * 1.5;
+const timeout: number = parseInt(process.env.test_global_timeout ?? '90000') * 1.4;
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -66,11 +69,11 @@ export default defineConfig({
       name: 'staging-webkit',
       use: { ...devices['Desktop Safari'] ,
         // WebKit-specific overrides
-        actionTimeout: 90_000,    // per-action timeout (click, fill, etc.)
-        navigationTimeout: 90_000, // page.goto(), waitForURL(), etc        
+        actionTimeout,    // per-action timeout (click, fill, etc.)
+        navigationTimeout, // page.goto(), waitForURL(), etc        
       },
        // Test-level timeout — overrides the global `timeout` above
-      timeout: 120_000      
+      timeout
     },
 
     /* Test against mobile viewports. */
