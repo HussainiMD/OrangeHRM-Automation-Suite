@@ -1,0 +1,343 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: ui/regression/leave/leave-workflow-subordinate.spec.ts >> Verify Employee applied leaves shows up in his leave history
+- Location: tests/ui/regression/leave/leave-workflow-subordinate.spec.ts:127:1
+
+# Error details
+
+```
+Test timeout of 90000ms exceeded.
+```
+
+```
+Error: page.waitForResponse: Target page, context or browser has been closed
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic:
+    - complementary [ref=e4]:
+      - navigation "Sidepanel" [ref=e5]:
+        - generic [ref=e6]:
+          - link "client brand banner" [ref=e7] [cursor=pointer]:
+            - /url: https://www.orangehrm.com/
+            - img "client brand banner" [ref=e9]
+          - text: 
+        - generic [ref=e10]:
+          - generic [ref=e11]:
+            - generic [ref=e12]:
+              - textbox "Search" [ref=e15]
+              - button "" [ref=e16] [cursor=pointer]:
+                - generic [ref=e17]: 
+            - separator [ref=e18]
+          - list [ref=e19]:
+            - listitem [ref=e20]:
+              - link "Leave" [ref=e21] [cursor=pointer]:
+                - /url: /web/index.php/leave/viewLeaveModule
+                - generic [ref=e24]: Leave
+            - listitem [ref=e25]:
+              - link "Time" [ref=e26] [cursor=pointer]:
+                - /url: /web/index.php/time/viewTimeModule
+                - generic [ref=e32]: Time
+            - listitem [ref=e33]:
+              - link "My Info" [ref=e34] [cursor=pointer]:
+                - /url: /web/index.php/pim/viewMyDetails
+                - generic [ref=e40]: My Info
+            - listitem [ref=e41]:
+              - link "Performance" [ref=e42] [cursor=pointer]:
+                - /url: /web/index.php/performance/viewPerformanceModule
+                - generic [ref=e50]: Performance
+            - listitem [ref=e51]:
+              - link "Dashboard" [ref=e52] [cursor=pointer]:
+                - /url: /web/index.php/dashboard/index
+                - generic [ref=e55]: Dashboard
+            - listitem [ref=e56]:
+              - link "Directory" [ref=e57] [cursor=pointer]:
+                - /url: /web/index.php/directory/viewDirectory
+                - generic [ref=e60]: Directory
+            - listitem [ref=e61]:
+              - link "Claim" [ref=e62] [cursor=pointer]:
+                - /url: /web/index.php/claim/viewClaimModule
+                - img [ref=e65]
+                - generic [ref=e69]: Claim
+            - listitem [ref=e70]:
+              - link "Buzz" [ref=e71] [cursor=pointer]:
+                - /url: /web/index.php/buzz/viewBuzz
+                - generic [ref=e74]: Buzz
+    - banner [ref=e75]:
+      - generic [ref=e76]:
+        - generic [ref=e77]:
+          - text: 
+          - heading "Dashboard" [level=6] [ref=e79]
+        - list [ref=e81]:
+          - listitem [ref=e82]:
+            - generic [ref=e83] [cursor=pointer]:
+              - img "profile picture" [ref=e84]
+              - paragraph [ref=e85]: playwright employee_007
+              - generic [ref=e86]: 
+      - navigation "Topbar Menu" [ref=e88]:
+        - list [ref=e89]:
+          - button "" [ref=e91] [cursor=pointer]:
+            - generic [ref=e92]: 
+  - generic [ref=e93]:
+    - generic [ref=e95]:
+      - generic [ref=e97]:
+        - generic [ref=e99]:
+          - generic [ref=e100]: 
+          - paragraph [ref=e101]: Time at Work
+        - separator [ref=e102]
+        - generic [ref=e104]:
+          - generic [ref=e105]:
+            - img "profile picture" [ref=e107]
+            - generic [ref=e108]:
+              - paragraph [ref=e109]: Not Punched In
+              - paragraph
+          - generic [ref=e110]:
+            - generic [ref=e111]: 0h 0m Today
+            - button "" [ref=e112] [cursor=pointer]:
+              - generic [ref=e113]: 
+          - separator [ref=e114]
+          - generic [ref=e115]:
+            - generic [ref=e116]:
+              - paragraph [ref=e117]: This Week
+              - paragraph [ref=e118]: May 04 - May 10
+            - generic [ref=e119]:
+              - generic [ref=e120]: 
+              - paragraph [ref=e121]: 0h 0m
+      - generic [ref=e125]:
+        - generic [ref=e127]:
+          - generic [ref=e128]: 
+          - paragraph [ref=e129]: My Actions
+        - separator [ref=e130]
+        - generic [ref=e132]:
+          - img "No Content" [ref=e133]
+          - paragraph [ref=e134]: No Pending Actions to Perform
+      - generic [ref=e136]:
+        - generic [ref=e138]:
+          - generic [ref=e139]: 
+          - paragraph [ref=e140]: Quick Launch
+        - separator [ref=e141]
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - button "Apply Leave" [ref=e145] [cursor=pointer]
+            - generic "Apply Leave" [ref=e148]:
+              - paragraph [ref=e149]: Apply Leave
+          - generic [ref=e150]:
+            - button "My Leave" [ref=e151] [cursor=pointer]
+            - generic "My Leave" [ref=e156]:
+              - paragraph [ref=e157]: My Leave
+          - generic [ref=e158]:
+            - button "My Timesheet" [ref=e159] [cursor=pointer]
+            - generic "My Timesheet" [ref=e162]:
+              - paragraph [ref=e163]: My Timesheet
+      - generic [ref=e165]:
+        - generic [ref=e167]:
+          - generic [ref=e168]: 
+          - paragraph [ref=e169]: Buzz Latest Posts
+        - separator [ref=e170]
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - generic [ref=e174] [cursor=pointer]:
+              - img "profile picture" [ref=e176]
+              - generic [ref=e177]:
+                - paragraph [ref=e178]: manda akhil user
+                - paragraph [ref=e179]: 2026-08-05 04:14 PM
+            - separator [ref=e180]
+            - paragraph [ref=e181]: Safety Check
+          - generic [ref=e182]:
+            - generic [ref=e183] [cursor=pointer]:
+              - img "profile picture" [ref=e185]
+              - generic [ref=e186]:
+                - paragraph [ref=e187]: manda akhil user
+                - paragraph [ref=e188]: 2026-08-05 04:13 PM
+            - separator [ref=e189]
+            - paragraph [ref=e190]: Updated Text
+          - generic [ref=e191]:
+            - generic [ref=e192] [cursor=pointer]:
+              - img "profile picture" [ref=e194]
+              - generic [ref=e195]:
+                - paragraph [ref=e196]: manda akhil user
+                - paragraph [ref=e197]: 2026-08-05 04:12 PM
+            - separator [ref=e198]
+            - paragraph [ref=e199]: Engagement
+          - generic [ref=e200]:
+            - generic [ref=e201] [cursor=pointer]:
+              - img "profile picture" [ref=e203]
+              - generic [ref=e204]:
+                - paragraph [ref=e205]: manda akhil user
+                - paragraph [ref=e206]: 2020-08-10 03:38 AM
+            - separator [ref=e207]
+            - paragraph [ref=e208]: "Hi All; Linda has been blessed with a baby boy! Linda: With love, we welcome your dear new baby to this world. Congratulations!"
+          - generic [ref=e209]:
+            - generic [ref=e210] [cursor=pointer]:
+              - img "profile picture" [ref=e212]
+              - generic [ref=e213]:
+                - paragraph [ref=e214]: Sania Shaheen
+                - paragraph [ref=e215]: 2020-08-10 03:38 AM
+            - separator [ref=e216]
+            - paragraph [ref=e217]: "World Championship: What makes the perfect snooker player? Mark Selby: Robertson has one of the best techniques in the game. It is very, very straight and he fully commits to every single shot he plays. John Higgins: Every shot is repetitive. He always keeps the same technique and cues through the ball bang straight. Barry Hawkins: Robertson is textbook with his grip and has a ramrod solid cue action, delivering it in a straight line. Honourable mentions: Shaun Murphy, Ding Junhui, Jack Lisowski."
+      - generic [ref=e219]:
+        - paragraph [ref=e225]: Employees on Leave Today
+        - separator [ref=e226]
+        - generic [ref=e228]:
+          - img "No Content" [ref=e229]
+          - paragraph [ref=e230]: No Employees are on Leave Today
+    - generic [ref=e231]:
+      - paragraph [ref=e232]: OrangeHRM OS 5.8
+      - paragraph [ref=e233]:
+        - text: © 2005 - 2026
+        - link "OrangeHRM, Inc" [ref=e234] [cursor=pointer]:
+          - /url: http://www.orangehrm.com
+        - text: . All rights reserved.
+```
+
+# Test source
+
+```ts
+  12  |     
+  13  |     /*Choose days from first week of the month. Looking to go for Monday & Tuesday */
+  14  |     today.setDate(1);
+  15  |     switch(today.getDay()) {
+  16  |         case 0: today.setDate(2); //if sunday, go to next day       
+  17  |         break;
+  18  |         case 6: today.setDate(3); // if saturday, skip 2 days
+  19  |         break;
+  20  |         case 5: today.setDate(4); // if friday, skip 2 days
+  21  |     }
+  22  |     
+  23  |     const todayDateStr: string = `${today.getFullYear()}-${today.getDate()}-${today.getMonth()+1}`;//month starts with 0, hence +1
+  24  |     const tomorrowDateStr: string = `${today.getFullYear()}-${today.getDate()+1}-${today.getMonth()+1}`;
+  25  | 
+  26  |     return {todayDateStr, tomorrowDateStr};
+  27  | }
+  28  | 
+  29  | 
+  30  | /*Utility function to get invalid (weekend) start & end dates for applying leave */
+  31  | function getInvalidStartEndDatesForLeave(): DatesObj {
+  32  |     const today: Date = new Date();
+  33  | 
+  34  |     /*Choose first weekend of the month */
+  35  |     today.setDate(1);
+  36  |     const deltaForNxtWeekend: number = 6 - today.getDay();
+  37  |     today.setDate(1+deltaForNxtWeekend);
+  38  |     
+  39  |     const todayDateStr: string = `${today.getFullYear()}-${today.getDate()}-${today.getMonth()+1}`;//month starts with 0, hence +1
+  40  |     const tomorrowDateStr: string = `${today.getFullYear()}-${today.getDate()+1}-${today.getMonth()+1}`;
+  41  | 
+  42  |     return {todayDateStr, tomorrowDateStr};
+  43  | }
+  44  | 
+  45  | 
+  46  | /**
+  47  |  * Utility function which has common code for test execution
+  48  |  * This a good demonstration of UI + API validation mix for faster test case execution
+  49  |  */
+  50  | async function runTest(page: Page, logger: pino.Logger, leaveDates: DatesObj, browserName: string): Promise<
+  51  | Response> {
+  52  |     const navResponse : Response | null = await page.goto('/web/index.php/leave/applyLeave');
+  53  |     expect(navResponse?.ok(),'Navigation to the apply leaves page has failed').toBe(true);
+  54  |     
+  55  |     const cardContainer: Locator = page.locator('.orangehrm-card-container');
+  56  |     await expect(cardContainer, 'Main container of leave application is not visible').toBeVisible();
+  57  | 
+  58  |     const applyLeaveSection: Locator = cardContainer.locator('.orangehrm-main-title').filter({hasText: 'Apply Leave'});
+  59  |     await expect(applyLeaveSection, 'Apply leave button is not available').not.toHaveCount(0);
+  60  |     
+  61  |     const formLocator: Locator = page.locator('.orangehrm-card-container .oxd-form');
+  62  |     await expect(formLocator, 'Apply leave form is not available').toHaveCount(1);
+  63  |     
+  64  |     const leaveTypeLocator: Locator = formLocator.locator('.oxd-input-group .oxd-select-text');
+  65  |     await expect(leaveTypeLocator, 'leave type text is not visible').toBeVisible();
+  66  |     
+  67  |     await leaveTypeLocator.focus();
+  68  |     await leaveTypeLocator.click();
+  69  |     await page.keyboard.press('ArrowDown');
+  70  |         
+  71  |    /**We are waiting for API Response behind the scenes. This api call is triggered by Enter button on UI. 
+  72  |     * Becaue listener & trigger has to be synchronized, we are using JS native promise.all() function
+  73  |    */
+  74  |     const [urlResponse] = await Promise.all([
+  75  |         page.waitForResponse(response => 
+  76  |             response.url().includes('/leave/leave-balance') && response.status() == 200
+  77  |         ), 
+  78  |         page.keyboard.press('Enter')
+  79  |     ]) as [Response, void];
+  80  |     
+  81  |     if(!(/chrom/i).test(browserName)) await page.waitForLoadState("networkidle");
+  82  |     
+  83  |     expect(urlResponse.ok(), 'leave balance API response is NOT ok').toBe(true);    
+  84  | 
+  85  |     const leaveBalanceLocator: Locator = formLocator.locator('.orangehrm-leave-balance-text');
+  86  |     await expect(leaveBalanceLocator, 'Leave Balance text is not visible').toBeVisible();//ensure it is there before reading text
+  87  |     const leaveBalance: string | null  = await leaveBalanceLocator.textContent();    
+  88  |     const leaveCountBeforeApply: number = parseFloat(leaveBalance?? '0');
+  89  |     expect(leaveCountBeforeApply, 'leave count before apply is zero').toBeGreaterThan(0);
+  90  | 
+  91  |     logger.info(`Total available leaves "before applying" are ${leaveCountBeforeApply}`);
+  92  | 
+  93  |     const dateInputsLocator: Locator = formLocator.locator('.oxd-input-group');
+  94  |     const fromDateSectionLocator: Locator = dateInputsLocator.filter({hasText: 'From Date'});
+  95  | 
+  96  |     const fromDateLocator:Locator = fromDateSectionLocator.locator('input.oxd-input');   
+  97  |     await expect(fromDateLocator, 'from date button is not enabled').toBeEnabled();
+  98  |     await fromDateLocator.fill(leaveDates.todayDateStr);
+  99  |     await fromDateLocator.blur();
+  100 | 
+  101 |     const toDateSectionLocator: Locator = dateInputsLocator.filter({hasText: 'To Date'});
+  102 |     const toDateLocator:Locator = toDateSectionLocator.locator('input.oxd-input');
+  103 |     await expect(toDateLocator, 'to date button is not enabled').toBeEnabled();
+  104 |     await toDateLocator.fill(leaveDates.tomorrowDateStr);
+  105 |     await toDateLocator.blur();
+  106 | 
+  107 |     const submitBtnLocator: Locator = formLocator.locator('button[type="submit"]');
+  108 |     await expect(submitBtnLocator, 'Submit button is not available or multiple options are there').toHaveCount(1);    
+  109 | 
+  110 |     /*We are monitoring the underlying API which does a POST call. Because submission of request & monitoring has to be in parellel, we are using Promise.all() */
+  111 |     const [leaveRequestAPIResponse] = await Promise.all([
+> 112 |         page.waitForResponse(response => response.url().includes('/leave/leave-requests')),
+      |              ^ Error: page.waitForResponse: Target page, context or browser has been closed
+  113 |         submitBtnLocator.click()
+  114 |     ]) as [Response, void];
+  115 |     
+  116 |     return leaveRequestAPIResponse;
+  117 | }
+  118 | 
+  119 | 
+  120 | 
+  121 | 
+  122 | /**
+  123 |  * ID from Test Cases (spreadsheet): TC_LOGIN_007
+  124 |  * Verifies the Leave application flow: 
+  125 |  * Ensure Leaves are available for chosen category -> Chose weekdays -> Click apply -> Verify API status (triggered behind the scenes)
+  126 |  */
+  127 | test('Verify Employee applied leaves shows up in his leave history', async ({essUserAuthPage, logger, browserName}) => {
+  128 |     const leaveDates: DatesObj = getValidStartEndDatesForLeave();
+  129 |     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
+  130 |     
+  131 |     expect(applyLeavesAPIResponse.ok(), 'apply leaves API response in not ok').toBe(true);  
+  132 | })
+  133 | 
+  134 | 
+  135 | /**
+  136 |  * ID from Test Cases (spreadsheet): TC_LOGIN_008
+  137 |  * Verifies the Leave application flow for INVALID dates: 
+  138 |  * Ensure Leaves are available for chosen category -> Chose weekends (invalid) -> Click apply -> Verify API status (triggered behind the scenes)
+  139 |  * */
+  140 | test('Verify weekends/invalid leave application is rejected', async ({essUserAuthPage, logger, browserName}) => {
+  141 |     const leaveDates: DatesObj = getInvalidStartEndDatesForLeave();
+  142 |     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
+  143 |     
+  144 |     expect(applyLeavesAPIResponse.ok(), 'apply leaves API response is not ok').toBe(false);  
+  145 | })
+  146 | 
+  147 | 
+  148 | 
+```

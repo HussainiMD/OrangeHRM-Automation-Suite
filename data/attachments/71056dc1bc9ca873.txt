@@ -1,0 +1,9 @@
+[16:28:38] INFO (11052): metrics got after listening to browser events for performance
+    worker: 17
+    test: "Login Page load metrics measurement by using browser events"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/performance/response-time.spec.ts"
+    fullLoad: 2577.388618
+    domContentLoaded: 2574.6775560000005
+    ttfb: 553
+    metricUsed: "FULL_LOAD"

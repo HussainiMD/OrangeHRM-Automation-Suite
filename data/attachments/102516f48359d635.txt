@@ -1,2 +1,0 @@
-[15:22:08] INFO (16887): PID: 16887 - Starting the process for a new Auth token
-[15:22:10] INFO (16887): Refreshing local globalAPIRequestContext reference
