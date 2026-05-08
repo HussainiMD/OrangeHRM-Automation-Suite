@@ -26,9 +26,9 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry settings */
-  retries: process.env.CI ? 3 : 1,
+  retries: process.env.CI ? 2 : 1,
   /* parallel tests. */
-  workers: process.env.CI ? 10 : 3,
+  workers: process.env.CI ? 5 : 3,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['dot'], ['html', { open: 'never' }], ["allure-playwright",  { 
     resultsDir: "allure-results",
