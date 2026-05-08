@@ -1,1 +1,1 @@
-{"total":0,"items":[]}
+{"total":2,"items":[{"uid":"f5e7ce5abad8381ed26cef1797f43ac6","name":"staging-webkit","statistic":{"failed":1,"broken":3,"skipped":1,"passed":12,"unknown":0,"total":17}},{"uid":"de6c422fa7caf4fe07ffdc7c3c9f8318","name":"staging-firefox","statistic":{"failed":0,"broken":2,"skipped":1,"passed":29,"unknown":0,"total":32}}]}

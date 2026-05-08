@@ -1,0 +1,12 @@
+[17:23:52] INFO (8392): found admin auth json path: ./storage/admin-auth-8392.json
+[17:23:58] INFO (8392): PID: 8392 - Got response code 401 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[17:23:58] INFO (8392): Doing Re-Auth as current authentication (context) expired
+[17:23:58] INFO (8392): Going to dispose of the Admin User Context
+[17:23:58] INFO (8392): PID: 8392 - Starting the process for a new Auth token
+[17:24:19] INFO (8392): Refreshing local globalAPIRequestContext reference
+[17:24:19] INFO (8392): found admin auth json path: ./storage/admin-auth-8392.json
+[17:24:24] INFO (8392): PID: 8392 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[17:24:24] INFO (8392): No need of Auth as current authentication is valid
+[17:24:31] INFO (8392): does "disabled_user_3fa86cb8-3fdf-4179-97fd-26" user exists? false
+[17:24:31] INFO (8392): using employee number 208 for adding new user
+[17:24:44] INFO (8392): add user request API response status is 200

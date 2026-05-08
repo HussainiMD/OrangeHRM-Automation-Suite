@@ -1,0 +1,11 @@
+[17:31:23] INFO (9863): PID: 9863 - Starting the process for a new Auth token
+[17:31:48] INFO (9863): Refreshing local globalAPIRequestContext reference
+[17:31:48] INFO (9863): found admin auth json path: ./storage/admin-auth-9863.json
+[17:31:53] INFO (9863): PID: 9863 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[17:31:53] INFO (9863): No need of Auth as current authentication is valid
+[17:31:53] INFO (9863): found admin auth json path: ./storage/admin-auth-9863.json
+[17:31:59] INFO (9863): PID: 9863 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[17:31:59] INFO (9863): No need of Auth as current authentication is valid
+[17:32:06] INFO (9863): does "user_c8f0e8ca-2c1b-402c-bedc-0b6707383f8" user exists? false
+[17:32:06] INFO (9863): using employee number 208 for adding new user
+[17:32:19] INFO (9863): add user request API response status is 200

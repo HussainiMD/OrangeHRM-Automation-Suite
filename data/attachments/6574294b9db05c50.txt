@@ -1,0 +1,30 @@
+[17:15:01] INFO (6717): found admin auth json path: ./storage/admin-auth-6717.json
+[17:15:01] WARN (6717): apiRequestContext.get: socket hang up
+Call log:
+  - → GET https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0.2) Gecko/20100101 Firefox/148.0.2
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - cookie: orangehrm=tvgk4ll2fc3m6ujskrgq9efle3
+
+    err: {
+      "type": "Error",
+      "message": "apiRequestContext.get: socket hang up\nCall log:\n\u001b[2m  - → GET https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0.2) Gecko/20100101 Firefox/148.0.2\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - cookie: orangehrm=tvgk4ll2fc3m6ujskrgq9efle3\u001b[22m\n",
+      "stack":
+          apiRequestContext.get: socket hang up
+          Call log:
+            - → GET https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+              - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0.2) Gecko/20100101 Firefox/148.0.2
+              - accept: */*
+              - accept-encoding: gzip,deflate,br
+              - cookie: orangehrm=tvgk4ll2fc3m6ujskrgq9efle3
+          
+              at getExistingAuthValidationCode (/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/utils/auth-manager.utils.ts:69:75)
+              at getValidAdminRequestContext (/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/utils/auth-manager.utils.ts:113:37)
+              at Object.adminUserAuthContext (/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/fixtures/admin-auth.fixture.ts:19:54)
+      "name": "Error"
+    }
+[17:15:01] INFO (6717): Doing Re-Auth as current authentication (context) expired
+[17:15:01] INFO (6717): Going to dispose of the Admin User Context
+[17:15:01] INFO (6717): PID: 6717 - Starting the process for a new Auth token
+[17:15:22] INFO (6717): Refreshing local globalAPIRequestContext reference
