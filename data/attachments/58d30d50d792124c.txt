@@ -1,0 +1,3 @@
+[09:15:26] INFO (5543): found admin auth json path: ./storage/admin-auth-5543.json
+[09:15:26] INFO (5543): PID: 5543 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:15:26] INFO (5543): No need of Auth as current authentication is valid

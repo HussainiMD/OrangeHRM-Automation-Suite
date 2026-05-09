@@ -1,0 +1,6 @@
+[09:20:54] INFO (8512): found admin auth json path: ./storage/admin-auth-8512.json
+[09:20:55] INFO (8512): PID: 8512 - Got response code 401 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:20:55] INFO (8512): Doing Re-Auth as current authentication (context) expired
+[09:20:55] INFO (8512): Going to dispose of the Admin User Context
+[09:20:55] INFO (8512): PID: 8512 - Starting the process for a new Auth token
+[09:20:56] INFO (8512): Refreshing local globalAPIRequestContext reference

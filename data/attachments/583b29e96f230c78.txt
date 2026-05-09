@@ -1,0 +1,26 @@
+[09:21:27] INFO (11076): Login Page : lighthouse performance metrics results report
+    worker: 17
+    test: "lighthouse performance metrics for login page"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/performance/response-time.spec.ts"
+    performance: {
+      "value": 0.05,
+      "status": "BAD"
+    }
+    lcp: {
+      "value": 22.11,
+      "status": "BAD"
+    }
+    cls: {
+      "value": 0,
+      "status": "GOOD"
+    }
+    tbt: {
+      "value": 0.26,
+      "status": "OK"
+    }
+    fcp: {
+      "value": 19.56,
+      "status": "BAD"
+    }
+    overall: "BAD"
