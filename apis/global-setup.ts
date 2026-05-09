@@ -68,7 +68,7 @@ export default async (): Promise<void> => {
 
     const isAUTReady: boolean = await validationsUtil.isAUTReadyForTesting();
     if(!isAUTReady)
-        throw new Error(`Application Under Test (AUT) is NOT accessible for test suite to continue with global setup`);
+        throw new Error(`Application Under Test (AUT) is either NOT accessible or set for non English language for test suite to continue with global setup`);
 
     baseLogger.info(`doing the Global Setup now...`);
     attachCrashHandlers();

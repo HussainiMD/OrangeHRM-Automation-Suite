@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Network / API failures",
+    "messageRegex": ".*net::ERR.*|.*ECONNREFUSED.*|.*timeout.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "Assertion failures",
+    "messageRegex": ".*expect.*|.*toHave.*|.*toBe.*",
+    "matchedStatuses": ["failed"]
+  },
+  {
+    "name": "WebKit flakiness",
+    "messageRegex": ".*webkit.*|.*WebKit.*",
+    "matchedStatuses": ["failed", "broken"]
+  },
+  {
+    "name": "Test infrastructure issues",
+    "matchedStatuses": ["broken"]
+  }
+]

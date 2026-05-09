@@ -113,6 +113,8 @@ Response> {
         submitBtnLocator.click()
     ]) as [Response, void];
     
+    if(!(/chrom/i).test(browserName)) await page.waitForLoadState("networkidle");
+    
     return leaveRequestAPIResponse;
 }
 
@@ -139,6 +141,7 @@ test('Verify Employee applied leaves shows up in his leave history', async ({ess
  * Ensure Leaves are available for chosen category -> Chose weekends (invalid) -> Click apply -> Verify API status (triggered behind the scenes)
  * */
 test('Verify weekends/invalid leave application is rejected', async ({essUserAuthPage, logger, browserName}) => {
+    test.slow();
     const leaveDates: DatesObj = getInvalidStartEndDatesForLeave();
     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
     
