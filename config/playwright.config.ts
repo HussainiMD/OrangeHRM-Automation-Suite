@@ -21,7 +21,7 @@ export default defineConfig({
   /* Retry settings */
   retries: process.env.CI ? 2 : 1,
   /* parallel tests. */
-  workers: process.env.CI ? 5 : 3,
+  workers: process.env.CI ? 3 : 3,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['dot'], ['html', { open: 'never' }], ["allure-playwright",  { 
     resultsDir: "allure-results",

@@ -125,6 +125,7 @@ Response> {
  * Ensure Leaves are available for chosen category -> Chose weekdays -> Click apply -> Verify API status (triggered behind the scenes)
  */
 test('Verify Employee applied leaves shows up in his leave history', async ({essUserAuthPage, logger, browserName}) => {
+    test.slow();
     const leaveDates: DatesObj = getValidStartEndDatesForLeave();
     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
     
