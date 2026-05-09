@@ -1,0 +1,12 @@
+[17:57:43] INFO (7033): found admin auth json path: ./storage/admin-auth-7033.json
+[17:57:44] INFO (7033): PID: 7033 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[17:57:44] INFO (7033): No need of Auth as current authentication is valid
+[17:57:44] INFO (7033): found admin auth json path: ./storage/admin-auth-7033.json
+[17:57:45] INFO (7033): PID: 7033 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[17:57:45] INFO (7033): No need of Auth as current authentication is valid
+[17:57:45] INFO (7033): found admin auth json path: ./storage/admin-auth-7033.json
+[17:57:46] INFO (7033): PID: 7033 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[17:57:46] INFO (7033): No need of Auth as current authentication is valid
+[17:57:46] INFO (7033): does "user_08f5ce9d-c632-4d35-ba5e-e0c7c20ea97" user exists? false
+[17:57:46] INFO (7033): using employee number 270 for adding new user
+[17:57:46] INFO (7033): add user request API response status is 200

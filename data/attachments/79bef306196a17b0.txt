@@ -1,5 +1,0 @@
-[14:11:40] INFO (11389): Total available leaves "before applying" are 8
-    worker: 13
-    test: "Verify Employee applied leaves shows up in his leave history"
-    retry: 1
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/leave/leave-workflow-subordinate.spec.ts"

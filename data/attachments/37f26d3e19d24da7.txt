@@ -1,0 +1,2 @@
+[18:01:30] INFO (9391): PID: 9391 - Starting the process for a new Auth token
+[18:01:32] INFO (9391): Refreshing local globalAPIRequestContext reference

@@ -1,0 +1,5 @@
+[17:54:00] WARN (5592): logo details: width-275, height-53.53125
+    worker: 0
+    test: "Ensure OrangeHRM Logo is being Displayed"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/auth/login-ui.spec.ts"

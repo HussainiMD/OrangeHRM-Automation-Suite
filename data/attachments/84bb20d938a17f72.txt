@@ -1,0 +1,3 @@
+[18:02:18] INFO (9374): found admin auth json path: ./storage/admin-auth-9374.json
+[18:02:19] INFO (9374): PID: 9374 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[18:02:19] INFO (9374): No need of Auth as current authentication is valid

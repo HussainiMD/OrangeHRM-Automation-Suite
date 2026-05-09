@@ -1,0 +1,8 @@
+[18:06:29] INFO (12750): PID: 12750 - Starting the process for a new Auth token
+[18:06:30] INFO (12750): Refreshing local globalAPIRequestContext reference
+[18:06:30] INFO (12750): found admin auth json path: ./storage/admin-auth-12750.json
+[18:06:30] INFO (12750): PID: 12750 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[18:06:30] INFO (12750): No need of Auth as current authentication is valid
+[18:06:31] INFO (12750): does "disabled_user_b246421c-e733-43ab-82bf-4c" user exists? false
+[18:06:31] INFO (12750): using employee number 270 for adding new user
+[18:06:31] INFO (12750): add user request API response status is 422
