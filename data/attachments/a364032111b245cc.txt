@@ -1,8 +1,0 @@
-[18:06:36] INFO (13043): PID: 13043 - Starting the process for a new Auth token
-[18:06:38] INFO (13043): Refreshing local globalAPIRequestContext reference
-[18:06:38] INFO (13043): found admin auth json path: ./storage/admin-auth-13043.json
-[18:06:38] INFO (13043): PID: 13043 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[18:06:38] INFO (13043): No need of Auth as current authentication is valid
-[18:06:38] INFO (13043): does "disabled_user_a1fa9c7e-4aff-4a38-906e-4f" user exists? false
-[18:06:38] INFO (13043): using employee number 270 for adding new user
-[18:06:38] INFO (13043): add user request API response status is 422

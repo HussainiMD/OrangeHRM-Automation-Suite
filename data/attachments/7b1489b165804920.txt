@@ -1,4 +1,0 @@
-[18:01:57] INFO (9391): found admin auth json path: ./storage/admin-auth-9391.json
-[18:01:58] INFO (9391): PID: 9391 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[18:01:58] INFO (9391): No need of Auth as current authentication is valid
-[18:02:05] INFO (9391): Add Employee interceptor - captured (backend) employee number: 169 & employee ID: 0372

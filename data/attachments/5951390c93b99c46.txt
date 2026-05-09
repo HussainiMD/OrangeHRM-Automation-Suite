@@ -1,3 +1,0 @@
-[17:59:34] INFO (8170): found admin auth json path: ./storage/admin-auth-8170.json
-[17:59:35] INFO (8170): PID: 8170 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[17:59:35] INFO (8170): No need of Auth as current authentication is valid
