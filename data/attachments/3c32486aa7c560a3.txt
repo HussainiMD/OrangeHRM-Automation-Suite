@@ -1,9 +1,0 @@
-[09:20:44] INFO (7282): found admin auth json path: ./storage/admin-auth-7282.json
-[09:20:44] INFO (7282): PID: 7282 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[09:20:44] INFO (7282): No need of Auth as current authentication is valid
-[09:20:44] INFO (7282): found admin auth json path: ./storage/admin-auth-7282.json
-[09:20:45] INFO (7282): PID: 7282 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[09:20:45] INFO (7282): No need of Auth as current authentication is valid
-[09:20:45] INFO (7282): does "disabled_user_412d464e-7d66-44e2-ac1f-54" user exists? false
-[09:20:45] INFO (7282): using employee number 227 for adding new user
-[09:20:45] INFO (7282): add user request API response status is 200

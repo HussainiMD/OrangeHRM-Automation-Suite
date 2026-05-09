@@ -1,6 +1,0 @@
-[09:17:10] INFO (5543): found admin auth json path: ./storage/admin-auth-5543.json
-[09:17:11] INFO (5543): PID: 5543 - Got response code 401 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[09:17:11] INFO (5543): Doing Re-Auth as current authentication (context) expired
-[09:17:11] INFO (5543): Going to dispose of the Admin User Context
-[09:17:11] INFO (5543): PID: 5543 - Starting the process for a new Auth token
-[09:17:12] INFO (5543): Refreshing local globalAPIRequestContext reference
