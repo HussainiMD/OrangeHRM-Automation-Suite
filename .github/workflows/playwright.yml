@@ -31,6 +31,19 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
+    - name: Update Playwright snapshots
+      if: github.event_name == 'workflow_dispatch'   # manual trigger only
+      run: npx playwright test --config=config/playwright.config.ts --update-snapshots
+
+    - name: Commit updated snapshots
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add **/*.png
+        git commit -m "chore: update Linux baseline screenshots" || echo "No changes"
+        git push
+
     - name: Run Playwright tests
       run: npm run testscript  # picks script from package.json. By default runs all projects defined in config
       env: 
