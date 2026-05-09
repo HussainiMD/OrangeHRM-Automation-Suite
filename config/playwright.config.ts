@@ -3,13 +3,6 @@ import { defineConfig, devices } from '@playwright/test';
 const actionTimeout: number = parseInt(process.env.test_expect_timeout ?? '60000') * 1.5;
 const navigationTimeout: number = parseInt(process.env.test_expect_timeout ?? '60000') * 1.5;
 const timeout: number = parseInt(process.env.test_global_timeout ?? '90000') * 1.4;
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 /**
  * See https://playwright.dev/docs/test-configuration.

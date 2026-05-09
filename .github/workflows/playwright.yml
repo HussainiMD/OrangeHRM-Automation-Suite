@@ -57,14 +57,14 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 14
-
-    - name: Upload test results (for Allure)
+    
+    - name: Upload Playwright traces
       if: always()
       uses: actions/upload-artifact@v4
       with:
-       name: allure-results
-       path: allure-results/
-       retention-days: 14
+        name: playwright-traces
+        path: test-results/          # traces land here by default
+        retention-days: 7
 
     - name: Generate Allure Report
       if: always()
