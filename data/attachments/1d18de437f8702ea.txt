@@ -1,0 +1,3 @@
+[08:39:30] INFO (6073): PID: 6073 - Starting the process for a new Auth token
+[08:39:38] INFO (6073): Refreshing local globalAPIRequestContext reference
+[08:39:55] INFO (6073): Add Employee interceptor - captured (backend) employee number: 194 & employee ID: 0397

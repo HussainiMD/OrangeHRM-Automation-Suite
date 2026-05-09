@@ -1,0 +1,11 @@
+[08:44:11] INFO (12068): PID: 12068 - Starting the process for a new Auth token
+[08:44:13] INFO (12068): Refreshing local globalAPIRequestContext reference
+[08:44:13] INFO (12068): found admin auth json path: ./storage/admin-auth-12068.json
+[08:44:13] INFO (12068): PID: 12068 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[08:44:13] INFO (12068): No need of Auth as current authentication is valid
+[08:44:13] INFO (12068): found admin auth json path: ./storage/admin-auth-12068.json
+[08:44:14] INFO (12068): PID: 12068 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[08:44:14] INFO (12068): No need of Auth as current authentication is valid
+[08:44:14] INFO (12068): does "user_34c6975c-2264-4012-a0cc-7e1f2de06b7" user exists? false
+[08:44:14] INFO (12068): using employee number 191 for adding new user
+[08:44:14] INFO (12068): add user request API response status is 200

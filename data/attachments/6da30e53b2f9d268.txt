@@ -1,8 +1,0 @@
-[17:18:03] INFO (6717): found admin auth json path: ./storage/admin-auth-6717.json
-[17:18:12] INFO (6717): PID: 6717 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[17:18:12] INFO (6717): No need of Auth as current authentication is valid
-[17:18:12] WARN (6717): Network throttling via CDP is only supported in Chromium. Current browser: firefox. Skipping this test.
-    worker: 4
-    test: "Verify Add Employee with credentials succeeds under Slow 3G network conditions"
-    retry: 0
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/resilience/pim-add-employee-slow-network.spec.ts"

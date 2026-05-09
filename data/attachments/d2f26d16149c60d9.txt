@@ -1,0 +1,5 @@
+[08:38:21] INFO (5518): No Accessibility violations found
+    worker: 4
+    test: "Login error message should meet WCAG 2.1 AA accessibility standards"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/auth/login-ui.spec.ts"
