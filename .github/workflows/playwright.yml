@@ -30,22 +30,14 @@ jobs:
 
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-
-    - name: Update Playwright snapshots
-      if: github.event_name == 'workflow_dispatch'   # manual trigger only
-      run: npx playwright test --config=config/playwright.config.ts --update-snapshots
-
-    - name: Commit updated snapshots
-      if: github.event_name == 'workflow_dispatch'
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git add **/*.png
-        git commit -m "chore: update Linux baseline screenshots" || echo "No changes"
-        git push
-
-    - name: Run Playwright tests
-      run: npm run testscript  # picks script from package.json. By default runs all projects defined in config
+   
+    - name: Run Playwright tests      
+      run: | # if condition (manual trigger only) to update playwright snapshots
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then 
+          npm run lint && npm run playwright -- --update-snapshots
+        else
+          npm run testscript  # picks script from package.json. By default runs all projects defined in config
+        fi        
       env: 
         base_url: ${{ secrets.BASE_URL }}
         api_timeout: ${{ secrets.API_TIMEOUT }}
@@ -63,6 +55,15 @@ jobs:
         mailtrap_account_id: ${{ secrets.MAILTRAP_ACCOUNT_ID }}
         mailtrap_inbox_id: ${{ secrets.MAILTRAP_INBOX_ID }}
 
+    - name: Commit updated snapshots
+      if: github.event_name == 'workflow_dispatch' && success()
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add tests/
+        git commit -m "chore: update Linux baseline screenshots" || echo "No changes"
+        git push
+
     - name: Upload Playwright HTML report
       if: always()                # upload even on test failure
       uses: actions/upload-artifact@v4
@@ -79,10 +80,27 @@ jobs:
         path: test-results/          # traces land here by default
         retention-days: 7
 
+    - name: Download previous Allure history
+      uses: actions/download-artifact@v4
+      if: always()
+      continue-on-error: true        # won't fail if first run
+      with:
+        name: allure-history
+        path: allure-results/history
+    
     - name: Generate Allure Report
       if: always()
       run: npx --yes --package=allure-commandline allure generate allure-results --clean --output allure-report
       # --package=allure-commandline tells npx which package to pull, allure is the actual binary to run. --yes skips the install confirmation prompt on CI.    
+
+    - name: Upload Allure history for next run
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-history
+        path: allure-report/history/
+        retention-days: 30   
+        overwrite: true   
 
     - name: Upload Allure Report
       if: always()
