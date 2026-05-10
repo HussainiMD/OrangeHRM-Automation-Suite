@@ -1,0 +1,2 @@
+[14:02:29] INFO (10440): PID: 10440 - Starting the process for a new Auth token
+[14:02:30] INFO (10440): Refreshing local globalAPIRequestContext reference

@@ -1,0 +1,12 @@
+[13:41:09] INFO (7052): found admin auth json path: ./storage/admin-auth-7052.json
+[13:41:09] INFO (7052): PID: 7052 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[13:41:09] INFO (7052): No need of Auth as current authentication is valid
+[13:41:09] INFO (7052): found admin auth json path: ./storage/admin-auth-7052.json
+[13:41:10] INFO (7052): PID: 7052 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[13:41:10] INFO (7052): No need of Auth as current authentication is valid
+[13:41:10] INFO (7052): found admin auth json path: ./storage/admin-auth-7052.json
+[13:41:10] INFO (7052): PID: 7052 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[13:41:10] INFO (7052): No need of Auth as current authentication is valid
+[13:41:10] INFO (7052): does "user_5fd38a4b-2970-4340-bdba-4cabd11cc45" user exists? false
+[13:41:10] INFO (7052): using employee number 223 for adding new user
+[13:41:11] INFO (7052): add user request API response status is 200

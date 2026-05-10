@@ -1,0 +1,11 @@
+[14:23:31] INFO (14711): PID: 14711 - Starting the process for a new Auth token
+[14:23:33] INFO (14711): Refreshing local globalAPIRequestContext reference
+[14:23:33] INFO (14711): found admin auth json path: ./storage/admin-auth-14711.json
+[14:23:33] INFO (14711): PID: 14711 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[14:23:33] INFO (14711): No need of Auth as current authentication is valid
+[14:23:33] INFO (14711): found admin auth json path: ./storage/admin-auth-14711.json
+[14:23:34] INFO (14711): PID: 14711 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[14:23:34] INFO (14711): No need of Auth as current authentication is valid
+[14:23:34] INFO (14711): does "user_9b0cc963-eadb-4470-a5f1-507d4e9c731" user exists? false
+[14:23:34] INFO (14711): using employee number 223 for adding new user
+[14:23:35] INFO (14711): add user request API response status is 422

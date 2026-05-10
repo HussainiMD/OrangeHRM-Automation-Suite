@@ -1,0 +1,12 @@
+[14:00:03] INFO (9817): PID: 9817 - Starting the process for a new Auth token
+[14:00:04] WARN (9817): Not able to access the LOGIN page of AUT
+    err: {
+      "type": "Error",
+      "message": "Not able to access the LOGIN page of AUT",
+      "stack":
+          Error: Not able to access the LOGIN page of AUT
+              at refreshAdminAuthState (file:///home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/utils/auth-manager.utils.ts:30:19)
+              at getValidAdminRequestContext (file:///home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/utils/auth-manager.utils.ts:122:13)
+              at Object.adminUserAuthContext [as fn] (file:///home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/fixtures/admin-auth.fixture.ts:19:48)
+              at /home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/node_modules/playwright/lib/worker/fixtureRunner.js:101:9
+    }
