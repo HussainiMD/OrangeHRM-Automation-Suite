@@ -72,8 +72,8 @@ jobs:
         path: playwright-report/
         retention-days: 14
     
-    - name: Upload Playwright traces
-      if: always() && github.event_name != 'workflow_dispatch'
+    - name: Upload Playwright traces  # On Manual trigger, it updates snapshots causing file size (100MB) errors
+      if: always() && github.event_name != 'workflow_dispatch' 
       uses: actions/upload-artifact@v4
       with:
         name: playwright-traces

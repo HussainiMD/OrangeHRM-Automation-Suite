@@ -39,7 +39,7 @@ export default defineConfig({
     baseURL: 'https://opensource-demo.orangehrmlive.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch' ? 'retain-on-failure'   : 'off',
+    trace: process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch' ? 'retain-on-failure' : 'off',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure'//crucial for UI test debugging when failures happen. !!! SUPER IMPORTANT !!!
   },
