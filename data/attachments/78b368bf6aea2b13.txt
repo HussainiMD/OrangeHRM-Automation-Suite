@@ -1,1 +1,0 @@
-[JavaScript Error: "downloadable font: download failed (font-family: "Nunito Sans" style:normal weight:800 stretch:100 src index:1): status=2152398850 source: https://opensource-demo.orangehrmlive.com/web/dist/fonts/nunito-sans-v6-latin-ext_latin-800.woff2"]
