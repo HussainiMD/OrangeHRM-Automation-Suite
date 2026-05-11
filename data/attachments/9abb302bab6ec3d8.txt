@@ -1,5 +1,0 @@
-[14:50:31] INFO (12409): Total available leaves "before applying" are 8
-    worker: 13
-    test: "Verify weekends/invalid leave application is rejected"
-    retry: 0
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/leave/leave-workflow-subordinate.spec.ts"

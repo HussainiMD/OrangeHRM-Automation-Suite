@@ -1,0 +1,300 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: ui/regression/auth/userActivityInExpiredSession.spec.ts >> TC_LOGIN_013 | Authentication | Session Management | Session expiry forces re-login on user action
+- Location: tests/ui/regression/auth/userActivityInExpiredSession.spec.ts:9:1
+
+# Error details
+
+```
+Error: MyInfo button is not enabled
+
+expect(locator).toBeEnabled() failed
+
+Locator: locator('.oxd-sidepanel a.oxd-main-menu-item').filter({ hasText: 'My Info' })
+Expected: enabled
+Timeout: 60000ms
+Error: element(s) not found
+
+Call log:
+  - MyInfo button is not enabled with timeout 60000ms
+  - waiting for locator('.oxd-sidepanel a.oxd-main-menu-item').filter({ hasText: 'My Info' })
+    - waiting for" https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index" navigation to finish...
+    - navigated to "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic:
+    - complementary [ref=e4]:
+      - navigation "Sidepanel" [ref=e5]:
+        - generic [ref=e6]:
+          - link "client brand banner" [ref=e7] [cursor=pointer]:
+            - /url: https://www.orangehrm.com/
+            - img "client brand banner" [ref=e9]
+          - text: 
+        - generic [ref=e10]:
+          - generic [ref=e11]:
+            - generic [ref=e12]:
+              - textbox "Search" [ref=e15]
+              - button "" [ref=e16] [cursor=pointer]:
+                - generic [ref=e17]: 
+            - separator [ref=e18]
+          - list [ref=e19]:
+            - listitem [ref=e20]:
+              - link "Leave" [ref=e21] [cursor=pointer]:
+                - /url: /web/index.php/leave/viewLeaveModule
+                - generic [ref=e24]: Leave
+            - listitem [ref=e25]:
+              - link "Time" [ref=e26] [cursor=pointer]:
+                - /url: /web/index.php/time/viewTimeModule
+                - generic [ref=e32]: Time
+            - listitem [ref=e33]:
+              - link "My Info" [ref=e34] [cursor=pointer]:
+                - /url: /web/index.php/pim/viewMyDetails
+                - generic [ref=e40]: My Info
+            - listitem [ref=e41]:
+              - link "Performance" [ref=e42] [cursor=pointer]:
+                - /url: /web/index.php/performance/viewPerformanceModule
+                - generic [ref=e50]: Performance
+            - listitem [ref=e51]:
+              - link "Dashboard" [ref=e52] [cursor=pointer]:
+                - /url: /web/index.php/dashboard/index
+                - generic [ref=e55]: Dashboard
+            - listitem [ref=e56]:
+              - link "Directory" [ref=e57] [cursor=pointer]:
+                - /url: /web/index.php/directory/viewDirectory
+                - generic [ref=e60]: Directory
+            - listitem [ref=e61]:
+              - link "Claim" [ref=e62] [cursor=pointer]:
+                - /url: /web/index.php/claim/viewClaimModule
+                - img [ref=e65]
+                - generic [ref=e69]: Claim
+            - listitem [ref=e70]:
+              - link "Buzz" [ref=e71] [cursor=pointer]:
+                - /url: /web/index.php/buzz/viewBuzz
+                - generic [ref=e74]: Buzz
+    - banner [ref=e75]:
+      - generic [ref=e76]:
+        - generic [ref=e77]:
+          - text: 
+          - heading "Dashboard" [level=6] [ref=e79]
+        - list [ref=e81]:
+          - listitem [ref=e82]:
+            - generic [ref=e83] [cursor=pointer]:
+              - img "profile picture" [ref=e84]
+              - paragraph [ref=e85]: playwright employee_007
+              - generic [ref=e86]: 
+      - navigation "Topbar Menu" [ref=e88]:
+        - list [ref=e89]:
+          - button "" [ref=e91] [cursor=pointer]:
+            - generic [ref=e92]: 
+  - generic [ref=e93]:
+    - generic [ref=e95]:
+      - generic [ref=e97]:
+        - generic [ref=e99]:
+          - generic [ref=e100]: 
+          - paragraph [ref=e101]: Time at Work
+        - separator [ref=e102]
+        - generic [ref=e104]:
+          - generic [ref=e105]:
+            - img "profile picture" [ref=e107]
+            - generic [ref=e108]:
+              - paragraph [ref=e109]: Not Punched In
+              - paragraph
+          - generic [ref=e110]:
+            - generic [ref=e111]: 0h 0m Today
+            - button "" [ref=e112] [cursor=pointer]:
+              - generic [ref=e113]: 
+          - separator [ref=e114]
+          - generic [ref=e115]:
+            - generic [ref=e116]:
+              - paragraph [ref=e117]: This Week
+              - paragraph [ref=e118]: May 11 - May 17
+            - generic [ref=e119]:
+              - generic [ref=e120]: 
+              - paragraph [ref=e121]: 0h 0m
+      - generic [ref=e125]:
+        - generic [ref=e127]:
+          - generic [ref=e128]: 
+          - paragraph [ref=e129]: My Actions
+        - separator [ref=e130]
+        - generic [ref=e132]:
+          - img "No Content" [ref=e133]
+          - paragraph [ref=e134]: No Pending Actions to Perform
+      - generic [ref=e136]:
+        - generic [ref=e138]:
+          - generic [ref=e139]: 
+          - paragraph [ref=e140]: Quick Launch
+        - separator [ref=e141]
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - button "Apply Leave" [ref=e145] [cursor=pointer]
+            - generic "Apply Leave" [ref=e148]:
+              - paragraph [ref=e149]: Apply Leave
+          - generic [ref=e150]:
+            - button "My Leave" [ref=e151] [cursor=pointer]
+            - generic "My Leave" [ref=e156]:
+              - paragraph [ref=e157]: My Leave
+          - generic [ref=e158]:
+            - button "My Timesheet" [ref=e159] [cursor=pointer]
+            - generic "My Timesheet" [ref=e162]:
+              - paragraph [ref=e163]: My Timesheet
+      - generic [ref=e165]:
+        - generic [ref=e167]:
+          - generic [ref=e168]: 
+          - paragraph [ref=e169]: Buzz Latest Posts
+        - separator [ref=e170]
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - generic [ref=e174] [cursor=pointer]:
+              - img "profile picture" [ref=e176]
+              - generic [ref=e177]:
+                - paragraph [ref=e178]: Gianna Bethanie Watsica
+                - paragraph [ref=e179]: 2026-11-05 05:14 PM
+            - separator [ref=e180]
+            - iframe [ref=e182]:
+              - generic [active] [ref=f1e1]:
+                - generic "YouTube Video Player" [ref=f1e3]
+                - generic [ref=f1e5]:
+                  - generic:
+                    - generic:
+                      - button "Play video" [ref=f1e10] [cursor=pointer]:
+                        - generic [ref=f1e13]:
+                          - img
+                      - button "Hide player controls" [ref=f1e14] [cursor=pointer]
+                      - generic [ref=f1e21]:
+                        - generic [ref=f1e22]:
+                          - 'link "Resident Evil Requiem : RTX 5080 16GB ( 4K Path Tracing ON / DLSS ON )" [ref=f1e23] [cursor=pointer]':
+                            - /url: https://www.youtube.com/watch?v=HHx8G9_layQ
+                          - link "MykePlay" [ref=f1e24] [cursor=pointer]:
+                            - /url: /channel/UCUzra0d8dm3Qrl6y-i6pB3Q
+                            - generic [ref=f1e25]: MykePlay
+                        - generic [ref=f1e26]:
+                          - button "thumbnail-image" [ref=f1e27] [cursor=pointer]:
+                            - img "thumbnail-image" [ref=f1e28]
+                          - generic [ref=f1e30]:
+                            - generic: MykePlay
+                            - generic: 178K subscribers
+          - generic [ref=e183]:
+            - generic [ref=e184] [cursor=pointer]:
+              - img "profile picture" [ref=e186]
+              - generic [ref=e187]:
+                - paragraph [ref=e188]: Gianna Bethanie Watsica
+                - paragraph [ref=e189]: 2026-11-05 05:12 PM
+            - separator [ref=e190]
+            - img [ref=e191]
+          - generic [ref=e192]:
+            - generic [ref=e193] [cursor=pointer]:
+              - img "profile picture" [ref=e195]
+              - generic [ref=e196]:
+                - paragraph [ref=e197]: Gianna Bethanie Watsica
+                - paragraph [ref=e198]: 2020-08-10 03:38 AM
+            - separator [ref=e199]
+            - paragraph [ref=e200]: "Hi All; Linda has been blessed with a baby boy! Linda: With love, we welcome your dear new baby to this world. Congratulations!"
+          - generic [ref=e201]:
+            - generic [ref=e202] [cursor=pointer]:
+              - img "profile picture" [ref=e204]
+              - generic [ref=e205]:
+                - paragraph [ref=e206]: Sania Shaheen
+                - paragraph [ref=e207]: 2020-08-10 03:38 AM
+            - separator [ref=e208]
+            - paragraph [ref=e209]: "World Championship: What makes the perfect snooker player? Mark Selby: Robertson has one of the best techniques in the game. It is very, very straight and he fully commits to every single shot he plays. John Higgins: Every shot is repetitive. He always keeps the same technique and cues through the ball bang straight. Barry Hawkins: Robertson is textbook with his grip and has a ramrod solid cue action, delivering it in a straight line. Honourable mentions: Shaun Murphy, Ding Junhui, Jack Lisowski."
+          - generic [ref=e210]:
+            - generic [ref=e211] [cursor=pointer]:
+              - img "profile picture" [ref=e213]
+              - generic [ref=e214]:
+                - paragraph [ref=e215]: Rebecca Harmony
+                - paragraph [ref=e216]: 2020-08-10 03:34 AM
+            - separator [ref=e217]
+            - paragraph [ref=e218]: Throwback Thursdays!!
+            - img [ref=e219]
+      - generic [ref=e221]:
+        - paragraph [ref=e227]: Employees on Leave Today
+        - separator [ref=e228]
+        - generic [ref=e230]:
+          - img "No Content" [ref=e231]
+          - paragraph [ref=e232]: No Employees are on Leave Today
+    - generic [ref=e233]:
+      - paragraph [ref=e234]: OrangeHRM OS 5.8
+      - paragraph [ref=e235]:
+        - text: © 2005 - 2026
+        - link "OrangeHRM, Inc" [ref=e236] [cursor=pointer]:
+          - /url: http://www.orangehrm.com
+        - text: . All rights reserved.
+```
+
+# Test source
+
+```ts
+  1  | import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
+  2  | 
+  3  | /**
+  4  |  * ID from Test Cases (spreadsheet): TC_LOGIN_013
+  5  |  * Verifies the AUT behavior if the session expires.
+  6  |  * This scenario is emulated by deleting the cookies after successful login
+  7  |  * Here is the complete flow: Login as ESS user -> clear cookies (AUT domain) -> Click on My Info to trigger a login verification
+  8  |  */
+  9  | test(
+  10 |   'TC_LOGIN_013 | Authentication | Session Management | Session expiry forces re-login on user action',
+  11 |   {
+  12 |     tag: [
+  13 |       '@smoke',
+  14 |       '@regression',
+  15 |       '@authentication',
+  16 |       '@session-management',
+  17 |       '@security',
+  18 |       '@cookie',
+  19 |       '@login',
+  20 |     ],
+  21 |     annotation: [
+  22 |       // Functional hierarchy
+  23 |       { type: 'feature', description: 'Authentication' },
+  24 |       { type: 'story', description: 'Session Management' },
+  25 | 
+  26 |       // Optional grouping in Allure
+  27 |       { type: 'suite', description: 'Session Expiry Handling' },
+  28 | 
+  29 |       // Cross-functional classification
+  30 |       { type: 'relatedFeature', description: 'Security' },
+  31 | 
+  32 |       // Business criticality
+  33 |       { type: 'severity', description: 'critical' },
+  34 | 
+  35 |       // External traceability
+  36 |       { type: 'testCaseId', description: 'TC_LOGIN_013' },
+  37 | 
+  38 |       // Human-readable description
+  39 |       {
+  40 |         type: 'description',
+  41 |         description:
+  42 |           'Verifies that when an authenticated session expires, the application redirects the user to the login page when the user attempts to access a protected module.',
+  43 |       },
+  44 |     ],
+  45 |   }, async ({essUserAuthPage, essUserAuthContext, browserName}) => {
+  46 |    
+  47 |    const domain: string = new URL(essUserAuthPage.url()).hostname;   
+  48 |    
+  49 |    /**Similating session expiry by clearing cookies */ 
+  50 |    await essUserAuthContext.clearCookies({domain});
+  51 |    
+  52 |    if((/webkit/i).test(browserName)) await essUserAuthPage.waitForLoadState('networkidle');//webkit sometimes causes UI freezes
+  53 |    /*Clicking on UI element after session is expired, it automatically redirects user to login page*/
+  54 |    const myInfoBtnLocator: Locator = essUserAuthPage.locator('.oxd-sidepanel a.oxd-main-menu-item').filter({hasText: 'My Info'});
+> 55 |    await expect(myInfoBtnLocator, 'MyInfo button is not enabled').toBeEnabled();   
+     |                                                                   ^ Error: MyInfo button is not enabled
+  56 |    await myInfoBtnLocator.click();
+  57 |    /*session expiry should redirect to login */
+  58 |    await expect(essUserAuthPage, 'Page URL is not referring to login page').toHaveURL(/\/auth\/login/i); //does regex match with wait and auto retries after click()
+  59 | })
+  60 | 
+  61 | 
+```

@@ -1,0 +1,5 @@
+[17:59:51] INFO (11530): No Accessibility violations found
+    worker: 12
+    test: "TC_LOGIN_030 | A11Y | Login | Invalid login error message meets WCAG 2.1 AA standards"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/auth/login-ui.spec.ts"

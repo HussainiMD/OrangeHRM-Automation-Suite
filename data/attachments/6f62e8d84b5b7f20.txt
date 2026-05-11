@@ -1,0 +1,3 @@
+[17:54:02] INFO (10215): PID: 10215 - Starting the process for a new Auth token
+[17:54:05] INFO (10215): Refreshing local globalAPIRequestContext reference
+[17:54:15] INFO (10215): Add Employee interceptor - captured (backend) employee number: 520 & employee ID: 0604
