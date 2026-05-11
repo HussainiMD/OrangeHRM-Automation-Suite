@@ -16,6 +16,11 @@ interface LoggerType {
     logger: pino.Logger
 }
 
+// Automatic fixture runs for every test.
+type InternalFixtures = {
+  applyAllureAnnotations: void;
+};
+
 const createTestLogger = (testInfo: TestInfo) =>
   baseLogger.child({
     worker: testInfo.workerIndex,
@@ -78,78 +83,82 @@ export const attachEmployeeInterceptor = (context: BrowserContext, testInfo: Tes
 };
 
 
-const test = base.extend<LoggerType>({
+const test = base.extend<LoggerType & InternalFixtures>({
     logger: async ({}, use, testInfo: TestInfo) => {        
         await use(createTestLogger(testInfo));        
-    }
-})
+    },
 
+  // Automatically applies Playwright annotations to Allure.
+  applyAllureAnnotations: [
+    async ({}, use, testInfo) => {
+      for (const annotation of testInfo.annotations) {
+        const value = annotation.description?.trim();
+        if (!value) continue;
 
-/* Global hook applied to every test that imports this custom `test`*/
-test.beforeEach(async ({}, testInfo: TestInfo) => {
-  for (const annotation of testInfo.annotations) {
-    const value = annotation.description?.trim();
-    if (!value) continue;
+        switch (annotation.type) {
+          case 'epic':
+            await allure.epic(value);
+            break;
 
-    switch (annotation.type) {
-      case 'epic':
-        await allure.epic(value);
-        break;
+          case 'feature':
+            await allure.feature(value);
+            break;
 
-      case 'feature':
-        await allure.feature(value);
-        break;
+          case 'story':
+            await allure.story(value);
+            break;
 
-      case 'story':
-        await allure.story(value);
-        break;
+          case 'suite':
+            await allure.suite(value);
+            break;
 
-      case 'suite':
-        await allure.suite(value);
-        break;
+          case 'parentSuite':
+            await allure.parentSuite(value);
+            break;
 
-      case 'parentSuite':
-        await allure.parentSuite(value);
-        break;
+          case 'subSuite':
+            await allure.subSuite(value);
+            break;
 
-      case 'subSuite':
-        await allure.subSuite(value);
-        break;
+          case 'description':
+            await allure.description(value);
+            break;
 
-      case 'description':
-        await allure.description(value);
-        break;
+          case 'severity': {
+            const severityMap: Record<string, Severity> = {
+              blocker: Severity.BLOCKER,
+              critical: Severity.CRITICAL,
+              normal: Severity.NORMAL,
+              minor: Severity.MINOR,
+              trivial: Severity.TRIVIAL,
+            };
 
-      case 'severity': {
-        const severityMap: Record<string, Severity> = {
-          blocker: Severity.BLOCKER,
-          critical: Severity.CRITICAL,
-          normal: Severity.NORMAL,
-          minor: Severity.MINOR,
-          trivial: Severity.TRIVIAL,
-        };
+            await allure.severity(
+              severityMap[value.toLowerCase()] ?? Severity.NORMAL
+            );
+            break;
+          }
 
-        await allure.severity(
-          severityMap[value.toLowerCase()] ?? Severity.NORMAL
-        );
-        break;
-      }
+          // Playwright tags become annotations with type="tag"
+          case 'tag':
+            await allure.tags(value.replace(/^@/, ''));
+            break;
 
-      // Playwright tags become annotations with type="tag"
-      case 'tag':
-        await allure.tags(value.replace(/^@/, ''));
-        break;
-
-      /* Any custom annotation becomes a custom Allure label
+          /* Any custom annotation becomes a custom Allure label
           Examples:
           { type: 'wcag', description: '2.1.1 Keyboard' }
           { type: 'testCaseId', description: 'TC_LOGIN_024' } */
-      default:
-        await allure.label(annotation.type, value);
-        break;
-    }
-  }
-});
+          default:
+            await allure.label(annotation.type, value);
+            break;
+        }
+      }
+
+      await use();
+    },
+    { auto: true },
+  ],
+})
 
 /*export everything from playwright test package. On top of that add our extension on test object*/
 export * from "@playwright/test"
