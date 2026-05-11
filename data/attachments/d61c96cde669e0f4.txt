@@ -1,5 +1,0 @@
-[13:36:44] INFO (5720): Throttled page navigation response duration: 5068.710389000014 ms or 5.07 secs
-    worker: 0
-    test: "network request is aborted cross-browser"
-    retry: 0
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/resilience/network-timeout.spec.ts"
