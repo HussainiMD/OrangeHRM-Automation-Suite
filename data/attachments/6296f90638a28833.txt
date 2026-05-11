@@ -1,0 +1,12 @@
+[07:20:10] INFO (13838): found admin auth json path: ./storage/admin-auth-13838.json
+[07:20:11] INFO (13838): PID: 13838 - Got response code 401 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[07:20:11] INFO (13838): Doing Re-Auth as current authentication (context) expired
+[07:20:11] INFO (13838): Going to dispose of the Admin User Context
+[07:20:11] INFO (13838): PID: 13838 - Starting the process for a new Auth token
+[07:20:17] INFO (13838): Refreshing local globalAPIRequestContext reference
+[07:20:17] INFO (13838): found admin auth json path: ./storage/admin-auth-13838.json
+[07:20:19] INFO (13838): PID: 13838 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[07:20:19] INFO (13838): No need of Auth as current authentication is valid
+[07:20:22] INFO (13838): does "disabled_user_fd7f8a37-9aed-4cbf-9420-22" user exists? false
+[07:20:22] INFO (13838): using employee number 321 for adding new user
+[07:20:28] INFO (13838): add user request API response status is 200

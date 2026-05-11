@@ -1,0 +1,11 @@
+[07:05:21] INFO (11997): PID: 11997 - Starting the process for a new Auth token
+[07:05:30] INFO (11997): Refreshing local globalAPIRequestContext reference
+[07:05:31] INFO (11997): found admin auth json path: ./storage/admin-auth-11997.json
+[07:05:33] INFO (11997): PID: 11997 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[07:05:33] INFO (11997): No need of Auth as current authentication is valid
+[07:05:33] INFO (11997): found admin auth json path: ./storage/admin-auth-11997.json
+[07:05:37] INFO (11997): PID: 11997 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[07:05:37] INFO (11997): No need of Auth as current authentication is valid
+[07:05:40] INFO (11997): does "user_1094f924-a8a1-45f6-b13d-0101591b2ca" user exists? false
+[07:05:40] INFO (11997): using employee number 321 for adding new user
+[07:05:48] INFO (11997): add user request API response status is 200

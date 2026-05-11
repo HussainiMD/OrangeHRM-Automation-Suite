@@ -1,0 +1,11 @@
+[07:05:06] INFO (12103): PID: 12103 - Starting the process for a new Auth token
+[07:05:11] INFO (12103): Refreshing local globalAPIRequestContext reference
+[07:05:11] INFO (12103): found admin auth json path: ./storage/admin-auth-12103.json
+[07:05:13] INFO (12103): PID: 12103 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[07:05:13] INFO (12103): No need of Auth as current authentication is valid
+[07:05:13] INFO (12103): found admin auth json path: ./storage/admin-auth-12103.json
+[07:05:15] INFO (12103): PID: 12103 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[07:05:15] INFO (12103): No need of Auth as current authentication is valid
+[07:05:18] INFO (12103): does "user_7e3783dc-e6e5-4742-b15b-3afeb568006" user exists? false
+[07:05:18] INFO (12103): using employee number 321 for adding new user
+[07:05:22] INFO (12103): add user request API response status is 200
