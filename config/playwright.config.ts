@@ -21,7 +21,7 @@ export default defineConfig({
   /* Retry settings */
   retries: process.env.CI ? 2 : 1,
   /* parallel tests. */
-  workers: process.env.CI ? 1 : 3,
+  workers: process.env.CI ? 2 : 3,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['dot'], ['html', { open: 'never' }], ["allure-playwright",  { 
     resultsDir: "allure-results",
@@ -39,8 +39,8 @@ export default defineConfig({
     baseURL: 'https://opensource-demo.orangehrmlive.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch' ? 'retain-on-failure' : 'off',
-    screenshot: 'only-on-failure',
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure', //only-on-failure is valid value for ONLY screentshot. For others retain-on-failue is valid value
     video: 'retain-on-failure'//crucial for UI test debugging when failures happen. !!! SUPER IMPORTANT !!!
   },
   globalSetup: '../apis/global-setup',

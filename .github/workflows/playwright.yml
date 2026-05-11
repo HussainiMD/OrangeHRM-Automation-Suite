@@ -11,7 +11,7 @@ env:
 
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 125
     runs-on: ubuntu-latest
     permissions:
       contents: write   # needed for gh-pages deployment
@@ -72,8 +72,8 @@ jobs:
         path: playwright-report/
         retention-days: 14
     
-    - name: Upload Playwright traces  # On Manual trigger, it updates snapshots causing file size (100MB) errors
-      if: always() && github.event_name != 'workflow_dispatch' 
+    - name: Upload Playwright traces  
+      if: always() 
       uses: actions/upload-artifact@v4
       with:
         name: playwright-traces
@@ -88,9 +88,11 @@ jobs:
         name: allure-history
         path: allure-results/history
     
-    - name: Generate Allure Report
+    - name: Generate Allure Report # We do not need traces ZIPs for allure report
       if: always()
-      run: npx --yes --package=allure-commandline allure generate allure-results --clean --output allure-report
+      run: |
+        find allure-results/ -name "*.zip" -delete 
+        npx --yes --package=allure-commandline allure generate allure-results --clean --output allure-report
       # --package=allure-commandline tells npx which package to pull, allure is the actual binary to run. --yes skips the install confirmation prompt on CI.    
 
     - name: Upload Allure history for next run
