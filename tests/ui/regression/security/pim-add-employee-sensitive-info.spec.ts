@@ -7,7 +7,37 @@ import { AddEmployeePage } from '../../../../pages/AddEmployeePage';
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_037
     * Verifies Password and Confirm Password fields mask input and are not displayed in plain text. It is in create user form.
  */
-  test('Verifies Password and Confirm Password fields mask input and are not displayed in plain text', async ({ adminUserAuthPage }) => {
+  test(
+  'TC_PIM_USER_ADD_037 | PIM | Add Employee | Password fields are masked (type=password)',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@security',
+      '@ui-contract',
+      '@input-masking',
+      '@form-fields',
+    ],
+    annotation: [
+      { type: 'epic', description: 'UI Security Compliance' },
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee - Sensitive Input Handling' },
+
+      { type: 'suite', description: 'Sensitive Input Field Validation' },
+
+      { type: 'severity', description: 'high' },
+
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_037' },
+
+      {
+        type: 'description',
+        description:
+          'Verifies that password-related fields are rendered as masked inputs using type="password", ensuring sensitive data is not displayed in plain text in the Add Employee form.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     const navigationPage = new NavigationPage(adminUserAuthPage);
     await expect( navigationPage.getPimNavItem(), 'PIM navigation item should be visible in the left sidebar'    ).toBeVisible();
@@ -35,7 +65,36 @@ import { AddEmployeePage } from '../../../../pages/AddEmployeePage';
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_038
     * Verifies Browser console does not log sensitive information(password) in plain text during or after form submission.
  */
-  test('Verifies if Browser console does not log password in plain text during or after form submission', async ({ adminUserAuthPage }) => {
+  test(
+  'TC_PIM_USER_ADD_038 | PIM | Security | Password is not exposed in browser console logs',
+  {
+    tag: [
+      '@regression',
+      '@pim',
+      '@employee',
+      '@security',
+      '@data-leakage',
+      '@console-monitoring',
+      '@critical',
+    ],
+    annotation: [
+      { type: 'epic', description: 'Security & Data Protection' },
+      { type: 'feature', description: 'Client-Side Security' },
+      { type: 'story', description: 'Prevent Sensitive Data Exposure in Console' },
+
+      { type: 'suite', description: 'Browser Console Security Checks' },
+
+      { type: 'severity', description: 'critical' },
+
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_038' },
+
+      {
+        type: 'description',
+        description:
+          'Verifies that sensitive information such as passwords is not exposed in browser console logs during or after Add Employee form submission, ensuring client-side logging does not leak confidential data.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
  
     // ── Console listener — must be registered before any page interaction ─────
     // Captures ALL console message types: log, warn, error, debug, info

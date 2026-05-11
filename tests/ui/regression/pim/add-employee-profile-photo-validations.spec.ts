@@ -9,7 +9,46 @@ test.describe('PIM - Add Employee: profile photo validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_008
     * verifies if add employee form accepts less than 1 MB profile photo
  */
-  test('Admin can add a new employee with a profile photo without size error', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_008 | PIM | Add Employee | Profile photo upload under 1MB succeeds',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@file-upload',
+      '@profile-photo',
+      '@positive-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Profile Photo Upload' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_008' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the Add Employee form accepts a profile photo file smaller than 1MB without triggering upload validation errors.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -38,7 +77,47 @@ test.describe('PIM - Add Employee: profile photo validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_011
     * verifies if add employee form rejects invalid format (BMP, TIFF, WEBP) profile photo
  */
-  test('Admin cannot add a new employee profile photo which has invalid format', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_011 | PIM | Add Employee | Reject invalid profile photo formats',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@file-upload',
+      '@profile-photo',
+      '@negative-test',
+      '@validation',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Profile Photo Upload Validation' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_011' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the Add Employee form rejects profile photo uploads with unsupported file formats (such as WEBP, BMP, and TIFF) and displays an appropriate validation error message.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -67,7 +146,48 @@ test.describe('PIM - Add Employee: profile photo validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_012
     * verifies if add employee form rejects large size profile photo (more than 1 MB)
  */
-  test('Admin cannot add a new employee profile photo if it is too large', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_012 | PIM | Add Employee | Reject profile photo larger than 1MB',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@file-upload',
+      '@profile-photo',
+      '@negative-test',
+      '@validation',
+      '@size-limit',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Profile Photo Upload Validation' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_012' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the Add Employee form rejects profile photo uploads when the file size exceeds 1MB and displays an appropriate size validation error message.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);

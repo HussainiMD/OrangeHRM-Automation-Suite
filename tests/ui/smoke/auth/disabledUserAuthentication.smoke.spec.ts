@@ -8,7 +8,35 @@ import { randomUUID } from "crypto";
  * Verifes the full flow of adding a new user as disabled. Then asserting login error at login page.
  * created disabled user -> attempt to login with user credentials
  */
-test('Login with Disabled User Account', async ({page}) => {
+test(
+  'TC_LOGIN_010 | Authentication | Disabled Account | Disabled users are prevented from logging in',
+  {
+    tag: [
+      '@security',
+      '@auth',
+      '@login',
+      '@negative',
+      '@regression',
+      '@critical',
+    ],
+    annotation: [
+      { type: 'epic', description: 'Authentication Security' },
+      { type: 'feature', description: 'Account Status Enforcement' },
+      { type: 'story', description: 'Prevent Login for Disabled Users' },
+
+      { type: 'suite', description: 'Authentication Negative Scenarios' },
+
+      { type: 'severity', description: 'critical' },
+
+      { type: 'testCaseId', description: 'TC_LOGIN_010' },
+
+      {
+        type: 'description',
+        description:
+          'Verifies that a disabled user account cannot authenticate successfully and that the application displays an appropriate error message when login is attempted using disabled credentials.',
+      },
+    ],
+  }, async ({page}) => {
     const loginPage:LoginPage = new LoginPage(page);
     await loginPage.navigateToLoginPage();
     

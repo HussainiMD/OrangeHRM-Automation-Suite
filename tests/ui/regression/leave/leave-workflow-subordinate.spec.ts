@@ -126,7 +126,43 @@ Response> {
  * Verifies the Leave application flow: 
  * Ensure Leaves are available for chosen category -> Chose weekdays -> Click apply -> Verify API status (triggered behind the scenes)
  */
-test('Verify Employee applied leaves shows up in his leave history', async ({essUserAuthPage, logger, browserName}) => {
+test(
+  'TC_LOGIN_007 | Leave Management | Apply Leave | Applied leave appears in leave history',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@leave',
+      '@leave-management',
+      '@ess-user',
+      '@api-validation',
+      '@integration',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Leave Management' },
+      { type: 'story', description: 'Apply Leave' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Leave Application Workflow' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_007' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that an ESS user can successfully apply for leave, the leave application API returns a successful response, and the submitted leave request appears in the user leave history.',
+      },
+    ],
+  }, async ({essUserAuthPage, logger, browserName}) => {
     test.slow();
     const leaveDates: DatesObj = getValidStartEndDatesForLeave();
     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
@@ -140,7 +176,44 @@ test('Verify Employee applied leaves shows up in his leave history', async ({ess
  * Verifies the Leave application flow for INVALID dates: 
  * Ensure Leaves are available for chosen category -> Chose weekends (invalid) -> Click apply -> Verify API status (triggered behind the scenes)
  * */
-test('Verify weekends/invalid leave application is rejected', async ({essUserAuthPage, logger, browserName}) => {
+test(
+  'TC_LOGIN_008 | Leave Management | Apply Leave | Invalid leave dates are rejected',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@leave',
+      '@leave-management',
+      '@negative',
+      '@validation',
+      '@ess-user',
+      '@api-validation',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Leave Management' },
+      { type: 'story', description: 'Apply Leave' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Leave Application Validation' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_008' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the application rejects leave requests submitted for invalid dates such as weekends or other non-working days, and the corresponding API response indicates failure.',
+      },
+    ],
+  }, async ({essUserAuthPage, logger, browserName}) => {
     test.slow();
     const leaveDates: DatesObj = getInvalidStartEndDatesForLeave();
     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);

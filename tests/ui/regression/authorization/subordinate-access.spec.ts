@@ -6,7 +6,44 @@ import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
  * Allowed Access - My leaves section
  * Restricted Acess - Configure, Leave List and Assign Leave
  */
-test('Verify Sub-ordinate Employee User has LIMITED access to Leaves module', async ({essUserAuthPage}) => {    
+test(
+  'TC_LOGIN_006 | Authorization | Leave Module | ESS user has limited access to Leave module',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@authorization',
+      '@role-based-access',
+      '@rbac',
+      '@leave',
+      '@ess-user',
+      '@security',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Security' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Authorization' },
+      { type: 'story', description: 'Role-Based Access Control' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Leave Module Permissions' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_006' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that a standard ESS user can access only the "My Leave" section and cannot access administrative Leave module options such as Configure, Leave List, and Assign Leave.',
+      },
+    ],
+  }, async ({essUserAuthPage}) => {    
     const leaveBtnLocator: Locator = essUserAuthPage.locator('.oxd-main-menu-item--name').filter({hasText: 'Leave'});    
     // await expect(leaveBtnLocator).not.toHaveCount(0);//ensuring that leave btn is there before clicking
     await expect(leaveBtnLocator, 'leave button is not visible').toBeVisible();

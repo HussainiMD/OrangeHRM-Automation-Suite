@@ -72,7 +72,7 @@ test.describe('PIM - Add Employee: form responsiveness across viewports', () => 
   for (const viewport of VIEWPORTS) {
 
     /**
-     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_029_{viewport.label}
+     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_042_{viewport.label}
      *
      * Verifies the Add Employee form (with Create Login Details toggled ON)
      * is fully usable at the given viewport size:
@@ -88,7 +88,47 @@ test.describe('PIM - Add Employee: form responsiveness across viewports', () => 
      *   - Admin user is authenticated (adminUserAuthPage fixture)
      *   - Viewport is set to the profile under test before navigation
      */
-    test(`TC_PIM_USER_ADD_029 - Form is responsive and usable at ${viewport.label} (${viewport.width}×${viewport.height})`, async ({ adminUserAuthPage }) => {
+    test(
+  `TC_PIM_USER_ADD_042 (RESPONSIVE) | PIM | Add Employee | Form is responsive at ${viewport.label} (${viewport.width}×${viewport.height})`,
+  {
+    tag: [
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@responsive',
+      '@layout',
+      '@accessibility',
+      '@wcag',
+      '@cross-browser',
+      '@negative-test', // not functional, but failure-sensitive UI integrity test
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'UI/UX Quality' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping (IMPORTANT: separate from functional tests)
+      { type: 'suite', description: 'Add Employee Responsive & Layout Validation' },
+
+      // Severity
+      { type: 'severity', description: 'major' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_029 (RESPONSIVE VARIANT)' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the Add Employee form remains usable and visually stable across different viewport sizes, ensuring no horizontal scrolling, no element overlap, proper visibility of mandatory fields, and WCAG-compliant touch target sizes.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
 
       // ── Set viewport before any navigation ─────────────────────────────
       await adminUserAuthPage.setViewportSize({

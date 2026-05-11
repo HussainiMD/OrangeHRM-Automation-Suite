@@ -8,7 +8,43 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_014
     * verifies if add employee form also allows to create user on the same page. FYI, One employee can have many user logins
  */
-  test('Admin can add a new employee along with user login. Verify user form being shown', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_014 | PIM | Add Employee | Admin can create employee with login details',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Employee Creation' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_014' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that while adding a new employee, an administrator can enable "Create Login Details" and the username and password fields are displayed for creating an associated user account.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -38,7 +74,45 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_016
     * verifies create user form has username and password fields are mandatory
  */
-  test('Verify user form fields are username and password are required', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_016 | PIM | Add Employee | Username and password are mandatory in Create Login Details',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@validation',
+      '@negative',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Create Login Details Validation' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_016' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the Create Login Details section requires Username and Password fields and displays validation errors when the form is submitted without providing them.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -69,7 +143,45 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_017
     * verifies create user form accepts valid username 
  */
-  test('Verify username accepts valid value in user form fields', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_017 | PIM | Add Employee | Username field accepts valid value',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@validation',
+      '@positive',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Create Login Details Validation' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_017' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the Username field in the Create Login Details section accepts a valid username and does not display validation errors.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -100,7 +212,45 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_018
     * verifies create user form reject duplicate username 
  */
-  test('Verify username rejects duplicate user if provided in user form fields', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_018 | PIM | Add Employee | Username field rejects duplicate usernames',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@validation',
+      '@negative',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Create Login Details Validation' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_018' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the Username field in the Create Login Details section rejects a username that already exists and displays a duplicate username validation error.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -131,7 +281,44 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_019
     * verifies create user form login status is enabled
  */
-  test('Verify new user login form is enabled by default', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_019 | PIM | Add Employee | Login status is enabled by default',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@default-values',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Create Login Details Defaults' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_019' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the Login Status option in the Create Login Details section is preselected as "Enabled" by default.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -159,7 +346,45 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_020
     * Verify if the form allow user login status to disabled
  */
-  test('Verify new user login form is enabled by default but allows user to disable it', async ({ adminUserAuthPage}) => {  
+  test(
+  'TC_PIM_USER_ADD_020 | PIM | Add Employee | Login status can be changed to Disabled',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@default-values',
+      '@form-interaction',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Create Login Details Defaults' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_020' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the Login Status option is set to "Enabled" by default and can be changed to "Disabled" before saving the employee record.',
+      },
+    ],
+  }, async ({ adminUserAuthPage}) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -193,7 +418,45 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_021
     * verifies passowrd and confirm password field values are matching. It is in create user form.
  */
-  test('Verify user form fields password and confirm passowrd are matching', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_021 | PIM | Add Employee | Password and Confirm Password must match',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@password-validation',
+      '@form-validation',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Logical grouping in Allure
+      { type: 'suite', description: 'Create Login Details Validation' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_021' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the Password and Confirm Password fields accept matching values when creating login details for a new employee and do not trigger validation errors.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -222,10 +485,49 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
   });
   
    /**
-    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_022
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_022_01
     * verifies error when passowrd and confirm password field values are not matching. It is in create user form.
  */
-  test('Verify user error when form fields password and confirm passowrd are not matching', async ({ adminUserAuthPage }) => {  
+  test(
+  'TC_PIM_USER_ADD_022_01 | PIM | Add Employee | Password mismatch shows validation error',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@password-validation',
+      '@negative-test',
+      '@form-validation',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping in Allure
+      { type: 'suite', description: 'Create Login Details Validation' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_022_01' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the system displays a validation error when the Password and Confirm Password fields contain mismatching values during employee creation login setup.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -254,10 +556,49 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
   });
 
  /**
-    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_024
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_026
     * Verify Cancel button discards invalid form data and returns to Employee List. It is in create user form.
  */
- test('Verify Cancel button discards invalid form data and returns to Employee List', async ({ adminUserAuthPage }) => {
+ test(
+  'TC_PIM_USER_ADD_026 | PIM | Add Employee | Cancel discards form and returns to Employee List',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@navigation',
+      '@form-cancel',
+      '@negative-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Allure grouping
+      { type: 'suite', description: 'Create Login Details Navigation & Cancel Flow' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_026' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that clicking the Cancel button on the Add Employee form discards any entered login details (including invalid or mismatched data) and navigates the user back to the Employee List page.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -293,7 +634,46 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_029
     * verifies All mandatory fields show Required error when Save is clicked without any input. It is in create user form.
  */
-  test('Verify All mandatory fields show Required error when Save is clicked without any input', async ({ adminUserAuthPage }) => {
+  test(
+  'TC_PIM_USER_ADD_029 | PIM | Add Employee | Mandatory fields show Required errors on empty submit',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@form-validation',
+      '@required-fields',
+      '@negative-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Allure grouping
+      { type: 'suite', description: 'Create Employee Required Field Validation' },
+
+      // Severity
+      { type: 'severity', description: 'critical' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_029' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that all mandatory fields in the Add Employee form display "Required" validation errors when the Save button is clicked without entering any input, and that the form is not submitted.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -324,7 +704,46 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_033
     * Verifies Browser Back button discards invalid form data and returns to Employee List.
  */
-  test('Verifies Browser Back button discards invalid form data and returns to Employee List', async ({ adminUserAuthPage }) => {
+  test(
+  'TC_PIM_USER_ADD_033 | PIM | Add Employee | Browser Back navigates to Employee List',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@navigation',
+      '@browser-navigation',
+      '@negative-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Allure grouping
+      { type: 'suite', description: 'Create Employee Browser Navigation' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_033' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that using the browser Back button from the Add Employee form correctly discards any entered (invalid or incomplete) login data and navigates the user back to the Employee List page.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -360,10 +779,48 @@ test.describe('PIM - Add Employee: with new user form validation', () => {
 
 test.describe.serial('PIM - Add Employee test case that should run in series to avoid duplicate employee ID issue', () => {
  /**
-    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_024
+    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_022_02
     * verifies error when passowrd and confirm password field values are not matching. It is in create user form.
  */
-  test('Verify Successful creation of add new employee along with login credentials', async ({ adminUserAuthPage }) => {
+ test(
+  'TC_PIM_USER_ADD_022_02 | PIM | Add Employee | Successfully create employee with login credentials',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@positive-test',
+      '@login-creation',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Success Flow' },
+
+      // Severity
+      { type: 'severity', description: 'critical' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_022_02' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that a new employee can be successfully created along with login credentials, and that the system redirects to the employee profile page after saving without validation errors.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
  
     await adminUserAuthPage.goto('/web/index.php/dashboard/index'); 
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -413,7 +870,46 @@ test.describe.serial('PIM - Add Employee test case that should run in series to 
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_048
     * Verify Save and Cancel buttons are disabled while form submission is in progress. Form is for add employee
  */
-  test('Verify Save and Cancel buttons are hidden while form submission is in progress', async ({ adminUserAuthPage }) => {
+  test(
+  'TC_PIM_USER_ADD_048 | PIM | Add Employee | Shows loader during submission and completes save',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@form-submission',
+      '@loading-state',
+      '@positive-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Submission State Handling' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_048' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that during Add Employee form submission, the system displays a loading state (spinner/loader) and successfully completes the employee creation process by redirecting to the employee profile page.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     const navigationPage = new NavigationPage(adminUserAuthPage);
     await expect( navigationPage.getPimNavItem(), 'PIM navigation item should be visible in the left sidebar' ).toBeVisible();

@@ -28,7 +28,37 @@ const SLOW_NETWORK_TIMEOUT = 30_000;
     * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_040
     * Verify Add Employee with credentials succeeds under Slow 3G network conditions.
  */
-  test('Verify Add Employee with credentials succeeds under Slow 3G network conditions', async ({ adminUserAuthPage, browserName, logger }) => {
+  test(
+  'TC_PIM_USER_ADD_040 | PIM | Add Employee | Works under Slow 3G network conditions',
+  {
+    tag: [
+      '@regression',
+      '@pim',
+      '@employee',
+      '@network',
+      '@performance-lite',
+      '@slow-network',
+      '@resilience',
+      '@critical-path',
+    ],
+    annotation: [
+      { type: 'epic', description: 'System Resilience' },
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee under Network Constraints' },
+
+      { type: 'suite', description: 'Network Condition Compatibility Tests' },
+
+      { type: 'severity', description: 'high' },
+
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_040' },
+
+      {
+        type: 'description',
+        description:
+          'Verifies that the Add Employee workflow remains functional under Slow 3G network conditions using CDP-based network throttling, ensuring form submission and navigation complete successfully despite degraded network performance.',
+      },
+    ],
+  }, async ({ adminUserAuthPage, browserName, logger }) => {
  
     // Skip non-Chromium browsers. CDP network throttling is a Chromium-only API. 
     if (browserName !== 'chromium') {

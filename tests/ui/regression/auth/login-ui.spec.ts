@@ -16,7 +16,43 @@ async function analyzeAccessibility(page: Page, selector: string) {
  * Verifies if the sensitive information like password is hidden. Not shown as plain text on web page
  * Indirect way of testing. HTML element with type password are automatically masked by browsers
  */
-test('Is Password Field getting masked', async ({page}) => {
+test(
+  'TC_LOGIN_018 | Authentication | Login | Password field masks entered characters',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@authentication',
+      '@login',
+      '@security',
+      '@password',
+      '@ui',
+    ],
+    annotation: [
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'Login Form Validation' },
+
+      // Cross-functional classification
+      { type: 'relatedFeature', description: 'Security' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_018' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the login page password field uses input type "password" so that entered characters are masked and not displayed as plain text.',
+      },
+    ],
+  }, async ({page}) => {
     const navResponse: Response | null = await page.goto('/web/index.php/auth/login');    
     expect(navResponse?.ok(),'Navigation to the login page has failed').toBe(true);
     
@@ -32,7 +68,43 @@ test('Is Password Field getting masked', async ({page}) => {
  * ID from Test Cases (spreadsheet): TC_LOGIN_028
  * Verify the right logo is being shown on the login page
  */
-test('Ensure OrangeHRM Logo is being Displayed', async ({page, logger}) => {
+test(
+  'TC_LOGIN_028 | Authentication | Login | OrangeHRM logo is displayed correctly',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@authentication',
+      '@login',
+      '@branding',
+      '@visual',
+      '@ui',
+    ],
+    annotation: [
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'Login Page Branding' },
+
+      // Cross-functional classification
+      { type: 'relatedFeature', description: 'Visual Regression' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_028' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the OrangeHRM branding logo is visible on the login page, has non-zero dimensions, and matches the approved baseline screenshot.',
+      },
+    ],
+  }, async ({page, logger}) => {
     const navResponse: Response |  null = await page.goto('/web/index.php/auth/login');
     expect(navResponse?.ok(),'Navigation to the login page has failed').toBe(true);
     const loginLayoutLocator: Locator = page.locator('.orangehrm-login-layout');
@@ -63,7 +135,49 @@ test('Ensure OrangeHRM Logo is being Displayed', async ({page, logger}) => {
  * ID from Test Cases (spreadsheet): TC_LOGIN_030
  * Verifies the login with non existent user credentials. Asserts the error message shown on page to user
  */
-test('Login error message should meet WCAG 2.1 AA accessibility standards', async ({page, logger}) => {
+test(
+  'TC_LOGIN_030 | A11Y | Login | Invalid login error message meets WCAG 2.1 AA standards',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@a11y',
+      '@authentication',
+      '@login',
+      '@error-message',
+      '@keyboard',
+      '@wcag-2.1.1',
+      '@wcag-4.1.3',
+    ],
+    annotation: [
+      // Accessibility hierarchy
+      { type: 'epic', description: 'Accessibility' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'Error Message Accessibility' },
+
+      // WCAG mappings
+      { type: 'wcag', description: '4.1.3 Status Messages' },
+      { type: 'wcag', description: '1.3.1 Info and Relationships' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_030' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that the invalid login error message is rendered with accessible semantics, contains readable text, is announced to assistive technologies, and has no critical or serious axe-core accessibility violations.',
+      },
+    ],
+  }, async ({page, logger}) => {
     const alertContainerCSS: string = '.orangehrm-login-form > .orangehrm-login-error';
     const alertContentCSS: string = `${alertContainerCSS} p.oxd-alert-content-text`;
     const loginPage:LoginPage = new LoginPage(page);

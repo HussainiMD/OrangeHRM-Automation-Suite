@@ -8,7 +8,45 @@ const password: string = process.env.ess_user_password??'';
  * ID from Test Cases (spreadsheet): TC_LOGIN_073
  * Verifies if app recovers from temporary network blips. App is expected to work normally without kicking out user
  */
-test('network request is aborted cross-browser', async ({ page, logger }) => {
+test(
+  'TC_LOGIN_073 | Login | Network Resilience | App recovers from request failure during navigation',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@login',
+      '@navigation',
+      '@resilience',
+      '@network',
+      '@fault-tolerance',
+      '@cross-browser',
+      '@critical',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'System Resilience' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication & Navigation' },
+      { type: 'story', description: 'My Info Navigation Stability' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Network Failure Recovery Tests' },
+
+      // Severity
+      { type: 'severity', description: 'critical' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_073' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the application handles temporary network failures during navigation requests gracefully and remains functional after recovery without logging out the user.',
+      },
+    ],
+  }, async ({ page, logger }) => {
 
     // page.route() is supported on all browsers. 'failed' is the most portable
     await page.route('**/viewMyDetails', async route => {

@@ -6,7 +6,43 @@ import {test, expect, Locator} from "../../../../fixtures/essUser-auth.fixture";
  * This scenario is emulated by deleting the cookies after successful login
  * Here is the complete flow: Login as ESS user -> clear cookies (AUT domain) -> Click on My Info to trigger a login verification
  */
-test('User Session Expired - Re-login enforced on User Action', async ({essUserAuthPage, essUserAuthContext, browserName}) => {
+test(
+  'TC_LOGIN_013 | Authentication | Session Management | Session expiry forces re-login on user action',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@authentication',
+      '@session-management',
+      '@security',
+      '@cookie',
+      '@login',
+    ],
+    annotation: [
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Session Management' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'Session Expiry Handling' },
+
+      // Cross-functional classification
+      { type: 'relatedFeature', description: 'Security' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_013' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that when an authenticated session expires, the application redirects the user to the login page when the user attempts to access a protected module.',
+      },
+    ],
+  }, async ({essUserAuthPage, essUserAuthContext, browserName}) => {
    
    const domain: string = new URL(essUserAuthPage.url()).hostname;   
    

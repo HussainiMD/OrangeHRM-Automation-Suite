@@ -9,7 +9,46 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
  * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_001
  * verifies if add employee form checks mandatory data inputs
  */
-  test("TC_PIM_USER_ADD_001 - Add New User Form Validation", async ({ adminUserAuthPage }) => {
+  test(
+  'TC_PIM_USER_ADD_001 | PIM | Add Employee | Mandatory field validation (basic)',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@form-validation',
+      '@required-fields',
+      '@negative-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping (keep lightweight separate from TC_029)
+      { type: 'suite', description: 'Create Employee Basic Validation' },
+
+      // Severity
+      { type: 'severity', description: 'critical' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_001' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the Add Employee form enforces mandatory field validation by displaying Required error messages when attempting to save without entering First Name and Last Name, and ensures the form is not submitted.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');
     
     const navigationPage = new NavigationPage(adminUserAuthPage);
@@ -43,7 +82,46 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
    * Verifies that First Name field accepts valid entry and no error is displayed
    * when attempting to submit with only First Name filled
    */
-  test("TC_PIM_USER_ADD_002 - Add New User Form Validation - Verify First Name field accepts valid entry", async ({adminUserAuthPage}) => {
+  test(
+  'TC_PIM_USER_ADD_002 | PIM | Add Employee | Partial submission validates missing mandatory fields',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@form-validation',
+      '@required-fields',
+      '@negative-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Partial Form Validation' },
+
+      // Severity
+      { type: 'severity', description: 'critical' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_002' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that submitting the Add Employee form with only First Name filled triggers validation errors for missing mandatory fields such as Last Name, and ensures the form is not submitted.',
+      },
+    ],
+  }, async ({adminUserAuthPage}) => {
      
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
 
@@ -73,7 +151,46 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
    * Verifies that middle Name field accepts valid entry and no error is displayed
    * when attempting to submit with only First Name filled
    */
-  test("TC_PIM_USER_ADD_003 - Add New User Form Validation - Verify Middle Name field accepts valid entry", async ({adminUserAuthPage}) => {
+  test(
+  'TC_PIM_USER_ADD_003 | PIM | Add Employee | Middle Name does not trigger validation in partial submission',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@form-validation',
+      '@optional-field',
+      '@negative-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Optional Field Validation' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_003' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the Middle Name field accepts input without triggering validation errors and does not affect form submission behavior when mandatory fields are missing.',
+      },
+    ],
+  }, async ({adminUserAuthPage}) => {
      
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
 
@@ -101,7 +218,46 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
    * Verifies that Last Name field accepts valid entry and no error is displayed
    * when attempting to submit with only Last Name filled
    */
-  test("TC_PIM_USER_ADD_004 - Add New User Form Validation - Verify Last Name field accepts valid entry", async ({adminUserAuthPage}) => {
+  test(
+  'TC_PIM_USER_ADD_004 | PIM | Add Employee | Partial submission validates missing mandatory fields (Last Name only)',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@form-validation',
+      '@required-fields',
+      '@negative-test',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Partial Form Validation' },
+
+      // Severity
+      { type: 'severity', description: 'critical' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_004' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that submitting the Add Employee form with only Last Name filled triggers validation errors for missing mandatory fields such as First Name, and ensures the form is not submitted.',
+      },
+    ],
+  }, async ({adminUserAuthPage}) => {
      
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
 
@@ -131,7 +287,46 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_005
    * Verifies that Employee ID is auto populated with add employee form is loaded   
    */
-  test("TC_PIM_USER_ADD_005 - Add New User Form Validation - Verify Employee ID is auto-populated", async ({adminUserAuthPage}) => {
+  test(
+  'TC_PIM_USER_ADD_005 | PIM | Add Employee | Employee ID is auto-generated on form load',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@default-values',
+      '@form-initialization',
+      '@auto-generated',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Default Field Initialization' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_005' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the Employee ID field is automatically populated when the Add Employee form is loaded, ensuring system-generated identifiers are assigned without user input.',
+      },
+    ],
+  }, async ({adminUserAuthPage}) => {
      
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
 
@@ -152,7 +347,46 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_006
    * Verifies that Employee ID that is auto populated is editable  
    */
-  test("TC_PIM_USER_ADD_006 - Add New User Form Validation - Verify auto populated Employee ID field is editable", async ({adminUserAuthPage}) => {
+  test(
+  'TC_PIM_USER_ADD_006 | PIM | Add Employee | Employee ID field is editable',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@input-field',
+      '@editability',
+      '@default-values',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Field Behavior Validation' },
+
+      // Severity
+      { type: 'severity', description: 'normal' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_006' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the auto-generated Employee ID field remains editable, allowing users to modify the system-generated value before saving the employee record.',
+      },
+    ],
+  }, async ({adminUserAuthPage}) => {
      
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
 
@@ -177,7 +411,46 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_007
    * Verify if duplicate Employee ID is reported as error while saving form  
    */
-  test("TC_PIM_USER_ADD_007 - Add New User Form Validation - Verify duplicate Employee ID is rejected", async ({adminUserAuthPage}) => {
+  test(
+  'TC_PIM_USER_ADD_007 | PIM | Add Employee | Duplicate Employee ID is rejected',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@validation',
+      '@negative-test',
+      '@duplicate-check',
+      '@admin',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Functional' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Suite grouping
+      { type: 'suite', description: 'Create Employee Uniqueness Validation' },
+
+      // Severity
+      { type: 'severity', description: 'critical' },
+
+      // Traceability
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_007' },
+
+      // Human-readable intent
+      {
+        type: 'description',
+        description:
+          'Verifies that the system prevents creation of an employee record when a duplicate Employee ID is used and displays an appropriate uniqueness validation error.',
+      },
+    ],
+  }, async ({adminUserAuthPage}) => {
      
     await adminUserAuthPage.goto('/web/index.php/dashboard/index');    
 
@@ -202,7 +475,41 @@ test.describe("PIM Module - Add Employee Form Validation", () => {
    * ID from Test Cases (spreadsheet): TC_PIM_USER_ADD_028
    * Verify if invalid Employee ID is reported as error while saving form  
    */
-  test("TC_PIM_USER_ADD_028 - Add New User Form Validation - Verify invalid (format) Employee ID is rejected", async ({adminUserAuthPage}) => {
+  test(
+  'TC_PIM_USER_ADD_028 | PIM | Add Employee | Invalid Employee ID format is rejected',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@pim',
+      '@employee',
+      '@user-management',
+      '@create-user',
+      '@validation',
+      '@negative-test',
+      '@format-validation',
+      '@known-bug',
+      '@admin',
+    ],
+    annotation: [
+      { type: 'epic', description: 'Functional' },
+      { type: 'feature', description: 'PIM' },
+      { type: 'story', description: 'Add Employee' },
+
+      // Important: isolate bugged behavior cleanly
+      { type: 'suite', description: 'Create Employee ID Format Validation' },
+
+      { type: 'severity', description: 'high' },
+
+      { type: 'testCaseId', description: 'TC_PIM_USER_ADD_028' },
+
+      {
+        type: 'description',
+        description:
+          'Verifies that the system rejects invalid Employee ID formats containing special characters and prevents form submission with appropriate validation error messages.',
+      },
+    ],
+  }, async ({adminUserAuthPage}) => {
     test.slow();
     test.fail(true, 'Known bug in the app. Developers are to be notified');
 

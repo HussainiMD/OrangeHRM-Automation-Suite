@@ -6,7 +6,44 @@ import {test, expect, Response} from "../../../../fixtures/essUser-auth.fixture"
  * This scenario is emulated by deleting the cookies after successful login
  * Here is the complete flow: Login as ESS user -> clear cookies (AUT domain) -> Reload the page to trigger a login verification
  */
-test('User Session Expired Automatically - Re-login Required', async ({essUserAuthPage, essUserAuthContext}) => {
+test(
+  'TC_LOGIN_012 | Authentication | Session Management | Session expiry forces re-login on page refresh',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@authentication',
+      '@session-management',
+      '@security',
+      '@cookie',
+      '@browser-refresh',
+      '@login',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Security' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Session Management' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Session Expiry Handling' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_012' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that when an authenticated session expires, refreshing the browser redirects the user to the login page and requires re-authentication.',
+      },
+    ],
+  }, async ({essUserAuthPage, essUserAuthContext}) => {
    const domain: string = (new URL(essUserAuthPage.url())).hostname;   
    
    /**Similating session expiry by clearing cookies */ 

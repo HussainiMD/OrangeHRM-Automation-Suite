@@ -89,7 +89,42 @@ test.use({
 });
 
 /**Simpliest approach to measure response time. Base is treating loading time as backend response time */
-test('Login and Dashboard Page Response Time', async ({page, logger}) => {        
+test(
+  'TC_LOGIN_051-001 | Performance | Login | Login and dashboard page response time',
+  {
+    tag: [
+      '@performance',
+      '@login',
+      '@dashboard',
+      '@metrics',
+      '@response-time',
+      '@non-functional',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Performance' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Performance Metrics' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_051-001' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Measures the login page load time and the dashboard page load time after successful authentication and validates both against configured thresholds.',
+      },
+    ],
+  }, async ({page, logger}) => {        
     const loginPageStartTime = performance.now();
     const loginPage: LoginPage = new LoginPage(page);
     await loginPage.navigateToLoginPage();    
@@ -111,7 +146,42 @@ test('Login and Dashboard Page Response Time', async ({page, logger}) => {
  * Here LCP - Largest Contentful paint time is measured only for Chromium browsers
  * as load & DomContentLoad times means only for resource loading, we are measuring LCP as a better option to see user interaction time (percieved)
 */
-test('Login Page load metrics measurement by using browser events', async ({ page, browserName, logger }, testInfo) => {  
+test(
+  'TC_LOGIN_051-002 | Performance | Login | Browser timing metrics measurement',
+  {
+    tag: [
+      '@performance',
+      '@login',
+      '@metrics',
+      '@browser-timing',
+      '@lcp',
+      '@non-functional',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Performance' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Performance Metrics' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_051-002' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Measures detailed login page performance metrics including DOMContentLoaded, full page load time, and Largest Contentful Paint (LCP) where supported, and validates them against configured thresholds.',
+      },
+    ],
+  }, async ({ page, browserName, logger }, testInfo) => {  
   const pageMetrics: PageLoadPerfMetricsType = await measurePagePerformance(
     page,
     browserName,
@@ -131,7 +201,42 @@ test('Login Page load metrics measurement by using browser events', async ({ pag
 })
 
 /*Running lighthouse tool on chromium browser by running in debugging mode*/
-test('lighthouse performance metrics for login page', async ({logger}) => {  
+test(
+  'TC_LOGIN_051-003 | Performance | Login | Lighthouse performance audit',
+  {
+    tag: [
+      '@performance',
+      '@login',
+      '@lighthouse',
+      '@metrics',
+      '@non-functional',
+      '@chromium-only',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Performance' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Lighthouse Audits' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_051-003' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Runs a Google Lighthouse performance audit against the login page and verifies that the overall performance score is acceptable.',
+      },
+    ],
+  }, async ({logger}) => {  
   /*BUG: LCP is consistently a larger number which needs to be fixed by engineering team*/
   test.fail(true, 'Known bug in the app. Developers are to be notified'); //marking it as failure as this test case will fail all the time till fixed
   const chromeDebuggingPort: number = 9222;
@@ -149,7 +254,53 @@ test('lighthouse performance metrics for login page', async ({logger}) => {
 });
 
 
-test('lighthouse performance metrics for dashboard page', async ({logger}) => {  
+/**
+ * Measures dashboard page performance using Google Lighthouse running
+ * against a Chromium instance launched in remote debugging mode.
+ *
+ * Test flow:
+ * 1. Launch Chromium with remote debugging enabled.
+ * 2. Navigate to the login page.
+ * 3. Authenticate as a valid user.
+ * 4. Run Lighthouse against the dashboard page.
+ * 5. Verify the overall performance rating is acceptable.
+ */
+test(
+  'TC_LOGIN_051-004 | Performance | Dashboard | Lighthouse performance audit',
+  {
+    tag: [
+      '@performance',
+      '@dashboard',
+      '@lighthouse',
+      '@metrics',
+      '@non-functional',
+      '@chromium-only',
+    ],
+    annotation: [
+      // Quality / business area
+      { type: 'epic', description: 'Performance' },
+
+      // Functional hierarchy
+      { type: 'feature', description: 'Dashboard' },
+      { type: 'story', description: 'Page Load Performance' },
+
+      // Optional grouping in Allure Suites tab
+      { type: 'suite', description: 'Lighthouse Audits' },
+
+      // Business criticality
+      { type: 'severity', description: 'normal' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_051-004' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Runs a Google Lighthouse performance audit against the authenticated dashboard page and verifies that the overall performance score is acceptable.',
+      },
+    ],
+  }, async ({logger}) => {  
   /*BUG: LCP is consistently a larger number which needs to be fixed by engineering team*/
   test.fail(true, 'Known bug in the app. Developers are to be notified'); //marking it as failure as this test case will fail all the time till fixed
   const chromeDebuggingPort: number = 9333;

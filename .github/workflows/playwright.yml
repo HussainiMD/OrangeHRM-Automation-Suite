@@ -102,6 +102,10 @@ jobs:
         npx --yes --package=allure-commandline allure generate allure-results --clean --output allure-report
       # --package=allure-commandline tells npx which package to pull, allure is the actual binary to run. --yes skips the install confirmation prompt on CI.    
 
+    - name: Ensure Allure history directory exists
+      if: always()
+      run: mkdir -p allure-report/history
+
     - name: Upload Allure history for next run
       if: always()
       uses: actions/upload-artifact@v4

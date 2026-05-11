@@ -47,10 +47,41 @@ async function toggleUserStatusAndSave(page: Page): Promise<void> {
 }
 
 /**
- * ID from Test Cases (spreadsheet): TC_PIM_USER_STATUS_001
- * Verify User Search by Username returns correct record. 
+ * ID from Test Cases (spreadsheet): TC_ADM_USER_STATUS_001
+ * Verify User Search by Username returns the correct record.
  */
-test('Verify User Search by Username returns correct record', async ({ adminUserAuthPage }) => {
+test(
+  'TC_ADM_USER_STATUS_001 | Admin | User Management | Search user by username returns correct record',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@admin',
+      '@usermanagement',
+      '@search',
+    ],
+    annotation: [
+      // Functional hierarchy
+      { type: 'feature', description: 'Administration' },
+      { type: 'story', description: 'User Management' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'User Search' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_ADM_USER_STATUS_001' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that searching for a user by username returns the newly created user in the search results.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
     const username = `user_${randomUUID()}`.slice(0, 40);
     await addNewESSUser(username, false);
 
@@ -59,10 +90,42 @@ test('Verify User Search by Username returns correct record', async ({ adminUser
 });
 
 /**
- * ID from Test Cases (spreadsheet): TC_PIM_USER_STATUS_004
- * Verify Admin can re-enable a disabled user 
+ * ID from Test Cases (spreadsheet): TC_ADM_USER_STATUS_004
+ * Verify Admin can re-enable a disabled user.
  */
-test('Verify Admin can re-enable a disabled user', async ({ adminUserAuthPage }) => {
+test(
+  'TC_ADM_USER_STATUS_004 | Admin | User Management | Re-enable disabled user',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@admin',
+      '@usermanagement',
+      '@user-status',
+      '@enable-user',
+    ],
+    annotation: [
+      // Functional hierarchy
+      { type: 'feature', description: 'Administration' },
+      { type: 'story', description: 'User Management' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'User Status Management' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_ADM_USER_STATUS_004' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that an administrator can re-enable a previously disabled user account.',
+      },
+    ],
+  }, async ({ adminUserAuthPage }) => {
     const username = `user_${randomUUID()}`.slice(0, 40);
     await addNewESSUser(username, false);
 
@@ -76,10 +139,47 @@ test('Verify Admin can re-enable a disabled user', async ({ adminUserAuthPage })
 });
 
 /**
- * ID from Test Cases (spreadsheet): TC_PIM_USER_STATUS_005
- * Verify disabled user can login again after re-enabling 
+ * ID from Test Cases (spreadsheet): TC_ADM_USER_STATUS_005
+ * Verify disabled user can log in again after being re-enabled.
  */
-test('Verify disabled user can login again after re-enabling', async ({ adminUserAuthPage, browser }) => {
+test(
+  'TC_ADM_USER_STATUS_005 | Admin | User Management | Re-enabled user can log in successfully',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@admin',
+      '@usermanagement',
+      '@user-status',
+      '@enable-user',
+      '@login',
+      '@authentication',
+    ],
+    annotation: [
+      // Functional hierarchy
+      { type: 'feature', description: 'Administration' },
+      { type: 'story', description: 'User Management' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'User Status Management' },
+
+      // Cross-functional relationship
+      { type: 'relatedFeature', description: 'Authentication' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_ADM_USER_STATUS_005' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that a previously disabled user can successfully log in after an administrator re-enables the account.',
+      },
+    ],
+  }, async ({ adminUserAuthPage, browser }) => {
     const username = `user_${randomUUID()}`.slice(0, 40);
     const { password } = await addNewESSUser(username, false);
 
@@ -102,10 +202,48 @@ test('Verify disabled user can login again after re-enabling', async ({ adminUse
 });
 
 /**
- * ID from Test Cases (spreadsheet): TC_PIM_USER_STATUS_006
- * Verify disabled user session is terminated if already logged in 
+ * ID from Test Cases (spreadsheet): TC_ADM_USER_STATUS_006
+ * Verify a disabled user's active session is terminated immediately.
  */
-test('Verify disabled user session is terminated if already logged in', async ({ adminUserAuthPage, browser }) => {
+test(
+  'TC_ADM_USER_STATUS_006 | Admin | User Management | Disable user terminates active session',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@admin',
+      '@usermanagement',
+      '@user-status',
+      '@disable-user',
+      '@session-management',
+      '@authentication',
+      '@security',
+    ],
+    annotation: [
+      // Functional hierarchy
+      { type: 'feature', description: 'Administration' },
+      { type: 'story', description: 'User Management' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'User Status Management' },
+
+      // Cross-functional relationship
+      { type: 'relatedFeature', description: 'Authentication' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_ADM_USER_STATUS_006' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that when an administrator disables a user account, any existing authenticated session for that user is immediately invalidated and redirected to the login page.',
+      },
+    ],
+  }, async ({ adminUserAuthPage, browser }) => {
     const username = `user_${randomUUID()}`.slice(0, 40);
     const { password } = await addNewESSUser(username, true);
 
@@ -131,10 +269,49 @@ test('Verify disabled user session is terminated if already logged in', async ({
 });
 
 /**
- * ID from Test Cases (spreadsheet): TC_PIM_USER_STATUS_007
- * Verify disabled user cannot access any system modules via direct URL
+ * ID from Test Cases (spreadsheet): TC_ADM_USER_STATUS_007
+ * Verify a disabled user cannot access protected modules via direct URL.
  */
-test('Verify disabled user cannot access any system modules via direct URL', async ({ adminUserAuthPage, browser }) => {
+test(
+  'TC_ADM_USER_STATUS_007 | Admin | User Management | Disabled user cannot access modules via direct URL',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@admin',
+      '@usermanagement',
+      '@user-status',
+      '@disable-user',
+      '@authentication',
+      '@authorization',
+      '@security',
+      '@direct-url',
+    ],
+    annotation: [
+      // Functional hierarchy
+      { type: 'feature', description: 'Administration' },
+      { type: 'story', description: 'User Management' },
+
+      // Optional grouping in Allure
+      { type: 'suite', description: 'User Status Management' },
+
+      // Cross-functional relationship
+      { type: 'relatedFeature', description: 'Authorization' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_ADM_USER_STATUS_007' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that once a user account is disabled, the user cannot access protected application modules by navigating directly to module URLs.',
+      },
+    ],
+  }, async ({ adminUserAuthPage, browser }) => {
     const username = `user_${randomUUID()}`.slice(0, 40);
     const { password } = await addNewESSUser(username, true);
 

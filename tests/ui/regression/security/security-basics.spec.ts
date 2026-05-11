@@ -8,7 +8,35 @@ const password: string = process.env.ess_user_password??'';
  * ID from Test Cases (spreadsheet): TC_LOGIN_036
  * Verifies if the URL has HTTPS protocol Specified and whether security details has SSL certificate and uses TLS protocol
  */
-test('Security (HTTPS) Protocol Verification of base URL', async ({page, browserName}) => {
+test(
+  'TC_LOGIN_036 | Security | HTTPS Enforcement | Base URL uses TLS-secured HTTPS connection',
+  {
+    tag: [
+      '@security',
+      '@transport-security',
+      '@https',
+      '@tls',
+      '@regression',
+      '@critical',
+    ],
+    annotation: [
+      { type: 'epic', description: 'Infrastructure Security' },
+      { type: 'feature', description: 'Transport Layer Security' },
+      { type: 'story', description: 'Ensure HTTPS Enforcement on Base URL' },
+
+      { type: 'suite', description: 'Transport Security Validation' },
+
+      { type: 'severity', description: 'critical' },
+
+      { type: 'testCaseId', description: 'TC_LOGIN_036' },
+
+      {
+        type: 'description',
+        description:
+          'Verifies that the application is served over HTTPS and establishes a TLS-secured connection, ensuring transport-level encryption is enforced for all base URL access.',
+      },
+    ],
+  }, async ({page, browserName}) => {
     const navResponse: Response | null = await page.goto('/');
     expect(navResponse?.ok(),'Navigation to the default home page has failed').toBe(true);    
     await expect(page, 'URL is not secure; missing HTTPS').toHaveURL(/^https/, {ignoreCase: true});//starts with https    
@@ -33,7 +61,35 @@ test('Security (HTTPS) Protocol Verification of base URL', async ({page, browser
  * ID from Test Cases (spreadsheet): TC_LOGIN_038
  * Verifies if the URL has user credentials being sent in clear text
  */
-test('Verifying User Credentials NOT getting exposed as clear text', async ({page}) => {
+test(
+  'TC_LOGIN_038 | Security | Credential Exposure | Credentials are not exposed in request URLs',
+  {
+    tag: [
+      '@security',
+      '@data-leakage',
+      '@credentials',
+      '@login',
+      '@network',
+      '@critical',
+    ],
+    annotation: [
+      { type: 'epic', description: 'Authentication Security' },
+      { type: 'feature', description: 'Credential Protection' },
+      { type: 'story', description: 'Prevent Credential Exposure in Network Requests' },
+
+      { type: 'suite', description: 'Credential Leakage Prevention Tests' },
+
+      { type: 'severity', description: 'critical' },
+
+      { type: 'testCaseId', description: 'TC_LOGIN_038' },
+
+      {
+        type: 'description',
+        description:
+          'Verifies that sensitive login credentials such as username and password are not exposed in plain text within network request URLs during authentication flows.',
+      },
+    ],
+  }, async ({page}) => {
     let foundUsername: boolean = false;
     let foundPassword: boolean = false;
 
@@ -63,7 +119,35 @@ test('Verifying User Credentials NOT getting exposed as clear text', async ({pag
  * ID from Test Cases (spreadsheet): TC_LOGIN_039
  * Verifies if user credentials are being logged in clear text in browser console
  */
-test('Network Request - Password Encryption', async ({page}) => {
+test(
+  'TC_LOGIN_039 | Security | Console Leakage | Credentials are not exposed in browser console logs',
+  {
+    tag: [
+      '@security',
+      '@console',
+      '@data-leakage',
+      '@credentials',
+      '@login',
+      '@critical',
+    ],
+    annotation: [
+      { type: 'epic', description: 'Authentication Security' },
+      { type: 'feature', description: 'Console Data Protection' },
+      { type: 'story', description: 'Prevent Credential Leakage in Console Logs' },
+
+      { type: 'suite', description: 'Credential Leakage Prevention Tests' },
+
+      { type: 'severity', description: 'critical' },
+
+      { type: 'testCaseId', description: 'TC_LOGIN_039' },
+
+      {
+        type: 'description',
+        description:
+          'Verifies that sensitive login credentials such as username and password are not exposed in browser console logs during authentication or navigation flows.',
+      },
+    ],
+  }, async ({page}) => {
     let foundUsername: boolean = false;
     let foundPassword: boolean = false;
 
@@ -91,7 +175,34 @@ test('Network Request - Password Encryption', async ({page}) => {
 test.describe('Security: Brute Force Protection', () => {
   test.describe.configure({ retries: 0 });
 
-  test('Rate Limiting on Login Attempts - should enforce protection on repeated failed logins', async ({ page }) => {
+  test(
+      'TC_LOGIN_072 | Security | Brute Force | Login endpoint enforces anti-automation protections',
+      {
+        tag: [
+          '@security',
+          '@bruteforce',
+          '@rate-limiting',
+          '@auth',
+          '@critical',
+        ],
+        annotation: [
+          { type: 'epic', description: 'Authentication Security' },
+          { type: 'feature', description: 'Brute Force Protection' },
+          { type: 'story', description: 'Prevent Automated Login Attacks' },
+
+          { type: 'suite', description: 'Authentication Abuse Protection' },
+
+          { type: 'severity', description: 'critical' },
+
+          { type: 'testCaseId', description: 'TC_LOGIN_072' },
+
+          {
+            type: 'description',
+            description:
+              'Verifies that the login system implements brute-force protections such as rate limiting, account locking, CAPTCHA triggers, or progressive delay after repeated failed authentication attempts.',
+          },
+        ],
+      }, async ({ page }) => {
     /*BUG: there is no basic protection for serious attacks like DDOS which needs to be fixed by engineering team*/
     test.fail(true, 'Known bug in the app. Developers are to be notified');
 
