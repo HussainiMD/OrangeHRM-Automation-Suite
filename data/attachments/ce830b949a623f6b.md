@@ -1,0 +1,217 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: ui/regression/leave/leave-workflow-subordinate.spec.ts >> Verify Employee applied leaves shows up in his leave history
+- Location: tests/ui/regression/leave/leave-workflow-subordinate.spec.ts:129:1
+
+# Error details
+
+```
+Test timeout of 270000ms exceeded.
+```
+
+```
+Error: page.waitForResponse: Target page, context or browser has been closed
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - generic [ref=e6]:
+    - img "company-branding" [ref=e8]
+    - generic [ref=e9]:
+      - heading "Login" [level=5] [ref=e10]
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - alert [ref=e13]:
+            - generic [ref=e14]:
+              - generic [ref=e15]: 
+              - paragraph [ref=e16]: Session Expired
+          - generic [ref=e18]:
+            - paragraph [ref=e19]: "Username : Admin"
+            - paragraph [ref=e20]: "Password : admin123"
+        - generic [ref=e21]:
+          - generic [ref=e23]:
+            - generic [ref=e24]:
+              - generic [ref=e25]: 
+              - generic [ref=e26]: Username
+            - textbox "Username" [active] [ref=e28]
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e32]: 
+              - generic [ref=e33]: Password
+            - textbox "Password" [ref=e35]
+          - button "Login" [ref=e37] [cursor=pointer]
+          - paragraph [ref=e39] [cursor=pointer]: Forgot your password?
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - link [ref=e42] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/orangehrm/mycompany/
+          - link [ref=e45] [cursor=pointer]:
+            - /url: https://www.facebook.com/OrangeHRM/
+          - link [ref=e48] [cursor=pointer]:
+            - /url: https://twitter.com/orangehrm?lang=en
+          - link [ref=e51] [cursor=pointer]:
+            - /url: https://www.youtube.com/c/OrangeHRMInc
+        - generic [ref=e54]:
+          - paragraph [ref=e55]: OrangeHRM OS 5.8
+          - paragraph [ref=e56]:
+            - text: © 2005 - 2026
+            - link "OrangeHRM, Inc" [ref=e57] [cursor=pointer]:
+              - /url: http://www.orangehrm.com
+            - text: . All rights reserved.
+  - img "orangehrm-logo" [ref=e59]
+```
+
+# Test source
+
+```ts
+  12  |     
+  13  |     /*Choose days from first week of the month. Looking to go for Monday & Tuesday */
+  14  |     today.setDate(1);
+  15  |     switch(today.getDay()) {
+  16  |         case 0: today.setDate(2); //if sunday, go to next day       
+  17  |         break;
+  18  |         case 6: today.setDate(3); // if saturday, skip 2 days
+  19  |         break;
+  20  |         case 5: today.setDate(4); // if friday, skip 2 days
+  21  |     }
+  22  |     
+  23  |     const todayDateStr: string = `${today.getFullYear()}-${today.getDate()}-${today.getMonth()+1}`;//month starts with 0, hence +1
+  24  |     const tomorrowDateStr: string = `${today.getFullYear()}-${today.getDate()+1}-${today.getMonth()+1}`;
+  25  | 
+  26  |     return {todayDateStr, tomorrowDateStr};
+  27  | }
+  28  | 
+  29  | 
+  30  | /*Utility function to get invalid (weekend) start & end dates for applying leave */
+  31  | function getInvalidStartEndDatesForLeave(): DatesObj {
+  32  |     const today: Date = new Date();
+  33  | 
+  34  |     /*Choose first weekend of the month */
+  35  |     today.setDate(1);
+  36  |     const deltaForNxtWeekend: number = 6 - today.getDay();
+  37  |     today.setDate(1+deltaForNxtWeekend);
+  38  |     
+  39  |     const todayDateStr: string = `${today.getFullYear()}-${today.getDate()}-${today.getMonth()+1}`;//month starts with 0, hence +1
+  40  |     const tomorrowDateStr: string = `${today.getFullYear()}-${today.getDate()+1}-${today.getMonth()+1}`;
+  41  | 
+  42  |     return {todayDateStr, tomorrowDateStr};
+  43  | }
+  44  | 
+  45  | 
+  46  | /**
+  47  |  * Utility function which has common code for test execution
+  48  |  * This a good demonstration of UI + API validation mix for faster test case execution
+  49  |  */
+  50  | async function runTest(page: Page, logger: pino.Logger, leaveDates: DatesObj, browserName: string): Promise<
+  51  | Response> {
+  52  |     const navResponse : Response | null = await page.goto('/web/index.php/leave/applyLeave');
+  53  |     expect(navResponse?.ok(),'Navigation to the apply leaves page has failed').toBe(true);
+  54  |     
+  55  |     const cardContainer: Locator = page.locator('.orangehrm-card-container');
+  56  |     await expect(cardContainer, 'Main container of leave application is not visible').toBeVisible();
+  57  | 
+  58  |     const applyLeaveSection: Locator = cardContainer.locator('.orangehrm-main-title').filter({hasText: 'Apply Leave'});
+  59  |     await expect(applyLeaveSection, 'Apply leave button is not available').not.toHaveCount(0);
+  60  |     
+  61  |     const formLocator: Locator = page.locator('.orangehrm-card-container .oxd-form');
+  62  |     await expect(formLocator, 'Apply leave form is not available').toHaveCount(1);
+  63  |     
+  64  |     const leaveTypeLocator: Locator = formLocator.locator('.oxd-input-group .oxd-select-text');
+  65  |     await expect(leaveTypeLocator, 'leave type text is not visible').toBeVisible();
+  66  |     
+  67  |     await leaveTypeLocator.focus();
+  68  |     await leaveTypeLocator.click();
+  69  |     await page.keyboard.press('ArrowDown');
+  70  |         
+  71  |    /**We are waiting for API Response behind the scenes. This api call is triggered by Enter button on UI. 
+  72  |     * Becaue listener & trigger has to be synchronized, we are using JS native promise.all() function
+  73  |    */
+  74  |     const [urlResponse] = await Promise.all([
+  75  |         page.waitForResponse(response => 
+  76  |             response.url().includes('/leave/leave-balance') && response.status() == 200
+  77  |         ), 
+  78  |         page.keyboard.press('Enter')
+  79  |     ]) as [Response, void];
+  80  |     
+  81  |     if(!(/chrom/i).test(browserName)) await page.waitForLoadState("networkidle");
+  82  |     
+  83  |     expect(urlResponse.ok(), 'leave balance API response is NOT ok').toBe(true);    
+  84  | 
+  85  |     const leaveBalanceLocator: Locator = formLocator.locator('.orangehrm-leave-balance-text');
+  86  |     await expect(leaveBalanceLocator, 'Leave Balance text is not visible').toBeVisible();//ensure it is there before reading text
+  87  |     const leaveBalance: string | null  = await leaveBalanceLocator.textContent();    
+  88  |     const leaveCountBeforeApply: number = parseFloat(leaveBalance?? '0');
+  89  |     expect(leaveCountBeforeApply, 'leave count before apply is zero').toBeGreaterThan(0);
+  90  | 
+  91  |     logger.info(`Total available leaves "before applying" are ${leaveCountBeforeApply}`);
+  92  | 
+  93  |     const dateInputsLocator: Locator = formLocator.locator('.oxd-input-group');
+  94  |     const fromDateSectionLocator: Locator = dateInputsLocator.filter({hasText: 'From Date'});
+  95  | 
+  96  |     const fromDateLocator:Locator = fromDateSectionLocator.locator('input.oxd-input');   
+  97  |     await expect(fromDateLocator, 'from date button is not enabled').toBeEnabled();
+  98  |     await fromDateLocator.fill(leaveDates.todayDateStr);
+  99  |     await fromDateLocator.blur();
+  100 | 
+  101 |     const toDateSectionLocator: Locator = dateInputsLocator.filter({hasText: 'To Date'});
+  102 |     const toDateLocator:Locator = toDateSectionLocator.locator('input.oxd-input');
+  103 |     await expect(toDateLocator, 'to date button is not enabled').toBeEnabled();
+  104 |     await toDateLocator.fill(leaveDates.tomorrowDateStr);
+  105 |     await toDateLocator.blur();
+  106 | 
+  107 |     const submitBtnLocator: Locator = formLocator.locator('button[type="submit"]');
+  108 |     await expect(submitBtnLocator, 'Submit button is not available or multiple options are there').toHaveCount(1);    
+  109 | 
+  110 |     /*We are monitoring the underlying API which does a POST call. Because submission of request & monitoring has to be in parellel, we are using Promise.all() */
+  111 |     const [leaveRequestAPIResponse] = await Promise.all([
+> 112 |         page.waitForResponse(response => response.url().includes('/leave/leave-requests')),
+      |              ^ Error: page.waitForResponse: Target page, context or browser has been closed
+  113 |         submitBtnLocator.click()
+  114 |     ]) as [Response, void];
+  115 |     
+  116 |     if(!(/chrom/i).test(browserName)) await page.waitForLoadState("networkidle");
+  117 |     
+  118 |     return leaveRequestAPIResponse;
+  119 | }
+  120 | 
+  121 | 
+  122 | 
+  123 | 
+  124 | /**
+  125 |  * ID from Test Cases (spreadsheet): TC_LOGIN_007
+  126 |  * Verifies the Leave application flow: 
+  127 |  * Ensure Leaves are available for chosen category -> Chose weekdays -> Click apply -> Verify API status (triggered behind the scenes)
+  128 |  */
+  129 | test('Verify Employee applied leaves shows up in his leave history', async ({essUserAuthPage, logger, browserName}) => {
+  130 |     test.slow();
+  131 |     const leaveDates: DatesObj = getValidStartEndDatesForLeave();
+  132 |     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
+  133 |     
+  134 |     expect(applyLeavesAPIResponse.ok(), 'apply leaves API response in not ok').toBe(true);  
+  135 | })
+  136 | 
+  137 | 
+  138 | /**
+  139 |  * ID from Test Cases (spreadsheet): TC_LOGIN_008
+  140 |  * Verifies the Leave application flow for INVALID dates: 
+  141 |  * Ensure Leaves are available for chosen category -> Chose weekends (invalid) -> Click apply -> Verify API status (triggered behind the scenes)
+  142 |  * */
+  143 | test('Verify weekends/invalid leave application is rejected', async ({essUserAuthPage, logger, browserName}) => {
+  144 |     test.slow();
+  145 |     const leaveDates: DatesObj = getInvalidStartEndDatesForLeave();
+  146 |     const applyLeavesAPIResponse: Response = await runTest(essUserAuthPage, logger, leaveDates, browserName);
+  147 |     
+  148 |     expect(applyLeavesAPIResponse.ok(), 'apply leaves API response is not ok').toBe(false);  
+  149 | })
+  150 | 
+  151 | 
+  152 | 
+```

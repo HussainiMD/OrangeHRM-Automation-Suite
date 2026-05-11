@@ -1,0 +1,10 @@
+[14:35:14] INFO (6639): metrics got after listening to browser events for performance
+    worker: 3
+    test: "Login Page load metrics measurement by using browser events"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/performance/response-time.spec.ts"
+    lcp: 2000
+    fullLoad: 1628.803008
+    domContentLoaded: 1627.428008
+    ttfb: 413.5
+    metricUsed: "LCP"
