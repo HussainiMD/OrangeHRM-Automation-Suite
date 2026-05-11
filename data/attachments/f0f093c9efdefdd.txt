@@ -1,5 +1,0 @@
-[10:22:47] INFO (6714): dashboard page duration - 0.99 seconds
-    worker: 2
-    test: "Login and Dashboard Page Response Time"
-    retry: 0
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/performance/response-time.spec.ts"

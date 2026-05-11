@@ -1,6 +1,0 @@
-[10:43:20] WARN (11470): logo details: width-275, height-53.53125
-    worker: 11
-    test: "Ensure OrangeHRM Logo is being Displayed"
-    retry: 0
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/auth/login-ui.spec.ts"
-A snapshot doesn't exist at /home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/auth/login-ui.spec.ts-snapshots/ohrm-branding-staging-webkit-linux.png, writing actual.
