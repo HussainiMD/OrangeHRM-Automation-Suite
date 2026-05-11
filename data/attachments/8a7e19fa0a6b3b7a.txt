@@ -1,0 +1,12 @@
+[10:43:02] INFO (11578): found admin auth json path: ./storage/admin-auth-11578.json
+[10:43:02] INFO (11578): PID: 11578 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[10:43:02] INFO (11578): No need of Auth as current authentication is valid
+[10:43:03] INFO (11578): found admin auth json path: ./storage/admin-auth-11578.json
+[10:43:03] INFO (11578): PID: 11578 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[10:43:03] INFO (11578): No need of Auth as current authentication is valid
+[10:43:03] INFO (11578): found admin auth json path: ./storage/admin-auth-11578.json
+[10:43:04] INFO (11578): PID: 11578 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[10:43:04] INFO (11578): No need of Auth as current authentication is valid
+[10:43:05] INFO (11578): does "user_a982dcec-caaa-4d3a-b276-40cedd58bb4" user exists? false
+[10:43:05] INFO (11578): using employee number 183 for adding new user
+[10:43:07] INFO (11578): add user request API response status is 200

@@ -1,0 +1,7 @@
+[10:39:33] INFO (10146): PID: 10146 - Starting the process for a new Auth token
+[10:39:50] INFO (10146): Refreshing local globalAPIRequestContext reference
+[10:39:51] WARN (10146): Network throttling via CDP is only supported in Chromium. Current browser: firefox. Skipping this test.
+    worker: 8
+    test: "Verify Add Employee with credentials succeeds under Slow 3G network conditions"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/resilience/pim-add-employee-slow-network.spec.ts"

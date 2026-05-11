@@ -1,0 +1,26 @@
+[10:23:19] INFO (6714): Dashboard Page : lighthouse performance metrics results report
+    worker: 2
+    test: "lighthouse performance metrics for dashboard page"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/performance/response-time.spec.ts"
+    performance: {
+      "value": 0.05,
+      "status": "BAD"
+    }
+    lcp: {
+      "value": 20.48,
+      "status": "BAD"
+    }
+    cls: {
+      "value": 0,
+      "status": "OK"
+    }
+    tbt: {
+      "value": 0.3,
+      "status": "OK"
+    }
+    fcp: {
+      "value": 19.42,
+      "status": "BAD"
+    }
+    overall: "BAD"
