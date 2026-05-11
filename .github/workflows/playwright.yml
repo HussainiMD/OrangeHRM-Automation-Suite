@@ -56,12 +56,19 @@ jobs:
         mailtrap_inbox_id: ${{ secrets.MAILTRAP_INBOX_ID }}
 
     - name: Commit updated snapshots
-      if: github.event_name == 'workflow_dispatch' 
+      if: github.event_name == 'workflow_dispatch'
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git add tests/
-        git commit -m "chore: update Linux baseline screenshots" || echo "No changes"
+        echo "=== Searching for any new PNG files ==="
+        find . -name "*linux*.png" 2>/dev/null || echo "No linux PNGs found anywhere"
+        echo "=== Git status before add ==="
+        git status
+        git add -A
+        echo "=== Git status after add ==="
+        git status
+        git diff --cached --name-only
+        git commit -m "chore: update Linux baseline screenshots" || echo "No changes to commit"
         git push
 
     - name: Upload Playwright HTML report
@@ -88,10 +95,10 @@ jobs:
         name: allure-history
         path: allure-results/history
     
-    - name: Generate Allure Report # We do not need traces ZIPs for allure report
+    - name: Generate Allure Report # We do NOT need traces ZIPs for allure report. Anything more than 10 MB can cause issues (FREE Limit: 100 MB), so deleting
       if: always()
-      run: |
-        find allure-results/ -name "*.zip" -delete 
+      run: | 
+        find allure-results/ -name "*.zip" -size +10M -delete
         npx --yes --package=allure-commandline allure generate allure-results --clean --output allure-report
       # --package=allure-commandline tells npx which package to pull, allure is the actual binary to run. --yes skips the install confirmation prompt on CI.    
 
