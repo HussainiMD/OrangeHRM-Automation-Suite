@@ -18,6 +18,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0    # full history needed for git push to work correctly
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -88,12 +90,15 @@ jobs:
         retention-days: 7
 
     - name: Download previous Allure history
-      uses: actions/download-artifact@v4
       if: always()
-      continue-on-error: true        # won't fail if first run
+      continue-on-error: true  # won't faill if first run
+      uses: dawidd6/action-download-artifact@v6
       with:
         name: allure-history
         path: allure-results/history
+        workflow: playwright.yml
+        branch: main
+        if_no_artifact_found: warn   # won't fail on first ever run
     
     - name: Generate Allure Report # We do NOT need traces ZIPs for allure report. Anything more than 10 MB can cause issues (FREE Limit: 100 MB), so deleting
       if: always()
