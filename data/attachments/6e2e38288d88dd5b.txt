@@ -1,0 +1,12 @@
+[12:43:06] INFO (10943): found admin auth json path: ./storage/admin-auth-10943.json
+[12:43:07] INFO (10943): PID: 10943 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[12:43:07] INFO (10943): No need of Auth as current authentication is valid
+[12:43:07] INFO (10943): found admin auth json path: ./storage/admin-auth-10943.json
+[12:43:08] INFO (10943): PID: 10943 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[12:43:08] INFO (10943): No need of Auth as current authentication is valid
+[12:43:08] INFO (10943): found admin auth json path: ./storage/admin-auth-10943.json
+[12:43:09] INFO (10943): PID: 10943 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[12:43:09] INFO (10943): No need of Auth as current authentication is valid
+[12:43:09] INFO (10943): does "user_1e80d020-4cb1-48b2-996a-0d2e7986370" user exists? false
+[12:43:09] INFO (10943): using employee number 191 for adding new user
+[12:43:10] INFO (10943): add user request API response status is 200
