@@ -1,4 +1,0 @@
-[12:51:26] INFO (12758): found admin auth json path: ./storage/admin-auth-12758.json
-[12:51:27] INFO (12758): PID: 12758 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[12:51:27] INFO (12758): No need of Auth as current authentication is valid
-[12:51:36] INFO (12758): Add Employee interceptor - captured (backend) employee number: 254 & employee ID: 0453
