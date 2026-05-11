@@ -58,7 +58,7 @@ jobs:
         mailtrap_inbox_id: ${{ secrets.MAILTRAP_INBOX_ID }}
 
     - name: Commit updated snapshots
-      if: github.event_name == 'workflow_dispatch'
+      if: always() && github.event_name == 'workflow_dispatch'
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
@@ -98,6 +98,7 @@ jobs:
         path: allure-results/history
         workflow: playwright.yml
         branch: main
+        workflow_conclusion: any        # picks up artifacts from failed runs too
         if_no_artifact_found: warn   # won't fail on first ever run
     
     - name: Generate Allure Report # We do NOT need traces ZIPs for allure report. Anything more than 10 MB can cause issues (FREE Limit: 100 MB), so deleting
