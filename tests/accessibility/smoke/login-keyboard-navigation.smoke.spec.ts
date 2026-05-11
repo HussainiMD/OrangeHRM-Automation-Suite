@@ -26,10 +26,50 @@ async function logoutUser(page:Page): Promise<void> {
 }
 
 /**
- * ID from Test Cases (spreadsheet): TC_LOGIN_024
- * All these test cases are minor variations - hitting enter after fillin password. Going to Login button and hit enter or space bar
+ * ID from Test Case Spreadsheet: TC_LOGIN_024 (variant-1)
+ *
+ * Accessibility:
+ * Verify that pressing Enter in the password field submits the login form.
+ *
+ * This test validates keyboard operability (WCAG 2.1.1 Keyboard)
+ * and expected form behavior for keyboard-only users.
  */
-test('Enter Key Submission for login page; password field', async ({page}) => {
+test( 'TC_LOGIN_024 (variant-1): A11Y | Login | Submit form using Enter key from password field',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@a11y',
+      '@authentication',
+      '@keyboard',
+      '@wcag-2.1.1',
+    ],
+    annotation: [
+      // Functional grouping
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Accessibility-specific grouping
+      { type: 'epic', description: 'Accessibility' },
+      { type: 'suite', description: 'Keyboard Navigation' },
+
+      // Standards mapping
+      { type: 'wcag', description: '2.1.1 Keyboard' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_024 (variant-1)' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verifies that pressing Enter in the password field submits the login form successfully.',
+      },
+    ],
+  }, async ({page}) => {
     await doPageFills(page);            
     await page.keyboard.press('Enter');
     await page.waitForLoadState('load');//extra check for test case stability
@@ -38,7 +78,51 @@ test('Enter Key Submission for login page; password field', async ({page}) => {
     await logoutUser(page);
 })
 
-test('Enter Key Submission for login page; login button', async ({page}) => {
+/**
+ * ID from Test Case Spreadsheet: TC_LOGIN_024 (variant-2)
+ *
+ * Accessibility:
+ * Verify that pressing Enter on the login button submits the login form.
+ *
+ * This test validates keyboard operability (WCAG 2.1.1 Keyboard)
+ * and expected form behavior for keyboard-only users.
+ */
+test( 'TC_LOGIN_024 (variant-2): A11Y | Login | Submit form using Enter key on submit button',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@a11y',
+      '@authentication',
+      '@keyboard',
+      '@wcag-2.1.1',
+    ],
+    annotation: [
+      // Functional grouping
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Accessibility-specific grouping
+      { type: 'epic', description: 'Accessibility' },
+      { type: 'suite', description: 'Keyboard Navigation' },
+
+      // Standards mapping
+      { type: 'wcag', description: '2.1.1 Keyboard' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_024 (variant-2)' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verify that pressing Enter on the login button submits the login form.',
+      },
+    ],
+  }, async ({page}) => {
     await doPageFills(page);
     await page.keyboard.press('Tab');
     await page.keyboard.press('Enter');
@@ -47,7 +131,51 @@ test('Enter Key Submission for login page; login button', async ({page}) => {
     await logoutUser(page);
 })
 
-test('Use SPACE BAR Key Submission for login page', async ({page}) => {
+/**
+ * ID from Test Case Spreadsheet: TC_LOGIN_024  (variant-3)
+ *
+ * Accessibility:
+ * Verify that pressing Enter space bar on the login button submits the login form.
+ *
+ * This test validates keyboard operability (WCAG 2.1.1 Keyboard)
+ * and expected form behavior for keyboard-only users.
+ */
+test( 'TC_LOGIN_024 (variant-3): A11Y | Login | Submit form using Space Bar key on the login button',
+  {
+    tag: [
+      '@smoke',
+      '@regression',
+      '@a11y',
+      '@authentication',
+      '@keyboard',
+      '@wcag-2.1.1',
+    ],
+    annotation: [
+      // Functional grouping
+      { type: 'feature', description: 'Authentication' },
+      { type: 'story', description: 'Login' },
+
+      // Accessibility-specific grouping
+      { type: 'epic', description: 'Accessibility' },
+      { type: 'suite', description: 'Keyboard Navigation' },
+
+      // Standards mapping
+      { type: 'wcag', description: '2.1.1 Keyboard' },
+
+      // Business criticality
+      { type: 'severity', description: 'critical' },
+
+      // External traceability
+      { type: 'testCaseId', description: 'TC_LOGIN_024 (variant-3)' },
+
+      // Human-readable description
+      {
+        type: 'description',
+        description:
+          'Verify that pressing Enter space bar on the Login button submits the login form.',
+      },
+    ],
+  }, async ({page}) => {
     await doPageFills(page);
     await page.keyboard.press('Tab');
     await page.keyboard.press('Space');
