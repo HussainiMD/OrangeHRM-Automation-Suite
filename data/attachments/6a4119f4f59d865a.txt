@@ -1,8 +1,0 @@
-[18:17:42] INFO (17088): PID: 17088 - Starting the process for a new Auth token
-[18:17:44] INFO (17088): Refreshing local globalAPIRequestContext reference
-[18:17:44] INFO (17088): found admin auth json path: ./storage/admin-auth-17088.json
-[18:17:45] INFO (17088): PID: 17088 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
-[18:17:45] INFO (17088): No need of Auth as current authentication is valid
-[18:17:45] INFO (17088): does "disabled_user_23f89e8e-fe0e-4916-b350-28" user exists? false
-[18:17:45] INFO (17088): using employee number 462 for adding new user
-[18:17:45] INFO (17088): add user request API response status is 422

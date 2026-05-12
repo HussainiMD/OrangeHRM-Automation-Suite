@@ -1,3 +1,0 @@
-[17:49:07] INFO (8994): PID: 8994 - Starting the process for a new Auth token
-[17:49:10] INFO (8994): Refreshing local globalAPIRequestContext reference
-[17:49:22] INFO (8994): Add Employee interceptor - captured (backend) employee number: 489 & employee ID: 0591
