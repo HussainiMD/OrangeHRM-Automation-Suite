@@ -5,6 +5,17 @@
 This is a **production-grade UI automation framework** for OrangeHRM, an enterprise HR management system used by thousands of organisations globally. It validates critical business workflows — employee lifecycle management, authentication, role-based access control, leave processing, security hardening, and system resilience — across three major browsers with zero manual intervention.
 
 The framework goes beyond functional testing: instrumented with structured logging, automated accessibility scanning (WCAG 2AA), email interception, credential leakage detection, and Lighthouse performance assertions. It is architected as a portfolio demonstration of what a senior SDET produces at scale — not a collection of scripts, but a maintainable engineering system.
+## What Makes This Different From a Tutorial Project
+
+| Decision | Why |
+|----------|-----|
+| API layer for test data setup | UI-driven setup is slow and tests the wrong thing |
+| Fixture-based auth (not beforeEach) | True test isolation via dependency injection |
+| Two role personas (Admin + ESS) | RBAC boundary testing, not just happy path |
+| Mailtrap email integration | Validates actual email delivery in CI |
+| CI integrated Allure Reporting | With each CI run, latest test reports gets published to github pages |
+| Snapshot auto-update via workflow_dispatch | Baseline management without manual local runs |
+| All secrets externalized | Zero hardcoded credentials — CI-safe by design |
 
 ---
 
