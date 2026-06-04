@@ -4,7 +4,7 @@
 
 This is a **production-grade UI automation framework** for OrangeHRM, an enterprise HR management system used by thousands of organisations globally. It validates critical business workflows — employee lifecycle management, authentication, role-based access control, leave processing, security hardening, and system resilience — across three major browsers with zero manual intervention.
 
-The framework goes beyond functional testing: every test is instrumented with structured logging, automated accessibility scanning (WCAG 2AA), email interception, credential leakage detection, and Lighthouse performance assertions. It is architected as a portfolio demonstration of what a senior SDET produces at scale — not a collection of scripts, but a maintainable engineering system.
+The framework goes beyond functional testing: instrumented with structured logging, automated accessibility scanning (WCAG 2AA), email interception, credential leakage detection, and Lighthouse performance assertions. It is architected as a portfolio demonstration of what a senior SDET produces at scale — not a collection of scripts, but a maintainable engineering system.
 
 ---
 
@@ -19,10 +19,10 @@ The framework goes beyond functional testing: every test is instrumented with st
 ## 💼 Business Value Delivered
 
 - **Eliminated 6–8 hours/week of manual regression** — 17+ test scenarios execute in parallel across three browsers, catching auth gaps, validation failures, and access-control violations before they reach UAT
-- **Cross-browser confidence in under 25 minutes** — Chrome, Firefox, and Safari run simultaneously in CI; previously required sequential, manual verification across machines
+- **Cross-browser confidence in under 25 minutes** — Chrome, Firefox, and Safari run simultaneously in CI; significant reduction of feeback time + major browsers covered!!
 - **Employee onboarding defect detection before UAT** — PIM form validation tests cover 12+ failure modes (photo upload edge cases, field masking, mandatory field bypass), preventing costly late-stage rework
 - **Built-in accessibility compliance gate** — Automated WCAG 2AA scanning on every auth and PIM flow; discovered password field contrast violations (3.2:1 vs. required 4.5:1) before release
-- **Instant post-incident root cause data** — Video, DOM trace, and screenshot captured on every failure; reduced average debugging time from ~2 hours to ~15 minutes
+- **Instant post-incident root cause data** — Video, DOM trace, and screenshot captured on every failure; reduced average debugging time from ~hours to ~minutes
 - **Security coverage as a first-class concern** — Credential leakage scanning across all HTTP traffic (including redirects and resource loads), CSRF token validation, and sensitive field masking checks run on every regression cycle
 
 ---
@@ -50,11 +50,11 @@ The framework goes beyond functional testing: every test is instrumented with st
 │    ├─ auth-manager      — Token refresh, CSRF extraction, session lifecycle
 │    ├─ logger            — Pino structured logging (test name, worker ID, retry count)
 │    ├─ waits-manager     — doRetriedPolling() with configurable backoff
-│    ├─ email-manager     — Mailtrap API integration for inbox polling
+│    ├─ email-manager     — Mailtrap API integration for inbox polling for password reset workflow
 │    ├─ email-parser      — Extracts reset links from raw email bodies
 │    ├─ leave-management  — Leave allocation via API (month-safe date logic)
 │    ├─ users-manager     — Employee/user creation + employee interceptor
-│    └─ page-load-performance — Lighthouse integration, SLA evaluation
+│    └─ page-load-performance — Chrome Lighthouse integration, SLA evaluation
 │
 └─ API Layer (apis/)
      global-setup.ts    — Test data provisioning before any worker starts
@@ -69,17 +69,18 @@ Two fixtures — `adminUserAuthContext` and `essUserAuthPage` — inject pre-aut
 
 On fixture *initialisation*, an explicit auth gate assertion confirms the session is valid before handing control to the test. On *teardown*, the fixture logs out and handles errors gracefully — if logout fails (e.g., session already expired), it catches and logs the failure rather than crashing the teardown chain. This design means a session failure manifests as a fixture error with a clear message, not as a mysterious mid-test assertion failure.
 
-When a token expires during a test and Playwright retries, the auth manager refreshes credentials using a lock flag to prevent race conditions across parallel workers. Subsequent retries get a guaranteed fresh context.
+**Mid Flight Auto Refresh which is thread safe from parellel workers**
+When a token expires during a test and Playwright retries, the auth manager refreshes credentials using a lock flag to prevent race conditions across parallel workers. Subsequent retries get a guaranteed fresh context. 
 
 **2. Global Setup / Teardown with Worker Isolation**
 
-`global-setup.ts` provisions exactly one test employee record before any worker starts and writes its metadata (ID, employee number) to the file system in `storage/`. All workers read from this shared file — no worker creates its own employee independently.
+`global-setup.ts` provisions exactly one test employee record before any worker starts and writes its metadata (ID, employee number) to the file system in `storage/`. All workers read from this shared file — no worker creates its own employee independently. Employee to Logins is a Many-to-One relationship.
 
 An `attachEmployeeInterceptor` on POST `/pim/employees` captures newly created records per worker session, enabling `global-cleanup.ts` to delete *all* employees created during the run — including those created by tests that exercise the add-employee flow — without knowledge of how many workers ran. This resolved a race condition found during development where cleanup would attempt to query employee data that another worker hadn't yet committed.
 
 **3. CSRF Token Extraction + Cookie-Based Auth Reuse**
 
-OrangeHRM's session relies on CSRF tokens. The auth manager extracts the token from the login page HTML, submits credentials to `/auth/validate` via API (not UI), and persists the resulting `storageState` (cookies + localStorage) to disk. Each test context loads this state directly — no browser navigation to the login page during test execution.
+OrangeHRM's session relies on CSRF tokens. The auth manager extracts the token from the login page HTML, submits credentials to `/auth/validate` via API (not UI), and persists the resulting `storageState` (cookies + localStorage) to disk. Each test context loads this state directly — no browser navigation to the login page during test execution. This enables CLEAN, STABLE and FAST test case results.
 
 This is not just a speed optimisation. It ensures that auth state is exactly reproducible and testable independently of the login UI. Login UI has its own dedicated test suite.
 
