@@ -96,6 +96,9 @@ jobs:
         rm -rf ~/.gradle 2>/dev/null || echo "No gradle cache to remove"
         rm -rf ~/.m2 2>/dev/null || echo "No maven cache to remove"
         echo ""
+        echo "Removing incomplete Playwright installations..."
+        rm -rf ~/.cache/ms-playwright* 2>/dev/null || echo "No playwright cache to remove"
+        echo ""
         echo "=== DISK SPACE BEFORE BROWSER INSTALL ==="
         df -h / && echo "" && echo "Free inodes:" && df -i / | tail -1
 
@@ -106,7 +109,8 @@ jobs:
         echo "Setting verbose logging..."
         export DEBUG=pw:api
         echo ""
-        timeout 300 npx playwright install --with-deps 2>&1 | tee playwright-install.log &
+        echo "Installing all required browsers: chromium, firefox, webkit"
+        timeout 300 npx playwright install chromium firefox webkit --with-deps 2>&1 | tee playwright-install.log &
         PID=$!
         
         # Monitor the process and print resource usage every 30 seconds
@@ -153,19 +157,50 @@ jobs:
         echo "=== VERIFYING PLAYWRIGHT INSTALLATION ==="
         npx playwright --version
         echo ""
-        echo "=== CHECKING FOR INSTALLED BROWSERS ==="
-        npx playwright install-deps --check 2>&1 || echo "Browser check returned non-zero (may be expected)"
+        echo "=== CHECKING INSTALLED BROWSER BINARIES ==="
+        echo "Chromium:"
+        test -d ~/.cache/ms-playwright/chromium-* && echo "✓ Chromium found" || echo "✗ Chromium NOT found"
         echo ""
-        echo "=== LISTING PLAYWRIGHT CACHE ==="
-        find ~/.cache/ms-playwright* -type d 2>/dev/null | grep -E "(chromium|firefox|webkit)" | sort || echo "No browser directories found"
+        echo "Firefox:"
+        test -d ~/.cache/ms-playwright/firefox-* && echo "✓ Firefox found" || echo "✗ Firefox NOT found"
+        echo ""
+        echo "WebKit:"
+        test -d ~/.cache/ms-playwright/webkit-* && echo "✓ WebKit found" || echo "✗ WebKit NOT found"
+        echo ""
+        echo "=== LISTING ALL INSTALLED BROWSERS ==="
+        ls -1 ~/.cache/ms-playwright/ 2>/dev/null | grep -E "^(chromium|firefox|webkit)" || echo "No browser directories found"
+        echo ""
+        echo "=== FULL PLAYWRIGHT CACHE STRUCTURE ==="
+        tree -L 2 ~/.cache/ms-playwright/ 2>/dev/null || find ~/.cache/ms-playwright -maxdepth 2 -type d | sort
+        echo ""
+        echo "=== VERIFYING EXECUTABLE FILES EXIST ==="
+        echo "Chromium executable:"
+        find ~/.cache/ms-playwright/chromium-* -name "chrome-linux64" -type d 2>/dev/null && \
+          test -x ~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome && echo "✓ Chromium executable found" || echo "✗ Chromium executable NOT found"
+        echo ""
+        echo "Firefox executable:"
+        find ~/.cache/ms-playwright/firefox-* -name "firefox" -type d 2>/dev/null && \
+          test -x ~/.cache/ms-playwright/firefox-*/firefox/firefox && echo "✓ Firefox executable found" || echo "✗ Firefox executable NOT found"
+        echo ""
+        echo "WebKit executable:"
+        find ~/.cache/ms-playwright/webkit-* -name "pw_run.sh" -type f 2>/dev/null && echo "✓ WebKit executable found" || echo "✗ WebKit executable NOT found"
+        echo ""
+        echo "=== CHECKING FILE SIZES (should be > 100MB for each browser) ==="
+        du -sh ~/.cache/ms-playwright/chromium-* 2>/dev/null | tail -1
+        du -sh ~/.cache/ms-playwright/firefox-* 2>/dev/null | tail -1
+        du -sh ~/.cache/ms-playwright/webkit-* 2>/dev/null | tail -1
+        echo ""
+        echo "=== LISTING ACTUAL BINARY FILES ==="
+        find ~/.cache/ms-playwright -type f -executable \( -name "chrome" -o -name "firefox" -o -name "chrome-headless-shell" \) 2>/dev/null | head -10
 
-    - name: Install Playwright Browsers - Pass 2 (Retry)
+    - name: Install Playwright Browsers - Pass 2 (Retry All)
       run: |
         echo "=== RETRY: PLAYWRIGHT BROWSER INSTALLATION (PASS 2) ==="
         echo "Installation start time: $(date)"
         export DEBUG=pw:api
         echo ""
-        timeout 300 npx playwright install 2>&1 | tee -a playwright-install.log &
+        echo "Explicitly installing: chromium firefox webkit"
+        timeout 300 npx playwright install chromium firefox webkit 2>&1 | tee -a playwright-install.log &
         PID=$!
         
         while kill -0 $PID 2>/dev/null; do
@@ -182,9 +217,59 @@ jobs:
         echo "=== RETRY INSTALLATION COMPLETED (PASS 2) ==="
         echo "Exit code: $EXIT_CODE"
         echo "Installation end time: $(date)"
+        echo ""
+        echo "=== FINAL BROWSER VERIFICATION ==="
+        echo "Chromium:"
+        find ~/.cache -type d -name "chromium-*" 2>/dev/null && echo "✓ Chromium installed" || echo "✗ Chromium missing"
+        echo "Firefox:"
+        find ~/.cache -type d -name "firefox-*" 2>/dev/null && echo "✓ Firefox installed" || echo "✗ Firefox missing"
+        echo "WebKit:"
+        find ~/.cache -type d -name "webkit-*" 2>/dev/null && echo "✓ WebKit installed" || echo "✗ WebKit missing"
         
         exit $EXIT_CODE
    
+    - name: Pre-Test Browser Executable Verification
+      run: |
+        echo "=== PRE-TEST BROWSER EXECUTABLE VERIFICATION ==="
+        echo ""
+        echo "Checking for Chromium executable..."
+        CHROMIUM_PATH=$(find ~/.cache/ms-playwright/chromium-* -name "chrome" -type f 2>/dev/null | head -1)
+        if [ -z "$CHROMIUM_PATH" ]; then
+          echo "❌ ERROR: Chromium executable 'chrome' not found"
+          find ~/.cache/ms-playwright/chromium-* -type f 2>/dev/null | head -20
+          exit 1
+        elif [ ! -x "$CHROMIUM_PATH" ]; then
+          echo "❌ ERROR: Chromium executable found but not executable: $CHROMIUM_PATH"
+          ls -la "$CHROMIUM_PATH"
+          exit 1
+        else
+          echo "✓ Chromium executable found: $CHROMIUM_PATH"
+          ls -lh "$CHROMIUM_PATH"
+          echo "Running chromium version check:"
+          "$CHROMIUM_PATH" --version || echo "Warning: Could not get chromium version"
+        fi
+        echo ""
+        echo "Checking for Firefox executable..."
+        FIREFOX_PATH=$(find ~/.cache/ms-playwright/firefox-* -name "firefox" -type f 2>/dev/null | head -1)
+        if [ -z "$FIREFOX_PATH" ]; then
+          echo "⚠ WARNING: Firefox executable not found (may not be required for this run)"
+        elif [ ! -x "$FIREFOX_PATH" ]; then
+          echo "⚠ WARNING: Firefox executable found but not executable: $FIREFOX_PATH"
+        else
+          echo "✓ Firefox executable found: $FIREFOX_PATH"
+        fi
+        echo ""
+        echo "Checking for WebKit executable..."
+        WEBKIT_PATH=$(find ~/.cache/ms-playwright/webkit-* -name "pw_run.sh" -type f 2>/dev/null | head -1)
+        if [ -z "$WEBKIT_PATH" ]; then
+          echo "⚠ WARNING: WebKit executable not found (may not be required for this run)"
+        else
+          echo "✓ WebKit executable found: $WEBKIT_PATH"
+        fi
+        echo ""
+        echo "=== FULL EXECUTABLE LISTING ==="
+        find ~/.cache/ms-playwright -type f -executable 2>/dev/null | sort
+
     - name: Run Playwright tests      
       run: | # if condition (manual trigger only) to update playwright snapshots
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then 
