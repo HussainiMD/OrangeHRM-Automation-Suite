@@ -52,13 +52,59 @@ jobs:
         echo "=== DISK SPACE AFTER CLEANUP ==="
         df -h /
 
-    - name: Install dependencies
-      run: npm ci --loglevel=verbose
-
-    - name: Install Playwright Browsers
+    - name: Analyze disk usage breakdown
       run: |
-        echo "=== STARTING PLAYWRIGHT BROWSER INSTALLATION ==="
+        echo "=== DETAILED CACHE DIRECTORY BREAKDOWN ==="
+        du -sh ~/.cache/* 2>/dev/null | sort -rh | head -10 || echo "No cache directories found"
+        echo ""
+        echo "=== TOP 10 LARGEST DIRECTORIES IN HOME ==="
+        du -sh ~/* 2>/dev/null | sort -rh | head -10 || echo "Unable to analyze home directory"
+        echo ""
+        echo "=== NPM CACHE SIZE ==="
+        du -sh ~/.npm 2>/dev/null || echo "No npm cache found"
+        echo ""
+        echo "=== TOTAL CACHE SIZE ==="
+        du -sh ~/.cache 2>/dev/null || echo "Unable to get cache size"
+        echo ""
+        echo "=== GITHUB ACTIONS RUNNER CACHE ==="
+        du -sh ~/.cache/act 2>/dev/null || echo "No act cache found"
+        du -sh ~/.cache/docker 2>/dev/null || echo "No docker cache found"
+        echo ""
+        echo "=== FIND REMAINING PLAYWRIGHT/BROWSER ARTIFACTS ==="
+        find ~/.cache -type d \( -name "*playwright*" -o -name "*chromium*" -o -name "*firefox*" -o -name "*webkit*" \) 2>/dev/null | head -5 || echo "No browser caches found"
+        echo ""
+        echo "=== FREE SPACE AFTER CLEANUP ==="
+        df -h / && echo "" && df -i /
+
+    - name: Install dependencies
+      run: |
+        echo "=== NPM INSTALL ===" 
+        npm ci --loglevel=verbose
+        echo ""
+        echo "=== PLAYWRIGHT VERSION AFTER NPM INSTALL ==="
+        npx playwright --version
+
+    - name: Aggressive cache cleanup before browser install
+      run: |
+        echo "=== AGGRESSIVE CACHE CLEANUP ==="
+        echo "Clearing npm cache..."
+        npm cache clean --force 2>&1 | tail -5
+        echo ""
+        echo "Clearing additional caches..."
+        rm -rf ~/.npm 2>/dev/null || echo "No npm cache to remove"
+        rm -rf ~/.cache/pip 2>/dev/null || echo "No pip cache to remove"
+        rm -rf ~/.gradle 2>/dev/null || echo "No gradle cache to remove"
+        rm -rf ~/.m2 2>/dev/null || echo "No maven cache to remove"
+        echo ""
+        echo "=== DISK SPACE BEFORE BROWSER INSTALL ==="
+        df -h / && echo "" && echo "Free inodes:" && df -i / | tail -1
+
+    - name: Install Playwright Browsers - Pass 1
+      run: |
+        echo "=== STARTING PLAYWRIGHT BROWSER INSTALLATION (PASS 1) ==="
         echo "Installation start time: $(date)"
+        echo "Setting verbose logging..."
+        export DEBUG=pw:api
         echo ""
         timeout 300 npx playwright install --with-deps 2>&1 | tee playwright-install.log &
         PID=$!
@@ -66,18 +112,22 @@ jobs:
         # Monitor the process and print resource usage every 30 seconds
         while kill -0 $PID 2>/dev/null; do
           sleep 30
-          echo "[$(date)] Installation still running..."
+          echo "[$(date)] Installation still running (PID: $PID)..."
           echo "Disk space:"
           df -h /
+          echo "Free inodes:"
+          df -i / | tail -1
           echo "Memory usage:"
           free -h
+          echo "Processes using most memory:"
+          ps aux --sort=-%mem | head -6
           echo ""
         done
         
         wait $PID
         EXIT_CODE=$?
         echo ""
-        echo "=== PLAYWRIGHT INSTALLATION COMPLETED ==="
+        echo "=== PLAYWRIGHT INSTALLATION COMPLETED (PASS 1) ==="
         echo "Exit code: $EXIT_CODE"
         echo "Installation end time: $(date)"
         echo ""
@@ -85,7 +135,53 @@ jobs:
         df -h /
         echo ""
         echo "=== INSTALLED BROWSER LOCATION ==="
-        find ~/.cache/ms-playwright* -type f -name "*.txt" 2>/dev/null | head -5 || echo "No browser metadata found"
+        find ~/.cache -type d -name "ms-playwright*" 2>/dev/null | head -5 || echo "No browser installations found"
+        echo ""
+        echo "=== BROWSER SIZE BREAKDOWN ==="
+        du -sh ~/.cache/ms-playwright* 2>/dev/null | sort -rh || echo "No browser caches to measure"
+        echo ""
+        echo "=== PLAYWRIGHT CACHE CONTENTS ==="
+        ls -la ~/.cache/ms-playwright* 2>/dev/null | head -20 || echo "No browser cache found"
+        echo ""
+        echo "=== INSTALLATION LOG TAIL ==="
+        tail -50 playwright-install.log
+        
+        exit $EXIT_CODE
+
+    - name: Verify Playwright Installation
+      run: |
+        echo "=== VERIFYING PLAYWRIGHT INSTALLATION ==="
+        npx playwright --version
+        echo ""
+        echo "=== CHECKING FOR INSTALLED BROWSERS ==="
+        npx playwright install-deps --check 2>&1 || echo "Browser check returned non-zero (may be expected)"
+        echo ""
+        echo "=== LISTING PLAYWRIGHT CACHE ==="
+        find ~/.cache/ms-playwright* -type d 2>/dev/null | grep -E "(chromium|firefox|webkit)" | sort || echo "No browser directories found"
+
+    - name: Install Playwright Browsers - Pass 2 (Retry)
+      run: |
+        echo "=== RETRY: PLAYWRIGHT BROWSER INSTALLATION (PASS 2) ==="
+        echo "Installation start time: $(date)"
+        export DEBUG=pw:api
+        echo ""
+        timeout 300 npx playwright install 2>&1 | tee -a playwright-install.log &
+        PID=$!
+        
+        while kill -0 $PID 2>/dev/null; do
+          sleep 30
+          echo "[$(date)] Retry installation running..."
+          df -h /
+          free -h
+          echo ""
+        done
+        
+        wait $PID
+        EXIT_CODE=$?
+        echo ""
+        echo "=== RETRY INSTALLATION COMPLETED (PASS 2) ==="
+        echo "Exit code: $EXIT_CODE"
+        echo "Installation end time: $(date)"
         
         exit $EXIT_CODE
    
