@@ -131,6 +131,17 @@ During development, a proposal was made to abstract a shared `APIRequestContext`
 
 ## 🧪 Test Strategy
 
+### Business Critical Areas
+
+| Area | What Can Go Wrong? | IMPACT |
+|---|---|---|
+| **Authentication** | User locked out / UnAuthorized access | Organization wide outage / Data Breach |
+| **Role Management** | Employee got free access to admin privilege features | Compliance & Security Risk |
+| **Employee Data** | Wrongful Create, Update or Delete | Payroll, Legal or Audit issues |
+| **Leave Workflow** | Incorrect Leave Balances | Payroll disputes & Legal Risks |
+| **Data Integrity** | Duplicate or Missing Employee(s)  | Reporting & Compliance Risk |
+| **API** | Contract Breaks | Larger Blast radius, Irreversible loss of trust, Legal & Compliance Risk |
+
 ### Coverage by Layer
 
 | Layer | Type | Purpose |
