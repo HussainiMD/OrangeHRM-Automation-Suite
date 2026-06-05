@@ -21,17 +21,73 @@ jobs:
       with:
         fetch-depth: 0    # full history needed for git push to work correctly
 
+    - name: Check system resources before setup
+      run: |
+        echo "=== DISK SPACE BEFORE SETUP ==="
+        df -h /
+        echo ""
+        echo "=== MOUNT INFORMATION ==="
+        mount | grep -E '(/ |/tmp|/var)'
+        echo ""
+        echo "=== INODE USAGE ==="
+        df -i /
+        echo ""
+        echo "=== HOME DIRECTORY SIZE ==="
+        du -sh ~/ 2>/dev/null || echo "Cannot access home directory"
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '24' # currently v24 is on my machine
         cache: 'npm'
 
+    - name: Clean up Playwright cache and previous installations
+      run: |
+        echo "=== CLEANING UP PLAYWRIGHT CACHE ==="
+        rm -rf ~/.cache/ms-playwright* 2>/dev/null || echo "No playwright cache to clean"
+        rm -rf ~/.cache/chromium 2>/dev/null || echo "No chromium cache to clean"
+        rm -rf /tmp/playwright* 2>/dev/null || echo "No playwright temp files to clean"
+        echo "Cleanup completed"
+        echo ""
+        echo "=== DISK SPACE AFTER CLEANUP ==="
+        df -h /
+
     - name: Install dependencies
-      run: npm ci
+      run: npm ci --loglevel=verbose
 
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: |
+        echo "=== STARTING PLAYWRIGHT BROWSER INSTALLATION ==="
+        echo "Installation start time: $(date)"
+        echo ""
+        timeout 300 npx playwright install --with-deps 2>&1 | tee playwright-install.log &
+        PID=$!
+        
+        # Monitor the process and print resource usage every 30 seconds
+        while kill -0 $PID 2>/dev/null; do
+          sleep 30
+          echo "[$(date)] Installation still running..."
+          echo "Disk space:"
+          df -h /
+          echo "Memory usage:"
+          free -h
+          echo ""
+        done
+        
+        wait $PID
+        EXIT_CODE=$?
+        echo ""
+        echo "=== PLAYWRIGHT INSTALLATION COMPLETED ==="
+        echo "Exit code: $EXIT_CODE"
+        echo "Installation end time: $(date)"
+        echo ""
+        echo "=== DISK SPACE AFTER BROWSER INSTALLATION ==="
+        df -h /
+        echo ""
+        echo "=== INSTALLED BROWSER LOCATION ==="
+        find ~/.cache/ms-playwright* -type f -name "*.txt" 2>/dev/null | head -5 || echo "No browser metadata found"
+        
+        exit $EXIT_CODE
    
     - name: Run Playwright tests      
       run: | # if condition (manual trigger only) to update playwright snapshots
