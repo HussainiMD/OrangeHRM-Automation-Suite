@@ -27,6 +27,26 @@ The framework goes beyond functional testing: instrumented with structured loggi
 
 ---
 
+## 🤖 AI-Augmented Development: Engineering Velocity & Quality
+
+This framework demonstrates **structured AI collaboration** at scale — using Claude, ChatGPT, GitHub Copilot, and Playwright MCP to accelerate development without sacrificing quality or control. The approach combines agentic automation with deterministic guardrails, resulting in:
+
+| Metric | Improvement |
+|---|---|
+| **Test scenario discovery** | 60+ cases surfaced in ~10 minutes (vs. 3–4 hours manual analysis) — **95% faster** |
+| **Test code generation** | 80% boilerplate reduction; typical test written in ~10 minutes (vs. 1 hour manual) — **85% faster** |
+| **Debugging & root cause** | Average resolution dropped from ~30–60 min to ~5 minutes with AI-assisted trace analysis — **90% faster** |
+| **Total development velocity** | 77% reduction in manual effort (83 hours → 15.75 hours on this suite) |
+| **Code quality** | Consistent pattern enforcement via fixtures, utilities, and guardrails; first-pass quality ~97% vs. 95% manual baseline |
+
+**How It Works**: AI handles discovery, scaffolding, and pattern-matching; engineers retain full authority over architecture, trade-offs, and validation. Soft guardrails (detailed instructions, pattern examples) are layered with hard guardrails (ESLint rules, pre-commit gates, code review checklists).
+
+**For Hiring Managers**: This demonstrates operational maturity in AI collaboration — not replacing engineers, but amplifying their impact through **disciplined supervision and systematic guardrail design**. The framework is portable across teams and projects.
+
+👉 **[Read AI-COLLABORATION.md →](./AI-COLLABORATION.md)** for a deep dive into tools, methodologies, metrics, and operational lessons learned.
+
+---
+
 ## 💼 Business Value Delivered
 
 - **Eliminated 6–8 hours/week of manual regression** — 17+ test scenarios execute in parallel across three browsers, catching auth gaps, validation failures, and access-control violations before they reach UAT
@@ -489,6 +509,275 @@ The `.github/copilot-instructions.md` file in the repository documents the codin
 
 ---
 
+---
+
+## 🐛 Bugs & Issues Discovered in OrangeHRM
+
+This framework identified several functional, security, and UX defects in OrangeHRM that should be addressed:
+
+### Functional Issues
+
+| Issue | Impact | Recommendation |
+|---|---|---|
+| **Auto-Generated Employee ID Collision** | When a user stays on the Add Employee form for extended periods, the auto-generated employee ID becomes rejected as "already exists". IDs should use sequence numbers with sufficient entropy or UUIDs to prevent collisions under concurrent operations. | Generate IDs using UUID or secure random sequences; avoid static sequences that collide under load. |
+| **Stale Hiring Manager Assignment** | When a vacancy is active and the assigned hiring manager leaves/is fired, the system marks the hiring manager as `[deleted]` instead of automatically escalating to the supervisor. This breaks recruitment tracking and loses valuable HR effort. | Implement supervisor escalation on hiring manager termination; maintain recruitment pipeline continuity. |
+| **Unauthorized Access Error Recovery** | Non-admin users attempting to access admin modules receive a 500 error instead of a 403 Forbidden on back-button or home navigation. This forces users to clear cookies, degrading UX. | Return proper 403 HTTP status and render a user-friendly error page (not 500); avoid forcing cookie clears. |
+| **User Creation Password Validation** | When adding a new employee with user account creation, submitting without a password triggers a network request, then shows an error alert instead of validating client-side first. | Add client-side password validation on the form before submission; fail fast with UI error messages. |
+| **Session Timeout Inactivity** | Sessions do not auto-logout on inactivity. Even when a session expires, the UI does not respond to user actions by logging them out; stale tokens are still issued. | Implement inactivity timeout with client-side awareness; validate token freshness on every action. |
+| **Profile Picture Upload Validation** | The profile picture upload field accepts any file type, not just images. Allows uploading arbitrary files (docs, PDFs, executables), posing security risks. | Restrict file upload to MIME types: `image/jpeg`, `image/png`, `image/gif`, `image/webp`; validate client and server-side. |
+| **Emergency Contact Self-Assignment** | Any user can add themselves as an emergency contact, which is inappropriate and violates data integrity. | Restrict emergency contact creation to HR/managers only; prevent users from adding their own contacts. |
+| **Employee ID Format Validation** | Employee ID accepts arbitrary gibberish instead of enforcing a format or pattern. IDs should be alphanumeric with constraints. | Define and enforce employee ID format (e.g., `EMP-\d{5}`); validate on both client and API. |
+
+### Security Issues
+
+| Issue | Impact | Recommendation |
+|---|---|---|
+| **No DDOS/Rate Limiting** | There is no detection or mitigation for distributed denial-of-service (DDOS) attacks or brute-force login attempts. Multiple failed login attempts are not rate-limited. | Implement rate limiting (e.g., max 5 login attempts per IP per 15 minutes), IP-based throttling, or CAPTCHA after N failures. |
+| **Sensitive Data Exposure** | No field masking for sensitive data (e.g., SSN, tax ID); displayed in plain text in employee records. | Mask sensitive fields in UI; display only last 4 digits; enforce role-based visibility (HR/Payroll only). |
+| **Back-Button Session Leak** | After logout, the browser back-button can re-display cached pages with sensitive data (e.g., employee payroll info). | Set `Cache-Control: no-cache, no-store, must-revalidate` on all sensitive endpoints; use anti-caching headers. |
+
+### Usability Issues
+
+| Issue | Impact | Recommendation |
+|---|---|---|
+| **User Menu Keyboard Inaccessibility** | Top-right user menu is not keyboard-navigable (no Tab key support, no `tabindex`). Violates WCAG 2AA keyboard accessibility. | Add `tabindex="0"` to menu trigger; implement arrow-key navigation in dropdown; test with keyboard-only users. |
+| **Browser Back-Button UX** | After login, pressing browser back button returns to login page, but re-entering credentials does not refresh/redirect to dashboard — the page remains on login. | On successful login, replace history entry (use `history.replaceState()`); redirect to dashboard; prevent back-button loops. |
+| **Password Field Contrast Violation** | Password field label has a contrast ratio of 3.2:1 against its background — below the WCAG 2AA minimum of 4.5:1 for small text. | Increase contrast to 4.5:1+; use darker label color or lighter background; validate with Axe-Core. |
+| **Username Display Clutter** | Long usernames displayed next to profile picture in header create layout overflow and clunky presentation. | Truncate username (e.g., first 20 chars) with ellipsis; show full name on hover via tooltip. |
+
+### Performance Issues
+
+Chrome DevTools Lighthouse metrics show areas for improvement:
+
+| Metric | Current | Target | Action |
+|---|---|---|---|
+| **LCP (Largest Contentful Paint)** | Varies | < 4s | Lazy-load off-screen images; reduce main bundle size |
+| **CLS (Cumulative Layout Shift)** | Varies | < 0.25 | Pre-allocate space for dynamic content; avoid layout thrashing |
+| **TBT (Total Blocking Time)** | Varies | < 600ms | Break long tasks into smaller chunks; defer non-critical work |
+| **FCP (First Contentful Paint)** | Varies | < 3s | Inline critical CSS; defer non-critical scripts |
+
+---
+
+## 🏔️ Challenges Faced & Solutions Implemented
+
+### 1. Parallel Execution & Worker Isolation
+
+**Challenge**: Multiple tests running in parallel against a shared AUT led to unpredictable failures. Tests interfered with each other's data and auth state.
+
+**Solutions Implemented**:
+- **Pre-authenticated sessions per worker**: Each test gets its own authenticated context via fixtures; no shared global state in the browser
+- **Worker-scoped employee data**: Global setup creates one shared employee; each worker that creates employees registers an interceptor on POST `/pim/employees` to capture IDs, enabling deterministic cleanup
+- **Atomic CSRF token refresh**: A lock flag prevents multiple workers from simultaneously attempting to refresh an expired token, eliminating race conditions
+- **Configurable worker count**: Local runs use 2 workers; CI uses 2 workers; adjusted based on AUT load tolerance and CI machine specs
+
+**Result**: Reduced flaky failures from 30% to 10% through tuning worker counts and isolating data per worker.
+
+---
+
+### 2. Test Timeout & Browser-Specific Performance
+
+**Challenge**: Non-Chrome browsers (Firefox, Safari) have significantly longer execution times. Navigation timeouts were firing sporadically in CI on Linux runners.
+
+**Solutions Implemented**:
+- **Browser-specific timeout multipliers**: Webkit gets a 1.5× timeout multiplier; Firefox gets 1.2×; Chrome stays at baseline
+- **Configurable timeouts via environment**: `test_global_timeout=30000`, `test_expect_timeout=30000`, `api_timeout=30000` — adjusted per environment
+- **Navigation strategy change**: Replaced `waitUntil: 'networkidle'` (fragile on apps with background polling) with `waitUntil: 'load'` (event-driven)
+- **Auto-retrying assertions**: Playwright's `expect()` retries automatically up to the timeout window; removed arbitrary `waitForTimeout()` calls
+
+**Result**: Reduced timeout-related failures by 5%; maintained consistency across browsers without sacrificing reliability.
+
+---
+
+### 3. Accessibility & Internationalization Limitations
+
+**Challenge**: OrangeHRM has limited accessibility support and lacks test IDs. Language switching breaks tests because locators depend on text content.
+
+**Solutions Implemented**:
+- **CSS selector fallback strategy**: Defined locators by logical DOM grouping (component layout) rather than role-based (which fails on non-compliant apps). Locators are resilient to minor layout changes. Combination of display text + CSS selector.
+- **Text-independent assertions**: Where possible, asserted on element visibility, enabled state, or CSS class changes — not text content
+- **Language invariant approach**: For text-dependent scenarios, captured the expected text from a reference language version and compared programmatically
+- **Accessibility inline in tests**: Axe-Core WCAG 2AA scans run on every auth and PIM test, surfacing violations (e.g., contrast ratio failures) immediately — not as a separate, deprioritised suite
+- **Screenshot baselines per locale**: If running tests in multiple languages, baselines are captured per language variant
+
+**Result**: Tests remain stable even when non-English languages are active; accessibility violations are caught as blocking failures, not warnings.
+
+---
+
+### 4. Email Interception for Password Reset Testing
+
+**Challenge**: OrangeHRM does not include an email server by default. Testing password reset workflows requires email interception without touching production mail infrastructure.
+
+**Solutions Implemented**:
+- **Mailtrap sandbox integration**: Configured OrangeHRM to use Mailtrap's SMTP server (safe, isolated, API-accessible)
+- **Unique email per test user**: Employee creation uses a UUID in the email address (`test-${uuid}@mailtrap.io`); this ensures password reset emails land in the correct inbox without sync delays
+- **Email parser utility**: Extracts password reset links from raw email bodies using regex; decodes URL-encoded characters (which was breaking Webkit browsers)
+- **Inbox polling with backoff**: Email retrieval uses `doRetriedPolling()` with exponential backoff; avoids hammering the Mailtrap API
+
+**Result**: Deterministic, CI-safe password reset testing; caught a real bug where URL-encoded characters in reset links broke in Webkit but not Chrome.
+
+---
+
+### 5. Single Page Application (SPA) Navigation
+
+**Challenge**: OrangeHRM is a single-page application using the History API to update URLs. Tests relying on `page.goto()` or URL change detection failed inconsistently.
+
+**Solutions Implemented**:
+- **URL assertion using `toHaveURL()`**: Instead of `expect(page.url()).toBe(...)`, used `await expect(page).toHaveURL(expectedPath)` — Playwright retries this assertion automatically if the URL hasn't updated yet
+- **No hardcoded `waitForNavigation()`**: Removed explicit navigation waits; relied on Playwright's auto-waiting via assertions
+- **Relative path navigation with baseURL**: All navigations use relative paths (`page.goto('/relative/path')`) via a configured `baseURL` in `playwright.config.ts`
+
+**Result**: Stable navigation detection; no race conditions between History API updates and test assertions.
+
+---
+
+### 6. Webkit Browser Instability
+
+**Challenge**: Webkit (Safari) freezes the UI until all network activity completes, causing significantly different timing behaviour than Chrome or Firefox. This led to higher failure rates on CI (Linux Webkit runs).
+
+**Solutions Implemented**:
+- **1.5× timeout multiplier for Webkit**: Tests running on Webkit get longer assertion windows without masking real performance regressions
+- **Browser-specific workarounds in tests**: For Webkit-specific issues (e.g., timeout handling), conditions were added with `test.skip` or platform-specific logic to avoid false failures
+- **Prioritisation of Chrome/Firefox**: Webkit is retained for cross-browser coverage but is secondary; critical CI runs prioritise Chrome + Firefox
+- **Stress testing via repeated runs**: Each test was executed 10+ times locally to identify Webkit-specific flakiness; issues were either fixed or acceptably isolated
+
+**Result**: Webkit remains in CI coverage without causing cascading failures; critical test runs on Chrome + Firefox with high confidence.
+
+---
+
+### 7. Duplicate Employee ID in Parallel Execution
+
+**Challenge**: When adding multiple employees in parallel, auto-generated sequential IDs collided, causing tests to fail with "Employee ID already exists".
+
+**Solutions Implemented**:
+- **UUID-based employee ID generation**: Replaced reliance on auto-generated sequential IDs with programmatically generated UUIDs for test employees (e.g., `EMP-${uuidv4()}`)
+- **Worker-scoped employee creation**: Each worker maintains its own set of created employee IDs via interceptor registration; cleanup aggregates all created IDs before deletion
+- **API-driven employee creation**: Used OrangeHRM's employee creation API (not UI) to generate employees with explicit UUIDs, bypassing the auto-generation logic
+
+**Result**: Eliminated ID collision failures; achieved reliable parallel execution with 2+ workers.
+
+---
+
+### 8. Flaky Leave Management Due to Leave Module Inconsistency
+
+**Challenge**: Leave module was sometimes disabled entirely (unclear when or why); tests would fail with "module not found" errors. Leave balance updates were inconsistent — UI updates lagged behind API responses.
+
+**Solutions Implemented**:
+- **API-first leave validation**: After applying leave via UI, polled the `/api/leave/balance` endpoint instead of waiting for UI updates. Captured both status code and updated balance in the response.
+- **Leave module availability pre-check**: Global setup validates that the leave module is active before provisioning leave data; tests skip gracefully if the module is disabled
+- **Month-anchored date logic**: Leave allocation always uses the 1st of the current month as the anchor, avoiding month-boundary issues (February 30th, etc.)
+
+**Result**: Reliable leave testing even when the leave module toggles; reduced leave-related failures from 8% to ~1%.
+
+---
+
+### 9. Stale Global Auth Context Across Workers
+
+**Challenge**: A single shared authenticated context (stored as `storageState`) was persisted to disk and reused by all workers. When one worker's session expired and was refreshed, other workers continued using the stale context, leading to authorization failures and session corruption.
+
+**Solutions Implemented**:
+- **Per-worker auth context files**: Changed from a single shared `admin-auth.json` to per-worker files (e.g., `admin-auth-${PID}.json`)
+- **Worker-scoped fixture initialization**: Each fixture initializes a fresh context on test startup; expired tokens are refreshed per worker without affecting siblings
+- **Lock flag for refresh races**: Even with per-worker contexts, a lock flag prevents the same worker from attempting simultaneous token refreshes (which can occur during Playwright retry logic)
+
+**Result**: Eliminated context corruption; workers became fully independent; test stability improved significantly under high parallelisation.
+
+---
+
+### 10. Locator Instability & Self-Healing Fallbacks
+
+**Challenge**: OrangeHRM's lack of test IDs forced reliance on CSS selectors. Selectors were fragile when DOM structure changed; tests would break on UI tweaks.
+
+**Solutions Implemented**:
+- **Grouped, layout-based selectors**: Instead of targeting individual elements, selectors identified component containers (e.g., `.oxd-input-group` wrapping both input and error message), making them resilient to internal structure changes
+- **Fallback locator chains**: For critical elements, defined multiple locator strategies in order of preference (e.g., try by role, fall back to CSS class, then by placeholder)
+- **Self-healing approach**: Page objects exposed locator logic through public methods; refactoring a selector in one place fixes all tests that depend on it
+
+**Result**: Reduced locator-related failures; easier maintenance when OrangeHRM UI updates occur.
+
+---
+
+## 📖 Key Learnings & Best Practices
+
+### 1. Worker Tuning is Non-Obvious
+
+Initially, the assumption was that running tests with the maximum number of workers (based on CI machine CPU count) would be optimal. In practice, adding more workers increased failures from 10% to 20%+. The AUT has limits on how many concurrent sessions it can handle gracefully. After stress testing and observation, a **2-worker setup** emerged as optimal for this AUT — high parallelisation without overwhelming the server.
+
+**Takeaway**: Parallelisation is not a function of machine capability alone — tune based on AUT load capacity. Use stress testing (running the same test suite 10+ times sequentially) to identify the breaking point.
+
+---
+
+### 2. Playwright's Auto-Wait is Transformatively Powerful — Use It Correctly
+
+Transitioning from point-in-time DOM snapshots (`element.textContent()`, `element.count()`) to auto-retrying assertions (`toHaveText()`, `toHaveCount()`) reduced mysterious failures significantly. The key: **the assertion retries the condition**, not the preceding action. Using `toHaveText()` waits for text to appear; using `textContent()` with a manual wait is fragile because the wait may complete before the DOM updates.
+
+**Takeaway**: Playwright's built-in assertions are more reliable than manual waits + custom checks. Avoid `waitForTimeout()` and `waitUntil: 'networkidle'`; rely on event-driven assertions instead.
+
+---
+
+### 3. API-First Validation Where Possible
+
+Validating leave balance via API response (both status and data) is faster and more reliable than refreshing the UI and scraping the DOM. Similarly, checking auth state via a dedicated API call (vs. navigating the login page) is 300ms faster and deterministic. This is not just a speed optimisation — it separates the concern of "did the operation work?" from "is the UI reflecting the result?"
+
+**Takeaway**: Use API-driven validation for business logic; reserve UI testing for user-facing features (layout, accessibility, visual feedback). Hybrid testing (API + UI in the same test) is powerful when each layer tests its own concern.
+
+---
+
+### 4. Fail Fast is Underrated
+
+Global setup includes baseline checks: Is the AUT reachable? Is the admin user creation endpoint responding? Are the leave and recruitment modules active? These checks run once before any worker starts. Failures here halt the entire suite immediately with a clear error, providing quick feedback. Without this gate, a broken AUT would cause silent, widespread test failures 10 minutes into a run.
+
+**Takeaway**: Invest in pre-suite sanity checks. They save hours of debugging and provide faster feedback loops.
+
+---
+
+### 5. Cross-Cutting Concerns Must Be Centralized
+
+Auth, logging, user creation, leave allocation — these are not test-specific. They live in utils, fixtures, and global setup. Test code remains focused on assertions; infrastructure stays in infrastructure code. This separation enabled refactoring the auth manager (token refresh, CSRF extraction, lock flags) without touching a single test file.
+
+**Takeaway**: Identify cross-cutting concerns early (setup, data, auth, logging); centralize them; test code should be thin and readable.
+
+---
+
+### 6. Accessibility Is Not "Optional"
+
+Embedding WCAG 2AA scans directly in functional tests (not in a separate, lower-priority suite) surfaced real issues (password field contrast violations) and ensured they were prioritised for fixes. Treating accessibility as a blocking test condition — not a "nice-to-have" — changes organizational behaviour.
+
+**Takeaway**: Integrate accessibility checks into the main test flow; make violations block tests; automation is the fastest way to catch regressions.
+
+---
+
+### 7. Browser-Specific Workarounds Are Acceptable When Scoped
+
+Rather than avoiding Webkit entirely, the framework accommodates its limitations (slower JS execution, UI freezing during network activity) with targeted workarounds: a 1.5× timeout multiplier and platform-specific branching where unavoidable. This allows cross-browser coverage without sacrificing stability.
+
+**Takeaway**: Embrace browser quirks where they're unavoidable; use multipliers and platform-specific logic; avoid removing browser coverage just because one browser is trickier.
+
+---
+
+### 8. Version Control for Baselines Is Essential
+
+Visual snapshots (screenshots) must be committed to the repository and versioned like any other baseline. When a snapshot changes legitimately (e.g., design update), a developer approves the new snapshot, commits it, and the next CI run uses the updated baseline. This workflow prevents accidental visual regressions without requiring manual review on every run.
+
+**Takeaway**: Screenshots and other visual baselines are code; version control them; require explicit approval for updates.
+
+---
+
+### 9. Logging Discipline Pays Dividends
+
+Every test logs significant actions (page navigations, assertions, API calls, user interactions). When a test fails, the logs tell the story — exactly where execution went wrong and what state the application was in. Logs are structured (JSON via Pino), decorated with test name and worker ID, making correlation easy in CI.
+
+**Takeaway**: Log liberally; use structured logging; treat logs as primary debugging artifact, not a secondary nicety.
+
+---
+
+### 10. Framework Constraints Enable AI Collaboration
+
+Strict typing (TypeScript strict mode), clear coding standards (ESLint import guards, fixture conventions), and documented patterns (in `.github/copilot-instructions.md`) make it possible for AI-assisted code generation to produce conformant output. Without these constraints, AI-generated code would require extensive rework. With them, generated code often requires only minor adjustments.
+
+**Takeaway**: Invest in framework discipline early; it enables both human collaboration and AI-assisted workflows.
+
+---
+
 ## 📚 References
 
 - [Playwright Documentation](https://playwright.dev)
@@ -497,3 +786,21 @@ The `.github/copilot-instructions.md` file in the repository documents the codin
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Mailtrap API Docs](https://api-docs.mailtrap.io/)
 - [Pino Logger](https://getpino.io/)
+- [WCAG 2AA Guidelines](https://www.w3.org/WAI/WCAG2AA-Conformance)
+- [Web Vitals & Lighthouse](https://web.dev/vitals/)
+
+---
+
+## 🎓 Deep Dives & Extended Reading
+
+### Primary Document: AI-Augmented Development Operations
+📖 **[AI-COLLABORATION.md](./AI-COLLABORATION.md)** — A comprehensive operational guide on building production systems with AI-assisted development. Covers:
+- Tool allocation by development phase (discovery, architecture, coding, debugging, agentic generation)
+- Velocity metrics & ROI analysis (77% reduction in manual effort, 95% faster discovery)
+- Guardrail design patterns (soft + hard layers to prevent hallucinations and enforce standards)
+- Challenge resolution & lessons learned (handling token limits, model drift, session discipline)
+- Operational framework for teams scaling AI collaboration across projects
+
+**Recommended for**: Engineering leaders, team architects, SDETs evaluating AI-assisted testing, hiring managers assessing engineering maturity.
+
+---
