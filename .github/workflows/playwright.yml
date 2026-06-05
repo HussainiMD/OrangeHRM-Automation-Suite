@@ -52,29 +52,36 @@ jobs:
         echo "=== DISK SPACE AFTER CLEANUP ==="
         df -h /
 
-    - name: Analyze disk usage breakdown
+    - name: Find Space Hogs - Diagnose Disk Usage
       run: |
-        echo "=== DETAILED CACHE DIRECTORY BREAKDOWN ==="
+        echo "=== TOP 10 SPACE CONSUMERS ON ENTIRE FILESYSTEM ==="
+        du -shx /* 2>/dev/null | sort -rh | head -10
+        echo ""
+        echo "=== DETAILED /var ANALYSIS ==="
+        du -sh /var/* 2>/dev/null | sort -rh | head -10 || echo "Cannot access /var"
+        echo ""
+        echo "=== DETAILED /tmp ANALYSIS ==="
+        du -sh /tmp/* 2>/dev/null | sort -rh | head -10 || echo "Cannot access /tmp"
+        echo ""
+        echo "=== HOME DIRECTORY BREAKDOWN ==="
+        du -sh ~/* 2>/dev/null | sort -rh | head -15 || echo "Unable to analyze home directory"
+        echo ""
+        echo "=== CACHE DIRECTORIES ==="
         du -sh ~/.cache/* 2>/dev/null | sort -rh | head -10 || echo "No cache directories found"
         echo ""
-        echo "=== TOP 10 LARGEST DIRECTORIES IN HOME ==="
-        du -sh ~/* 2>/dev/null | sort -rh | head -10 || echo "Unable to analyze home directory"
+        echo "=== DOCKER ANALYSIS ==="
+        docker system df 2>/dev/null || echo "Docker not available or not consuming space"
         echo ""
-        echo "=== NPM CACHE SIZE ==="
-        du -sh ~/.npm 2>/dev/null || echo "No npm cache found"
+        echo "=== SYSTEM LOG FILES ==="
+        find /var/log -type f -size +100M 2>/dev/null | head -10 || echo "No large log files found"
         echo ""
-        echo "=== TOTAL CACHE SIZE ==="
-        du -sh ~/.cache 2>/dev/null || echo "Unable to get cache size"
+        echo "=== OLD TEST ARTIFACTS (allure-results, test-results, playwright-report) ==="
+        du -sh allure-results 2>/dev/null || echo "No allure-results"
+        du -sh test-results 2>/dev/null || echo "No test-results"
+        du -sh playwright-report 2>/dev/null || echo "No playwright-report"
         echo ""
-        echo "=== GITHUB ACTIONS RUNNER CACHE ==="
-        du -sh ~/.cache/act 2>/dev/null || echo "No act cache found"
-        du -sh ~/.cache/docker 2>/dev/null || echo "No docker cache found"
-        echo ""
-        echo "=== FIND REMAINING PLAYWRIGHT/BROWSER ARTIFACTS ==="
-        find ~/.cache -type d \( -name "*playwright*" -o -name "*chromium*" -o -name "*firefox*" -o -name "*webkit*" \) 2>/dev/null | head -5 || echo "No browser caches found"
-        echo ""
-        echo "=== FREE SPACE AFTER CLEANUP ==="
-        df -h / && echo "" && df -i /
+        echo "=== CURRENT DISK STATUS ==="
+        df -h /
 
     - name: Install dependencies
       run: |
@@ -84,23 +91,52 @@ jobs:
         echo "=== PLAYWRIGHT VERSION AFTER NPM INSTALL ==="
         npx playwright --version
 
-    - name: Aggressive cache cleanup before browser install
+    - name: Aggressive System-wide Disk Cleanup
       run: |
-        echo "=== AGGRESSIVE CACHE CLEANUP ==="
-        echo "Clearing npm cache..."
-        npm cache clean --force 2>&1 | tail -5
+        echo "=== AGGRESSIVE SYSTEM-WIDE CLEANUP STARTING ==="
         echo ""
-        echo "Clearing additional caches..."
-        rm -rf ~/.npm 2>/dev/null || echo "No npm cache to remove"
-        rm -rf ~/.cache/pip 2>/dev/null || echo "No pip cache to remove"
-        rm -rf ~/.gradle 2>/dev/null || echo "No gradle cache to remove"
-        rm -rf ~/.m2 2>/dev/null || echo "No maven cache to remove"
+        echo "=== CLEANING /var/cache ==="
+        sudo rm -rf /var/cache/apt/* 2>/dev/null && echo "✓ Cleaned apt cache" || echo "No apt cache or insufficient permissions"
+        sudo rm -rf /var/cache/yum/* 2>/dev/null && echo "✓ Cleaned yum cache" || echo "No yum cache or insufficient permissions"
         echo ""
-        echo "Removing incomplete Playwright installations..."
-        rm -rf ~/.cache/ms-playwright* 2>/dev/null || echo "No playwright cache to remove"
+        echo "=== CLEANING /var/log ==="
+        sudo truncate -s 0 /var/log/syslog 2>/dev/null && echo "✓ Truncated syslog" || echo "No syslog or insufficient permissions"
+        sudo truncate -s 0 /var/log/apt/term.log 2>/dev/null && echo "✓ Truncated apt log" || echo "No apt log"
         echo ""
-        echo "=== DISK SPACE BEFORE BROWSER INSTALL ==="
-        df -h / && echo "" && echo "Free inodes:" && df -i / | tail -1
+        echo "=== VACUUMING JOURNAL LOGS ==="
+        sudo journalctl --vacuum=time=1d 2>/dev/null && echo "✓ Vacuumed journal" || echo "journalctl not available"
+        echo ""
+        echo "=== CLEANING USER CACHES ==="
+        rm -rf ~/.npm 2>/dev/null && echo "✓ Removed npm cache" || echo "No npm cache"
+        rm -rf ~/.cache/pip 2>/dev/null && echo "✓ Removed pip cache" || echo "No pip cache"
+        rm -rf ~/.cache/gradle 2>/dev/null && echo "✓ Removed gradle cache" || echo "No gradle cache"
+        rm -rf ~/.m2 2>/dev/null && echo "✓ Removed maven cache" || echo "No maven cache"
+        echo ""
+        echo "=== CLEANING PLAYWRIGHT CACHE ==="
+        rm -rf ~/.cache/ms-playwright* 2>/dev/null && echo "✓ Removed playwright cache" || echo "No playwright cache"
+        rm -rf ~/.cache/chromium 2>/dev/null && echo "✓ Removed chromium cache" || echo "No chromium cache"
+        echo ""
+        echo "=== CLEANING TEST ARTIFACTS FROM PREVIOUS RUNS ==="
+        rm -rf allure-results/* 2>/dev/null && echo "✓ Cleaned allure-results" || echo "No allure-results"
+        rm -rf test-results/* 2>/dev/null && echo "✓ Cleaned test-results" || echo "No test-results"
+        rm -rf playwright-report/* 2>/dev/null && echo "✓ Cleaned playwright-report" || echo "No playwright-report"
+        rm -f playwright-install*.log 2>/dev/null && echo "✓ Cleaned installation logs" || echo "No install logs"
+        echo ""
+        echo "=== DOCKER CLEANUP ==="
+        docker system prune -a -f 2>/dev/null && echo "✓ Docker system pruned" || echo "Docker not available or no dangling images"
+        docker image prune -a -f 2>/dev/null && echo "✓ Docker images pruned" || echo "Docker images already cleaned"
+        echo ""
+        echo "=== CLEANING /tmp ==="
+        sudo rm -rf /tmp/* 2>/dev/null && echo "✓ Cleaned /tmp" || echo "Cannot clean /tmp or insufficient permissions"
+        echo ""
+        echo "=== POST-CLEANUP DISK SPACE ==="
+        df -h /
+        echo ""
+        echo "=== POST-CLEANUP HOME DIRECTORY SIZE ==="
+        du -sh ~/ 2>/dev/null || echo "Cannot measure home directory"
+        echo ""
+        echo "=== POST-CLEANUP FREE INODES ==="
+        df -i / | tail -1
 
     - name: Install Playwright Browsers - Pass 1
       run: |
