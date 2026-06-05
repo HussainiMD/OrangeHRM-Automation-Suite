@@ -120,6 +120,28 @@ jobs:
         sudo rm -rf /var/lib/snapd/snaps/* 2>/dev/null && echo "✓ Cleaned snapd" || echo "No snapd or error"
         echo ""
         
+        echo "=== CLEANING /usr/src (kernel sources - often 1-2GB) ==="
+        sudo rm -rf /usr/src/* 2>/dev/null && echo "✓ Deleted kernel sources" || echo "Error"
+        echo ""
+        
+        echo "=== CLEANING /usr/local (local installations - often 5-10GB) ==="
+        sudo rm -rf /usr/local/* 2>/dev/null && echo "✓ Cleaned /usr/local" || echo "Error"
+        echo ""
+        
+        echo "=== CLEANING /usr/share/doc (documentation - often 2-5GB) ==="
+        sudo rm -rf /usr/share/doc/* 2>/dev/null && echo "✓ Deleted documentation" || echo "Error"
+        echo ""
+        
+        echo "=== CLEANING UNUSED LOCALES (keep only en_US - can save 1-3GB) ==="
+        sudo find /usr/share/locale -type d ! -name "en*" -delete 2>/dev/null && echo "✓ Removed non-English locales" || echo "Error"
+        echo ""
+        
+        echo "=== AGGRESSIVE APT CLEANUP ==="
+        sudo apt-get remove -y '^linux-image-[^-]*-generic$' 2>/dev/null && echo "✓ Removed old kernels" || echo "No old kernels to remove"
+        sudo apt-get autoremove -y 2>/dev/null && echo "✓ Autoremoved unused packages" || echo "Error"
+        sudo dpkg --list | grep '^rc' | awk '{print $2}' | xargs sudo apt-get purge -y 2>/dev/null && echo "✓ Purged residual packages" || echo "Error"
+        echo ""
+        
         echo "=== CLEANING USER CACHES ==="
         rm -rf ~/.npm ~/.cache ~/.gradle ~/.m2 ~/.local/share/pip* 2>/dev/null && echo "✓ Cleaned user caches" || echo "Error"
         echo ""
@@ -141,6 +163,9 @@ jobs:
         echo ""
         echo "=== DISK USAGE BY MAJOR DIRS AFTER CLEANUP ==="
         du -shx /* 2>/dev/null | sort -rh | head -10
+        echo ""
+        echo "=== DETAILED /usr ANALYSIS AFTER CLEANUP ==="
+        du -sh /usr/* 2>/dev/null | sort -rh | head -15 || echo "Cannot measure /usr"
         echo ""
         echo "=== POST-CLEANUP HOME DIRECTORY SIZE ==="
         du -sh ~/ 2>/dev/null || echo "Cannot measure home directory"
