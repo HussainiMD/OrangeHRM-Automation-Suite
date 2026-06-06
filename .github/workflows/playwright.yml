@@ -174,6 +174,8 @@ jobs:
         df -i / | tail -1
 
     - name: Install Playwright Browsers - Pass 1
+      env:
+        NODE_OPTIONS: --dns-result-order=ipv4first
       run: |
         echo "=== STARTING PLAYWRIGHT BROWSER INSTALLATION (PASS 1) ==="
         echo "Installation start time: $(date)"
@@ -265,6 +267,8 @@ jobs:
         find ~/.cache/ms-playwright -type f -executable \( -name "chrome" -o -name "firefox" -o -name "chrome-headless-shell" \) 2>/dev/null | head -10
 
     - name: Install Playwright Browsers - Pass 2 (Retry All)
+      env:
+        NODE_OPTIONS: --dns-result-order=ipv4first
       run: |
         echo "=== RETRY: PLAYWRIGHT BROWSER INSTALLATION (PASS 2) ==="
         echo "Installation start time: $(date)"
