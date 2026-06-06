@@ -173,9 +173,14 @@ jobs:
         echo "=== POST-CLEANUP FREE INODES ==="
         df -i / | tail -1
 
-    - name: Install Playwright Browsers - Pass 1
-      env:
-        NODE_OPTIONS: --dns-result-order=ipv4first
+    - name: Disable IPv6 (force IPv4 for all network calls)
+      run: |
+        sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+        sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
+        echo "IPv6 disabled. Verifying..."
+        curl -s ifconfig.me/ip  # should show IPv4 address
+
+    - name: Install Playwright Browsers - Pass 1      
       run: |
         echo "=== STARTING PLAYWRIGHT BROWSER INSTALLATION (PASS 1) ==="
         echo "Installation start time: $(date)"
