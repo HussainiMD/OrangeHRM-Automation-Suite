@@ -21,15 +21,12 @@ The framework goes beyond functional testing: instrumented with structured loggi
 
 ## 🔗 Quick Links
 - **Repository**: [github.com/HussainiMD/OrangeHRM-Automation-Suite](https://github.com/HussainiMD/OrangeHRM-Automation-Suite)
-- 🎬 Demo: Hybrid API+UI Password Reset Flow - CLICK on the LINK
-- [![Password Reset Demo]](https://youtu.be/3aTzZftW2K0)
-- *Playwright pauses after triggering reset → Mailtrap inbox shows email landing in real time → script resumes, pulls link via API, completes recovery across browsers.*
-- 
+- 🎬 ***Demo***: Hybrid API+UI Password Reset Flow - CLICK on the LINK
+     - [![Password Reset Demo]](https://youtu.be/3aTzZftW2K0)
+          - *Playwright pauses after triggering reset → Mailtrap inbox shows email landing in real time → script resumes, pulls link via API, completes recovery across browsers.*
 - **Public Allure Dashboard**: [hussainimd.github.io/OrangeHRM-Automation-Suite](https://hussainimd.github.io/OrangeHRM-Automation-Suite/) — Live test history, trends, and flakiness data
-- <img width="1862" height="835" alt="Allur_Report_Screenshot" src="https://github.com/user-attachments/assets/8303a5c0-f1cb-484d-9536-bcb443973f5f" />
-
+     - <img width="1862" height="835" alt="Allur_Report_Screenshot" src="https://github.com/user-attachments/assets/8303a5c0-f1cb-484d-9536-bcb443973f5f" />
 - **CI/CD Workflow**: [GitHub Actions](https://github.com/HussainiMD/OrangeHRM-Automation-Suite/actions/workflows/playwright.yml) — Trigger a manual run anytime without a code push
-
 ---
 
 ## 🤖 AI-Augmented Development: Engineering Velocity & Quality
