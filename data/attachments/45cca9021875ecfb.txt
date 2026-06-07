@@ -1,0 +1,5 @@
+[14:53:02] INFO (7941): Throttled page navigation response duration: 5117.962369999965 ms or 5.12 secs
+    worker: 5
+    test: "TC_LOGIN_073 | Login | Network Resilience | App recovers from request failure during navigation"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/resilience/network-timeout.spec.ts"
