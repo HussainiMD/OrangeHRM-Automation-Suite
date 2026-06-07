@@ -12,7 +12,7 @@ env:
 jobs:
   test:
     timeout-minutes: 125
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write   # needed for gh-pages deployment
     steps:
@@ -265,40 +265,92 @@ jobs:
         echo "=== LISTING ACTUAL BINARY FILES ==="
         find ~/.cache/ms-playwright -type f -executable \( -name "chrome" -o -name "firefox" -o -name "chrome-headless-shell" \) 2>/dev/null | head -10
 
-    - name: Install Playwright Browsers - Pass 2 (Retry All)     
+    - name: Install Playwright Browsers - Pass 2 (Manual curl fallback)
       run: |
-        echo "=== RETRY: PLAYWRIGHT BROWSER INSTALLATION (PASS 2) ==="
-        echo "Installation start time: $(date)"
-        export DEBUG=pw:api
-        echo ""
-        echo "Explicitly installing: chromium firefox webkit"
-        timeout 65000 npx playwright install chromium firefox webkit 2>&1 | tee -a playwright-install.log &
-        PID=$!
-        
-        while kill -0 $PID 2>/dev/null; do
-          sleep 30
-          echo "[$(date)] Retry installation running..."
-          df -h /
-          free -h
+        echo "=== PASS 2: MANUAL BROWSER DOWNLOAD VIA CURL ==="
+        echo "Start time: $(date)"
+
+        download_and_extract() {
+          local URL=$1
+          local DEST=$2
+          local NAME=$3
+
+          if [ -d "$DEST" ] && [ "$(du -sm "$DEST" | cut -f1)" -gt 50 ]; then
+            echo "✓ $NAME already present ($(du -sh "$DEST" | cut -f1)), skipping"
+            return 0
+          fi
+
           echo ""
-        done
-        
-        wait $PID
-        EXIT_CODE=$?
+          echo "--- Downloading $NAME ---"
+          echo "URL: $URL"
+          echo "Destination: $DEST"
+          mkdir -p "$DEST"
+
+          curl -4 -fL \
+            --retry 5 \
+            --retry-delay 10 \
+            --retry-all-errors \
+            --connect-timeout 30 \
+            --max-time 300 \
+            --progress-bar \
+            -o /tmp/pw-browser.zip \
+            "$URL"
+
+          CURL_EXIT=$?
+          if [ $CURL_EXIT -ne 0 ]; then
+            echo "✗ Download failed for $NAME (curl exit: $CURL_EXIT)"
+            return 1
+          fi
+
+          echo "Downloaded: $(du -sh /tmp/pw-browser.zip | cut -f1)"
+
+          echo "Extracting $NAME..."
+          unzip -q /tmp/pw-browser.zip -d "$DEST"
+          UNZIP_EXIT=$?
+          rm -f /tmp/pw-browser.zip
+
+          if [ $UNZIP_EXIT -ne 0 ]; then
+            echo "✗ Extraction failed for $NAME"
+            return 1
+          fi
+
+          echo "✓ $NAME installed ($(du -sh "$DEST" | cut -f1))"
+          return 0
+        }
+
+        FAILED=0
+
+        download_and_extract \
+          "https://cdn.playwright.dev/builds/cft/147.0.7727.15/linux64/chrome-linux64.zip" \
+          "/home/runner/.cache/ms-playwright/chromium-1217" \
+          "Chromium" || FAILED=1
+
+        download_and_extract \
+          "https://cdn.playwright.dev/builds/cft/147.0.7727.15/linux64/chrome-headless-shell-linux64.zip" \
+          "/home/runner/.cache/ms-playwright/chromium_headless_shell-1217" \
+          "Chrome Headless Shell" || FAILED=1
+
+        download_and_extract \
+          "https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1511/firefox-ubuntu-24.04.zip" \
+          "/home/runner/.cache/ms-playwright/firefox-1511" \
+          "Firefox" || FAILED=1
+
+        download_and_extract \
+          "https://cdn.playwright.dev/dbazure/download/playwright/builds/webkit/2272/webkit-ubuntu-24.04.zip" \
+          "/home/runner/.cache/ms-playwright/webkit-2272" \
+          "WebKit" || FAILED=1
+
+        download_and_extract \
+          "https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip" \
+          "/home/runner/.cache/ms-playwright/ffmpeg-1011" \
+          "FFmpeg" || FAILED=1
+
         echo ""
-        echo "=== RETRY INSTALLATION COMPLETED (PASS 2) ==="
-        echo "Exit code: $EXIT_CODE"
-        echo "Installation end time: $(date)"
-        echo ""
-        echo "=== FINAL BROWSER VERIFICATION ==="
-        echo "Chromium:"
-        find ~/.cache -type d -name "chromium-*" 2>/dev/null && echo "✓ Chromium installed" || echo "✗ Chromium missing"
-        echo "Firefox:"
-        find ~/.cache -type d -name "firefox-*" 2>/dev/null && echo "✓ Firefox installed" || echo "✗ Firefox missing"
-        echo "WebKit:"
-        find ~/.cache -type d -name "webkit-*" 2>/dev/null && echo "✓ WebKit installed" || echo "✗ WebKit missing"
-        
-        exit $EXIT_CODE
+        echo "=== INSTALLING SYSTEM DEPS ==="
+        npx playwright install-deps chromium firefox webkit
+
+        echo "End time: $(date)"
+        exit $FAILED
    
     - name: Pre-Test Browser Executable Verification
       run: |
