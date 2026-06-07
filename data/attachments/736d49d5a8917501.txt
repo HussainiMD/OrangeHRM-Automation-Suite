@@ -1,0 +1,3 @@
+[16:12:23] INFO (10986): found admin auth json path: ./storage/admin-auth-10986.json
+[16:12:23] INFO (10986): PID: 10986 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[16:12:23] INFO (10986): No need of Auth as current authentication is valid

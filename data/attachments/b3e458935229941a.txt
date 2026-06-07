@@ -1,5 +1,0 @@
-[14:47:47] INFO (7941): Total available leaves "before applying" are 20
-    worker: 5
-    test: "TC_LOGIN_008 | Leave Management | Apply Leave | Invalid leave dates are rejected"
-    retry: 0
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/leave/leave-workflow-subordinate.spec.ts"

@@ -1,0 +1,4 @@
+[15:50:13] INFO (5381): found admin auth json path: ./storage/admin-auth-5381.json
+[15:50:13] INFO (5381): PID: 5381 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:50:13] INFO (5381): No need of Auth as current authentication is valid
+[15:50:20] INFO (5381): Add Employee interceptor - captured (backend) employee number: 350 & employee ID: 0553

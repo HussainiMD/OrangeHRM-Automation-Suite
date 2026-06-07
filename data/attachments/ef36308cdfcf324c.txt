@@ -1,0 +1,5 @@
+[15:48:50] INFO (5380): Total available leaves "before applying" are 10
+    worker: 0
+    test: "TC_LOGIN_007 | Leave Management | Apply Leave | Applied leave appears in leave history"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/leave/leave-workflow-subordinate.spec.ts"

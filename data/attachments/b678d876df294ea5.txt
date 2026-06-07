@@ -1,5 +1,0 @@
-[14:57:10] WARN (11169): logo details: width-275, height-53.53125
-    worker: 8
-    test: "TC_LOGIN_028 | Authentication | Login | OrangeHRM logo is displayed correctly"
-    retry: 0
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/auth/login-ui.spec.ts"

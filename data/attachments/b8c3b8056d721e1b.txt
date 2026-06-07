@@ -1,0 +1,11 @@
+[15:47:38] INFO (5380): PID: 5380 - Starting the process for a new Auth token
+[15:47:39] INFO (5380): Refreshing local globalAPIRequestContext reference
+[15:47:39] INFO (5380): found admin auth json path: ./storage/admin-auth-5380.json
+[15:47:40] INFO (5380): PID: 5380 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:47:40] INFO (5380): No need of Auth as current authentication is valid
+[15:47:40] INFO (5380): found admin auth json path: ./storage/admin-auth-5380.json
+[15:47:40] INFO (5380): PID: 5380 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[15:47:40] INFO (5380): No need of Auth as current authentication is valid
+[15:47:40] INFO (5380): does "user_97d2220b-8dba-48ff-9a16-d83861a78e7" user exists? false
+[15:47:40] INFO (5380): using employee number 347 for adding new user
+[15:47:41] INFO (5380): add user request API response status is 200
