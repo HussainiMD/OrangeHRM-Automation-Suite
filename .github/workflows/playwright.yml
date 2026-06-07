@@ -312,7 +312,8 @@ jobs:
       if: always()
       id: check_results
       run: |
-        if [ -d "allure-results" ] && [ "$(ls -A allure-results)" ]; then
+        count=$(find allure-results -name "*.json" 2>/dev/null | wc -l)
+        if [ "$count" -gt "3" ]; then        # at least a few real result files
           echo "has_results=true" >> $GITHUB_OUTPUT
         else
           echo "has_results=false" >> $GITHUB_OUTPUT
@@ -335,7 +336,7 @@ jobs:
         path: allure-results/history
         workflow: playwright.yml
         branch: main
-        workflow_conclusion: any        # picks up artifacts from failed runs too
+        workflow_conclusion: success   # ← only pull from clean runs
         search_artifacts: true        # scan through previous runs to find the artifact by name
         if_no_artifact_found: warn   # won't fail on first ever run
         
@@ -360,7 +361,7 @@ jobs:
         overwrite: true   
 
     - name: Upload Allure Report
-      if: always() && steps.check_results.outputs.has_results == 'true'
+      if: (job.status == 'success' || job.status == 'failure') && steps.check_results.outputs.has_results == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: allure-report
@@ -368,7 +369,10 @@ jobs:
         retention-days: 14
 
     - name: Deploy Allure Report to GitHub Pages
-      if: always() && steps.check_results.outputs.has_results == 'true' && github.event_name != 'pull_request'
+      if: |
+        (job.status == 'success' || job.status == 'failure') &&
+        steps.check_results.outputs.has_results == 'true' &&
+        github.event_name != 'pull_request'
       uses: peaceiris/actions-gh-pages@v4
       with:
        github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub injects it automatically
