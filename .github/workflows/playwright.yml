@@ -173,14 +173,10 @@ jobs:
         echo "=== POST-CLEANUP FREE INODES ==="
         df -i / | tail -1
 
-    - name: Disable IPv6 (force IPv4 for all network calls)
-      run: |
-        sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
-        sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
-        echo "IPv6 disabled. Verifying..."
-        curl -s ifconfig.me/ip  # should show IPv4 address
 
-    - name: Install Playwright Browsers - Pass 1      
+    - name: Install Playwright Browsers - Pass 1 
+      env:
+        PLAYWRIGHT_DOWNLOAD_HOST: https://playwright.azureedge.net     
       run: |
         echo "=== STARTING PLAYWRIGHT BROWSER INSTALLATION (PASS 1) ==="
         echo "Installation start time: $(date)"
@@ -271,16 +267,18 @@ jobs:
         echo "=== LISTING ACTUAL BINARY FILES ==="
         find ~/.cache/ms-playwright -type f -executable \( -name "chrome" -o -name "firefox" -o -name "chrome-headless-shell" \) 2>/dev/null | head -10
 
-    - name: Install Playwright Browsers - Pass 2 (Retry All)
+    - name: Install Playwright Browsers - Pass 2 (Retry All)     
       env:
+        PLAYWRIGHT_DOWNLOAD_HOST: https://cdn.playwright.dev
         NODE_OPTIONS: --dns-result-order=ipv4first
+        PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT: 60000
       run: |
         echo "=== RETRY: PLAYWRIGHT BROWSER INSTALLATION (PASS 2) ==="
         echo "Installation start time: $(date)"
         export DEBUG=pw:api
         echo ""
         echo "Explicitly installing: chromium firefox webkit"
-        timeout 300 npx playwright install chromium firefox webkit 2>&1 | tee -a playwright-install.log &
+        timeout 65000 npx playwright install chromium firefox webkit 2>&1 | tee -a playwright-install.log &
         PID=$!
         
         while kill -0 $PID 2>/dev/null; do
