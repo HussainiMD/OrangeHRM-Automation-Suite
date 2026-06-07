@@ -305,7 +305,7 @@ jobs:
           echo "Downloaded: $(du -sh /tmp/pw-browser.zip | cut -f1)"
 
           echo "Extracting $NAME..."
-          unzip -q /tmp/pw-browser.zip -d "$DEST"
+          unzip -qo /tmp/pw-browser.zip -d "$DEST"
           UNZIP_EXIT=$?
           rm -f /tmp/pw-browser.zip
 
