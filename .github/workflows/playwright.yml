@@ -12,7 +12,7 @@ env:
 jobs:
   test:
     timeout-minutes: 125
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: write   # needed for gh-pages deployment
     steps:
@@ -174,9 +174,7 @@ jobs:
         df -i / | tail -1
 
 
-    - name: Install Playwright Browsers - Pass 1 
-      env:
-        PLAYWRIGHT_DOWNLOAD_HOST: https://playwright.azureedge.net     
+    - name: Install Playwright Browsers - Pass 1       
       run: |
         echo "=== STARTING PLAYWRIGHT BROWSER INSTALLATION (PASS 1) ==="
         echo "Installation start time: $(date)"
@@ -268,10 +266,6 @@ jobs:
         find ~/.cache/ms-playwright -type f -executable \( -name "chrome" -o -name "firefox" -o -name "chrome-headless-shell" \) 2>/dev/null | head -10
 
     - name: Install Playwright Browsers - Pass 2 (Retry All)     
-      env:
-        PLAYWRIGHT_DOWNLOAD_HOST: https://cdn.playwright.dev
-        NODE_OPTIONS: --dns-result-order=ipv4first
-        PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT: 60000
       run: |
         echo "=== RETRY: PLAYWRIGHT BROWSER INSTALLATION (PASS 2) ==="
         echo "Installation start time: $(date)"
