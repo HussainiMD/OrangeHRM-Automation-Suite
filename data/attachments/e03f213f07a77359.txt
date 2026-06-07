@@ -1,3 +1,0 @@
-[15:54:24] INFO (7126): PID: 7126 - Starting the process for a new Auth token
-[15:54:26] INFO (7126): Refreshing local globalAPIRequestContext reference
-[15:55:34] INFO (7126): Add Employee interceptor - captured (backend) employee number: 366 & employee ID: 0569

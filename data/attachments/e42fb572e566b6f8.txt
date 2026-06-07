@@ -1,9 +1,0 @@
-[16:17:23] INFO (12517): metrics got after listening to browser events for performance
-    worker: 18
-    test: "TC_LOGIN_051-002 | Performance | Login | Browser timing metrics measurement"
-    retry: 0
-    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/performance/response-time.spec.ts"
-    fullLoad: 1555.7925340000002
-    domContentLoaded: 1554.6350119999997
-    ttfb: 401
-    metricUsed: "FULL_LOAD"
