@@ -11,7 +11,7 @@ env:
 
 jobs:
   test:
-    timeout-minutes: 125
+    timeout-minutes: 75
     runs-on: ubuntu-latest
     permissions:
       contents: write   # needed for gh-pages deployment
@@ -19,98 +19,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0    # full history needed for git push to work correctly
-
-    - name: Check system resources before setup
-      run: |
-        echo "=== DISK SPACE BEFORE SETUP ==="
-        df -h /
-        echo ""
-        echo "=== MOUNT INFORMATION ==="
-        mount | grep -E '(/ |/tmp|/var)'
-        echo ""
-        echo "=== INODE USAGE ==="
-        df -i /
-        echo ""
-        echo "=== HOME DIRECTORY SIZE ==="
-        du -sh ~/ 2>/dev/null || echo "Cannot access home directory"
+        fetch-depth: 0    # full history needed for git push to work correctly    
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '24' # currently v24 is on my machine
-        cache: 'npm'
-
-    - name: Clean up Playwright cache and previous installations
-      run: |
-        echo "=== CLEANING UP PLAYWRIGHT CACHE ==="
-        rm -rf ~/.cache/ms-playwright* 2>/dev/null || echo "No playwright cache to clean"
-        rm -rf ~/.cache/chromium 2>/dev/null || echo "No chromium cache to clean"
-        rm -rf /tmp/playwright* 2>/dev/null || echo "No playwright temp files to clean"
-        echo "Cleanup completed"
-        echo ""
-        echo "=== DISK SPACE AFTER CLEANUP ==="
-        df -h /
-
-    - name: Diagnose Disk Usage BEFORE Cleanup
-      run: |
-        echo "=== DISK SPACE BEFORE ANY CLEANUP ==="
-        df -h /
-        echo ""
-        echo "=== TOP 10 SPACE CONSUMERS ON ENTIRE FILESYSTEM ==="
-        du -shx /* 2>/dev/null | sort -rh | head -10
-        echo ""
-        echo "=== DETAILED /var ANALYSIS ==="
-        du -sh /var/* 2>/dev/null | sort -rh | head -15 || echo "Cannot access /var"
-        echo ""
-        echo "=== DETAILED /opt ANALYSIS ==="
-        du -sh /opt/* 2>/dev/null | sort -rh | head -10 || echo "No /opt directory"
-        echo ""
-        echo "=== DETAILED /usr/local ANALYSIS ==="
-        du -sh /usr/local/* 2>/dev/null | sort -rh | head -10 || echo "No /usr/local directory"
-        echo ""
-        echo "=== DETAILED /tmp ANALYSIS ==="
-        du -sh /tmp/* 2>/dev/null | sort -rh | head -10 || echo "Cannot access /tmp"
-        echo ""
-        echo "=== /var/lib/apt/lists SIZE ==="
-        du -sh /var/lib/apt/lists 2>/dev/null || echo "No apt lists"
-        echo ""
-        echo "=== /var/lib/docker SIZE ==="
-        du -sh /var/lib/docker 2>/dev/null || echo "No docker lib"
-        echo ""
-        echo "=== /var/lib/snapd SIZE ==="
-        du -sh /var/lib/snapd 2>/dev/null || echo "No snapd"
-        echo ""
-        echo "=== HOME DIRECTORY BREAKDOWN ==="
-        du -sh ~/* 2>/dev/null | sort -rh | head -15 || echo "Unable to analyze home directory"
-        echo ""
-        echo "=== VERY LARGE FILES (> 500MB) ==="
-        find / -type f -size +500M 2>/dev/null | head -20 || echo "No files >500MB found"
+        cache: 'npm'        
 
     - name: Install dependencies
       run: |
         echo "=== NPM INSTALL ===" 
-        npm ci --loglevel=verbose
-        echo ""
+        npm ci 
         echo "=== PLAYWRIGHT VERSION AFTER NPM INSTALL ==="
         npx playwright --version
 
-    - name: Aggressive System-wide Disk Cleanup
-      run: |
-        echo "=== AGGRESSIVE SYSTEM-WIDE CLEANUP STARTING ==="
-        echo ""
-        echo "=== CLEANING /var/lib/apt/lists ==="
-        sudo rm -rf /var/lib/apt/lists/* 2>/dev/null && echo "✓ Cleaned apt lists" || echo "Error cleaning apt lists"
-        sudo apt-get clean 2>/dev/null && echo "✓ Cleaned apt cache" || echo "apt-get clean failed"
-        sudo apt-get autoclean 2>/dev/null && echo "✓ Autocleaned apt" || echo "apt-get autoclean failed"
-        echo ""
-        
-        echo "=== CLEANING /var/cache ==="
-        sudo rm -rf /var/cache/apt/* 2>/dev/null && echo "✓ Cleaned apt cache" || echo "Error"
-        sudo rm -rf /var/cache/yum/* 2>/dev/null && echo "✓ Cleaned yum cache" || echo "Error"
-        sudo rm -rf /var/cache/apk/* 2>/dev/null && echo "✓ Cleaned apk cache" || echo "Error"
-        echo ""
-        
+    - name: Disk Cleanup
+      run: |       
         echo "=== CLEANING /var/log ==="
         sudo find /var/log -type f -name "*.log" -delete 2>/dev/null && echo "✓ Deleted all log files" || echo "Error"
         sudo find /var/log -type f -name "*.gz" -delete 2>/dev/null && echo "✓ Deleted compressed logs" || echo "Error"
@@ -128,26 +53,12 @@ jobs:
         sudo rm -rf /usr/local/* 2>/dev/null && echo "✓ Cleaned /usr/local" || echo "Error"
         echo ""
         
-        echo "=== CLEANING /usr/share/doc (documentation - often 2-5GB) ==="
-        sudo rm -rf /usr/share/doc/* 2>/dev/null && echo "✓ Deleted documentation" || echo "Error"
-        echo ""
-        
         echo "=== CLEANING UNUSED LOCALES (keep only en_US - can save 1-3GB) ==="
         sudo find /usr/share/locale -type d ! -name "en*" -delete 2>/dev/null && echo "✓ Removed non-English locales" || echo "Error"
-        echo ""
-        
-        echo "=== AGGRESSIVE APT CLEANUP ==="
-        sudo apt-get remove -y '^linux-image-[^-]*-generic$' 2>/dev/null && echo "✓ Removed old kernels" || echo "No old kernels to remove"
-        sudo apt-get autoremove -y 2>/dev/null && echo "✓ Autoremoved unused packages" || echo "Error"
-        sudo dpkg --list | grep '^rc' | awk '{print $2}' | xargs sudo apt-get purge -y 2>/dev/null && echo "✓ Purged residual packages" || echo "Error"
-        echo ""
+        echo ""        
         
         echo "=== CLEANING USER CACHES ==="
         rm -rf ~/.npm ~/.cache ~/.gradle ~/.m2 ~/.local/share/pip* 2>/dev/null && echo "✓ Cleaned user caches" || echo "Error"
-        echo ""
-        
-        echo "=== CLEANING TEST ARTIFACTS ==="
-        rm -rf allure-results test-results playwright-report playwright-install*.log 2>/dev/null && echo "✓ Cleaned test artifacts" || echo "Error"
         echo ""
         
         echo "=== DOCKER CLEANUP ==="
@@ -161,17 +72,9 @@ jobs:
         echo "=== POST-CLEANUP DISK SPACE ==="
         df -h /
         echo ""
-        echo "=== DISK USAGE BY MAJOR DIRS AFTER CLEANUP ==="
-        du -shx /* 2>/dev/null | sort -rh | head -10
-        echo ""
-        echo "=== DETAILED /usr ANALYSIS AFTER CLEANUP ==="
-        du -sh /usr/* 2>/dev/null | sort -rh | head -15 || echo "Cannot measure /usr"
-        echo ""
         echo "=== POST-CLEANUP HOME DIRECTORY SIZE ==="
         du -sh ~/ 2>/dev/null || echo "Cannot measure home directory"
-        echo ""
-        echo "=== POST-CLEANUP FREE INODES ==="
-        df -i / | tail -1
+        echo ""        
 
 
     - name: Install Playwright Browsers - Pass 1       
@@ -182,42 +85,18 @@ jobs:
         export DEBUG=pw:api
         echo ""
         echo "Installing all required browsers: chromium, firefox, webkit"
-        timeout 300 npx playwright install chromium firefox webkit --with-deps 2>&1 | tee playwright-install.log &
-        PID=$!
-        
-        # Monitor the process and print resource usage every 30 seconds
-        while kill -0 $PID 2>/dev/null; do
-          sleep 30
-          echo "[$(date)] Installation still running (PID: $PID)..."
-          echo "Disk space:"
-          df -h /
-          echo "Free inodes:"
-          df -i / | tail -1
-          echo "Memory usage:"
-          free -h
-          echo "Processes using most memory:"
-          ps aux --sort=-%mem | head -6
-          echo ""
-        done
+        timeout 100 npx playwright install --with-deps 2>&1 | tee playwright-install.log &
+        PID=$!        
         
         wait $PID
         EXIT_CODE=$?
         echo ""
         echo "=== PLAYWRIGHT INSTALLATION COMPLETED (PASS 1) ==="
         echo "Exit code: $EXIT_CODE"
-        echo "Installation end time: $(date)"
-        echo ""
-        echo "=== DISK SPACE AFTER BROWSER INSTALLATION ==="
-        df -h /
+        echo "Installation end time: $(date)"        
         echo ""
         echo "=== INSTALLED BROWSER LOCATION ==="
         find ~/.cache -type d -name "ms-playwright*" 2>/dev/null | head -5 || echo "No browser installations found"
-        echo ""
-        echo "=== BROWSER SIZE BREAKDOWN ==="
-        du -sh ~/.cache/ms-playwright* 2>/dev/null | sort -rh || echo "No browser caches to measure"
-        echo ""
-        echo "=== PLAYWRIGHT CACHE CONTENTS ==="
-        ls -la ~/.cache/ms-playwright* 2>/dev/null | head -20 || echo "No browser cache found"
         echo ""
         echo "=== INSTALLATION LOG TAIL ==="
         tail -50 playwright-install.log
@@ -242,9 +121,6 @@ jobs:
         echo "=== LISTING ALL INSTALLED BROWSERS ==="
         ls -1 ~/.cache/ms-playwright/ 2>/dev/null | grep -E "^(chromium|firefox|webkit)" || echo "No browser directories found"
         echo ""
-        echo "=== FULL PLAYWRIGHT CACHE STRUCTURE ==="
-        tree -L 2 ~/.cache/ms-playwright/ 2>/dev/null || find ~/.cache/ms-playwright -maxdepth 2 -type d | sort
-        echo ""
         echo "=== VERIFYING EXECUTABLE FILES EXIST ==="
         echo "Chromium executable:"
         find ~/.cache/ms-playwright/chromium-* -name "chrome-linux64" -type d 2>/dev/null && \
@@ -260,10 +136,7 @@ jobs:
         echo "=== CHECKING FILE SIZES (should be > 100MB for each browser) ==="
         du -sh ~/.cache/ms-playwright/chromium-* 2>/dev/null | tail -1
         du -sh ~/.cache/ms-playwright/firefox-* 2>/dev/null | tail -1
-        du -sh ~/.cache/ms-playwright/webkit-* 2>/dev/null | tail -1
-        echo ""
-        echo "=== LISTING ACTUAL BINARY FILES ==="
-        find ~/.cache/ms-playwright -type f -executable \( -name "chrome" -o -name "firefox" -o -name "chrome-headless-shell" \) 2>/dev/null | head -10
+        du -sh ~/.cache/ms-playwright/webkit-* 2>/dev/null | tail -1        
 
     - name: Install Playwright Browsers - Pass 2 (Manual curl fallback)
       run: |
@@ -435,7 +308,17 @@ jobs:
         path: playwright-report/
         retention-days: 14
     
-    - name: Upload Playwright traces  
+    - name: Check if Allure results exist
+      if: always()
+      id: check_results
+      run: |
+        if [ -d "allure-results" ] && [ "$(ls -A allure-results)" ]; then
+          echo "has_results=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_results=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Upload Playwright traces
       if: always() 
       uses: actions/upload-artifact@v4
       with:
@@ -444,7 +327,7 @@ jobs:
         retention-days: 7
 
     - name: Download previous Allure history
-      if: always()
+      if: always() && steps.check_results.outputs.has_results == 'true'
       continue-on-error: true  # won't faill if first run
       uses: dawidd6/action-download-artifact@v6
       with:
@@ -455,20 +338,20 @@ jobs:
         workflow_conclusion: any        # picks up artifacts from failed runs too
         search_artifacts: true        # scan through previous runs to find the artifact by name
         if_no_artifact_found: warn   # won't fail on first ever run
-    
+        
     - name: Generate Allure Report # We do NOT need traces ZIPs for allure report. Anything more than 10 MB can cause issues (FREE Limit: 100 MB), so deleting
-      if: always()
-      run: | 
+      if: always() && steps.check_results.outputs.has_results == 'true'
+      run: |
         find allure-results/ -name "*.zip" -size +10M -delete
         npx --yes --package=allure-commandline allure generate allure-results --clean --output allure-report
       # --package=allure-commandline tells npx which package to pull, allure is the actual binary to run. --yes skips the install confirmation prompt on CI.    
 
     - name: Ensure Allure history directory exists
-      if: always()
+      if: always() && steps.check_results.outputs.has_results == 'true'
       run: mkdir -p allure-report/history
 
     - name: Upload Allure history for next run
-      if: always()
+      if: always() && steps.check_results.outputs.has_results == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: allure-history
@@ -477,15 +360,15 @@ jobs:
         overwrite: true   
 
     - name: Upload Allure Report
-      if: always()
+      if: always() && steps.check_results.outputs.has_results == 'true'
       uses: actions/upload-artifact@v4
       with:
-       name: allure-report
-       path: allure-report/
-       retention-days: 14
+        name: allure-report
+        path: allure-report/
+        retention-days: 14
 
     - name: Deploy Allure Report to GitHub Pages
-      if: always() && github.event_name != 'pull_request'
+      if: always() && steps.check_results.outputs.has_results == 'true' && github.event_name != 'pull_request'
       uses: peaceiris/actions-gh-pages@v4
       with:
        github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub injects it automatically
