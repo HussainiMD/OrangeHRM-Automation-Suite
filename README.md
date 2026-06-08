@@ -5,8 +5,8 @@
 This is a **production-grade UI automation framework** for OrangeHRM, an enterprise HR management system used by thousands of organisations globally. It validates critical business workflows — employee lifecycle management, authentication, role-based access control, leave processing, security hardening, and system resilience — across three major browsers with zero manual intervention.
 
 The framework goes beyond functional testing: instrumented with structured logging, automated accessibility scanning (WCAG 2AA), email interception, credential leakage detection, and Lighthouse performance assertions. It is architected as a portfolio demonstration of what a senior SDET produces at scale — not a collection of scripts, but a maintainable engineering system.
-## What Makes This Different From a Tutorial Project
 
+## What Makes This Different From a Tutorial Project
 | Decision | Why |
 |----------|-----|
 | API layer for test data setup | UI-driven setup is slow and tests the wrong thing |
@@ -18,10 +18,9 @@ The framework goes beyond functional testing: instrumented with structured loggi
 | All secrets externalized | Zero hardcoded credentials — CI-safe by design |
 
 ---
-
 ## 🔗 Quick Links
 - **Repository**: [github.com/HussainiMD/OrangeHRM-Automation-Suite](https://github.com/HussainiMD/OrangeHRM-Automation-Suite)
-- 🎬 ***Demo***: Hybrid API+UI Password Reset Flow - CLICK on the LINK
+- 🎬 ***Demo***: Hybrid API+UI Password Reset Flow - CLICK on the LINK below
      - [![Password Reset Demo]](https://youtu.be/3aTzZftW2K0)
           - *Playwright pauses after triggering reset → Mailtrap inbox shows email landing in real time → script resumes, pulls link via API, completes recovery across browsers.*
 - **Public Allure Dashboard**: [hussainimd.github.io/OrangeHRM-Automation-Suite](https://hussainimd.github.io/OrangeHRM-Automation-Suite/) — Live test history, trends, and flakiness data
@@ -57,41 +56,122 @@ This framework demonstrates **structured AI collaboration** at scale — using C
 - **Built-in accessibility compliance gate** — Automated WCAG 2AA scanning on every auth and PIM flow; discovered password field contrast violations (3.2:1 vs. required 4.5:1) before release
 - **Instant post-incident root cause data** — Video, DOM trace, and screenshot captured on every failure; reduced average debugging time from ~hours to ~minutes
 - **Security coverage as a first-class concern** — Credential leakage scanning across all HTTP traffic (including redirects and resource loads), CSRF token validation, and sensitive field masking checks run on every regression cycle
+---
+
+## 🐛 Bugs & Issues Discovered in OrangeHRM
+This framework identified several functional, security, and UX defects in OrangeHRM that should be addressed:
+
+### Functional Issues
+| Issue | Impact | Recommendation |
+|---|---|---|
+| **Auto-Generated Employee ID Collision** | When a user stays on the Add Employee form for extended periods, the auto-generated employee ID becomes rejected as "already exists". IDs should use sequence numbers with sufficient entropy or UUIDs to prevent collisions under concurrent operations. | Generate IDs using UUID or secure random sequences; avoid static sequences that collide under load. |
+| **Stale Hiring Manager Assignment** | When a vacancy is active and the assigned hiring manager leaves/is fired, the system marks the hiring manager as `[deleted]` instead of automatically escalating to the supervisor. This breaks recruitment tracking and loses valuable HR effort. | Implement supervisor escalation on hiring manager termination; maintain recruitment pipeline continuity. |
+| **Unauthorized Access Error Recovery** | Non-admin users attempting to access admin modules receive a 500 error instead of a 403 Forbidden on back-button or home navigation. This forces users to clear cookies, degrading UX. | Return proper 403 HTTP status and render a user-friendly error page (not 500); avoid forcing cookie clears. |
+| **User Creation Password Validation** | When adding a new employee with user account creation, submitting without a password triggers a network request, then shows an error alert instead of validating client-side first. | Add client-side password validation on the form before submission; fail fast with UI error messages. |
+| **Session Timeout Inactivity** | Sessions do not auto-logout on inactivity. Even when a session expires, the UI does not respond to user actions by logging them out; stale tokens are still issued. | Implement inactivity timeout with client-side awareness; validate token freshness on every action. |
+| **Profile Picture Upload Validation** | The profile picture upload field accepts any file type, not just images. Allows uploading arbitrary files (docs, PDFs, executables), posing security risks. | Restrict file upload to MIME types: `image/jpeg`, `image/png`, `image/gif`, `image/webp`; validate client and server-side. |
+| **Emergency Contact Self-Assignment** | Any user can add themselves as an emergency contact, which is inappropriate and violates data integrity. | Restrict emergency contact creation to HR/managers only; prevent users from adding their own contacts. |
+| **Employee ID Format Validation** | Employee ID accepts arbitrary gibberish instead of enforcing a format or pattern. IDs should be alphanumeric with constraints. | Define and enforce employee ID format (e.g., `EMP-\d{5}`); validate on both client and API. |
+
+### Security Issues
+| Issue | Impact | Recommendation |
+|---|---|---|
+| **No DDOS/Rate Limiting** | There is no detection or mitigation for distributed denial-of-service (DDOS) attacks or brute-force login attempts. Multiple failed login attempts are not rate-limited. | Implement rate limiting (e.g., max 5 login attempts per IP per 15 minutes), IP-based throttling, or CAPTCHA after N failures. |
+| **Sensitive Data Exposure** | No field masking for sensitive data (e.g., SSN, tax ID); displayed in plain text in employee records. | Mask sensitive fields in UI; display only last 4 digits; enforce role-based visibility (HR/Payroll only). |
+| **Back-Button Session Leak** | After logout, the browser back-button can re-display cached pages with sensitive data (e.g., employee payroll info). | Set `Cache-Control: no-cache, no-store, must-revalidate` on all sensitive endpoints; use anti-caching headers. |
+
+### Usability Issues
+| Issue | Impact | Recommendation |
+|---|---|---|
+| **User Menu Keyboard Inaccessibility** | Top-right user menu is not keyboard-navigable (no Tab key support, no `tabindex`). Violates WCAG 2AA keyboard accessibility. | Add `tabindex="0"` to menu trigger; implement arrow-key navigation in dropdown; test with keyboard-only users. |
+| **Browser Back-Button UX** | After login, pressing browser back button returns to login page, but re-entering credentials does not refresh/redirect to dashboard — the page remains on login. | On successful login, replace history entry (use `history.replaceState()`); redirect to dashboard; prevent back-button loops. |
+| **Password Field Contrast Violation** | Password field label has a contrast ratio of 3.2:1 against its background — below the WCAG 2AA minimum of 4.5:1 for small text. | Increase contrast to 4.5:1+; use darker label color or lighter background; validate with Axe-Core. |
+| **Username Display Clutter** | Long usernames displayed next to profile picture in header create layout overflow and clunky presentation. | Truncate username (e.g., first 20 chars) with ellipsis; show full name on hover via tooltip. |
+
+### Performance Issues
+Chrome DevTools Lighthouse metrics show areas for improvement:
+
+| Metric | Current | Target | Action |
+|---|---|---|---|
+| **LCP (Largest Contentful Paint)** | Varies | < 4s | Lazy-load off-screen images; reduce main bundle size |
+| **CLS (Cumulative Layout Shift)** | Varies | < 0.25 | Pre-allocate space for dynamic content; avoid layout thrashing |
+| **TBT (Total Blocking Time)** | Varies | < 600ms | Break long tasks into smaller chunks; defer non-critical work |
+| **FCP (First Contentful Paint)** | Varies | < 3s | Inline critical CSS; defer non-critical scripts |
 
 ---
 
 ## 🏗️ Architecture & Design Decisions
 
-### Layered Architecture
+### 📁 Project Structure
 
 ```
-┌─ Test Layer (tests/ui/regression/**/*.spec.ts)
-│    Test logic, assertions, Allure annotations
-│    └─ Uses fixtures for pre-authenticated contexts
+.
+├── config/
+│   └── playwright.config.ts            # Multi-browser, parallel workers, reporters,
+│                                       # environment-aware timeouts, baseURL
 │
-├─ Fixture Layer (fixtures/*.fixture.ts)
-│    Dependency-injected browser contexts per role
-│    (adminUserAuthContext, essUserAuthPage)
-│    Auth gate assertion on fixture init; logout with error handling on teardown
+├── pages/                            # UI interaction encapsulation; selectors never leak into tests
+│   ├── LoginPage.ts                    # CSRF extraction, credential submission
+│   ├── NavigationPage.ts               # Sidebar, role-based menu traversal
+│   ├── PimEmployeeListPage.ts          # Employee list, search, add/edit actions
+│   ├── AddEmployeePage.ts              # Employee form, photo upload, validation
+│   ├── EditUserPage.ts                 # User account creation from employee record
+│   ├── UserListPage.ts                 # Admin user list and filters
+│   └── components/
+│       └── UserMenu.ts                 # Logout, profile menu widget
 │
-├─ Page Object Model (pages/*.ts)
-│    UI interaction encapsulation; selectors never leak into tests
-│    └─ Components (pages/components/*.ts) — Reusable widgets (UserMenu, forms)
+├── fixtures/                         # Uses fixtures for pre-authenticated contexts
+│   ├── admin-auth.fixture.ts           # Admin-role context: auth gate + teardown logout
+│   └── essUser-auth.fixture.ts         # ESS-role context: auth gate + teardown logout
+├── tests/
+│   ├── base.ts                         # Extended Playwright test with logger fixture
+│   ├── types/
+│   │   ├── credentials.ts              # {username, password} type
+│   │   ├── BasicEmployeeType.ts        # Employee creation payload
+│   │   └── EmployeeDetailsType.ts      # Employee metadata (ID, employee number)
+│   ├── errors/
+│   │   └── duplicate-user-error.ts     # Domain-specific error (not generic Error)
+│   └── ui/
+│       ├── smoke/
+│       │   └── [login, basic navigation]
+│       └── regression/
+│           ├── auth/                   # Login, session management, timeout, back-button
+│           ├── pim/                    # Add employee, validation, photo, responsive
+│           ├── authorization/          # Supervisor vs. subordinate access
+│           ├── security/               # Credential leakage, CSRF, sensitive field masking
+│           ├── performance/            # Lighthouse SLA assertions
+│           ├── resilience/             # Timeout handling, slow network simulation
+│           └── leave/                  # Subordinate leave workflow
 │
-├─ Utility Layer (utils/*.ts)
-│    Cross-cutting concerns, each with a single responsibility:
-│    ├─ auth-manager      — Token refresh, CSRF extraction, session lifecycle
-│    ├─ logger            — Pino structured logging (test name, worker ID, retry count)
-│    ├─ waits-manager     — doRetriedPolling() with configurable backoff
-│    ├─ email-manager     — Mailtrap API integration for inbox polling for password reset workflow
-│    ├─ email-parser      — Extracts reset links from raw email bodies
-│    ├─ leave-management  — Leave allocation via API (month-safe date logic)
-│    ├─ users-manager     — Employee/user creation + employee interceptor
-│    └─ page-load-performance — Chrome Lighthouse integration, SLA evaluation
+├── utils/                            # Cross-cutting concerns, each with a single responsibility:
+│   ├── logger.ts                       # Pino singleton decorated with test context
+│   ├── auth-manager.utils.ts           # CSRF extraction, token refresh, lock-flag races
+│   ├── waits-manager.util.ts           # doRetriedPolling() — no arbitrary setTimeout
+│   ├── users-manager.util.ts           # Employee/user creation + employee interceptor
+│   ├── email-manager.util.ts           # Mailtrap API: inbox polling, message retrieval
+│   ├── email-parser.util.ts            # Extracts reset links from raw email bodies
+│   ├── leave-management.util.ts        # Leave allocation — month-safe date logic
+│   ├── page-load-performance.utils.ts  # Lighthouse integration helpers
+│   ├── lighthouse-performance.evaluator.ts
+│   ├── page-manager.util.ts
+│   ├── env-validations.utils.ts        # Fail fast on missing required env vars
+│   └── types/                          # API payload type definitions
+├── apis/
+│   ├── global-setup.ts                 # Provisions test employee + ESS user pre-suite
+│   └── global-cleanup.ts               # Deletes all provisioned data post-suite
+├── .github/
+│   ├── copilot-instructions.md         # Coding standards and patterns for AI assistance
+│   └── workflows/
+│       └── playwright.yml              # CI pipeline — lint gate + cross-browser run
 │
-└─ API Layer (apis/)
-     global-setup.ts    — Test data provisioning before any worker starts
-     global-cleanup.ts  — Deterministic teardown after all workers finish
+├── storage/                            # Auth state, employee data (gitignored)
+├── allure-results/                     # Raw Allure data (gitignored)
+├── allure-report/                      # Generated Allure HTML (gitignored, CI deploys)
+├── playwright-report/                  # Playwright HTML report
+├── package.json
+├── tsconfig.json                       # strict: true
+├── eslint.config.js
+└── autCred.env                         # Credentials (gitignored)
 ```
 
 ### Key Design Patterns & the Reasoning Behind Each
@@ -130,11 +210,138 @@ The leave allocation utility always constructs date ranges starting from the **1
 **6. YAGNI-Driven API Architecture**
 
 During development, a proposal was made to abstract a shared `APIRequestContext` across all utility functions. It was correctly rejected: only one utility (the auth manager) needs a persistent API context; the others use Playwright's built-in `request` fixture, which is scoped per test. Introducing a shared abstraction for a single consumer would have added indirection with no reuse benefit. The framework reflects this discipline — abstractions are introduced when they have two or more real consumers, not in anticipation of hypothetical future need.
+---
 
+## 🏔️ Challenges Faced & Solutions Implemented
+
+### 1. Parallel Execution & Worker Isolation
+
+**Challenge**: Multiple tests running in parallel against a shared AUT led to unpredictable failures. Tests interfered with each other's data and auth state.
+
+**Solutions Implemented**:
+- **Pre-authenticated sessions per worker**: Each test gets its own authenticated context via fixtures; no shared global state in the browser
+- **Worker-scoped employee data**: Global setup creates one shared employee; each worker that creates employees registers an interceptor on POST `/pim/employees` to capture IDs, enabling deterministic cleanup
+- **Atomic CSRF token refresh**: A lock flag prevents multiple workers from simultaneously attempting to refresh an expired token, eliminating race conditions
+- **Configurable worker count**: Local runs use 2 workers; CI uses 2 workers; adjusted based on AUT load tolerance and CI machine specs
+
+**Result**: Reduced flaky failures from 30% to 10% through tuning worker counts and isolating data per worker.
+---
+
+### 2. Test Timeout & Browser-Specific Performance
+
+**Challenge**: Non-Chrome browsers (Firefox, Safari) have significantly longer execution times. Navigation timeouts were firing sporadically in CI on Linux runners.
+
+**Solutions Implemented**:
+- **Browser-specific timeout multipliers**: Webkit gets a 1.5× timeout multiplier; Firefox gets 1.2×; Chrome stays at baseline
+- **Prioritisation of Chrome/Firefox**: Webkit is retained for cross-browser coverage but is secondary; critical CI runs prioritise Chrome + Firefox
+- **Stress testing via repeated runs**: Each test was executed 10+ times locally to identify Webkit-specific flakiness; issues were either fixed or acceptably isolated
+- **Configurable timeouts via environment**: `test_global_timeout`, `test_expect_timeout`, `api_timeout` — adjusted per environment
+
+**Result**: Reduced timeout-related failures by 5%; maintained consistency across browsers without sacrificing reliability.
+---
+
+### 3. Accessibility Support & Internationalization Limitations
+
+**Challenge**: OrangeHRM has limited accessibility support and lacks test IDs. Language switching breaks tests because locators depend on text content.
+
+**Solutions Implemented**:
+- **CSS selector fallback strategy**: Defined locators by logical DOM grouping (component layout) rather than role-based (which fails on non-compliant apps). Locators are resilient to minor layout changes. Combination of display text + CSS selector.
+- **Text-independent assertions**: Where possible, asserted on element visibility, enabled state, or CSS class changes — not text content
+- **Language invariant approach**: For text-dependent scenarios, captured the expected text from a reference language version and compared programmatically
+- **Accessibility inline in tests**: Axe-Core WCAG 2AA scans run on every auth and PIM test, surfacing violations (e.g., contrast ratio failures) immediately — not as a separate, deprioritised suite
+- **Screenshot baselines per locale**: If running tests in multiple languages, baselines are captured per language variant
+
+**Result**: Tests remain stable even when non-English languages are active; accessibility violations are caught as blocking failures, not warnings.
+---
+
+### 4. Email Interception for Password Reset Testing
+
+**Challenge**: OrangeHRM does not include an email server by default. Testing password reset workflows requires email interception without touching production mail infrastructure.
+
+**Solutions Implemented**:
+- **Mailtrap sandbox integration**: Configured OrangeHRM to use Mailtrap's SMTP server (safe, isolated, API-accessible)
+- **Unique email per test user**: Employee creation uses a UUID in the email address (`test-${uuid}@mailtrap.io`); this ensures password reset emails land in the correct inbox without sync delays
+- **Email parser utility**: Extracts password reset links from raw email bodies using regex; decodes URL-encoded characters (which was breaking Webkit browsers)
+- **Inbox polling with backoff**: Email retrieval uses `doRetriedPolling()` with exponential backoff; avoids hammering the Mailtrap API
+
+**Result**: Deterministic, CI-safe password reset testing; caught a real bug where URL-encoded characters in reset links broke in Webkit but not Chrome.
+---
+
+### 5. Single Page Application (SPA) Navigation
+
+**Challenge**: OrangeHRM is a single-page application using the History API to update URLs. Tests relying on `page.goto()` or URL change detection failed inconsistently.
+
+**Solutions Implemented**:
+- **URL assertion using `toHaveURL()`**: Instead of `expect(page.url()).toBe(...)`, used `await expect(page).toHaveURL(expectedPath)` — Playwright retries this assertion automatically if the URL hasn't updated yet
+- **No hardcoded `waitForNavigation()`**: Removed explicit navigation waits; relied on Playwright's auto-waiting via assertions
+- **Relative path navigation with baseURL**: All navigations use relative paths (`page.goto('/relative/path')`) via a configured `baseURL` in `playwright.config.ts`
+
+**Result**: Stable navigation detection; no race conditions between History API updates and test assertions.
+---
+
+### 6. CI pipeline failure - un-related reasons
+
+**Challenge**: GitHub Actions CI pipeline SILENTLY timed out (~1 hours) during Playwright browser installation after a runner image update shifted the runner pool from `westus3` to `eastus2`. No explicit error surfaced in the primary install step, making the root cause non-obvious. It was tricky as I do NOT have SSH access to Github CI machine to do trouble shooting!!
+
+**Root Cause**: Playwright Runner's download manager silently FAILING in chrome binary download but received truncated responses, reporting 100% download completion on an 18MB file that should be 171MB. There was nothing getting logged despite bumping up of log levels, changing the Ubuntu (OS) version, forcing different Azure cloud region. Also tried going for IPV4 instead of IPV6; again not helping!!
+
+**Solutions Implemented**:
+- **Log-only diagnostics**: Added timestamped exit codes, disk usage probes, and cache size verification to each workflow step to build full observability without SSH access — the only debugging mechanism available on hosted runners
+- **IPv6 disabled at OS level**: `sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1` applied before the install step to prevent Node from attempting the broken IPv6 route
+- **Two-pass installation strategy**: Pass 1 uses the standard `npx playwright install` path unchanged; Pass 2 is CUSTOM curl-based fallback that bypasses Playwright's download manager entirely, using `-4` (force IPv4), `-f` (fail on partial response), and `-o` (overwrite without interactive prompts); Pass 2 skips any browser whose cache directory already exceeds 50MB, so only genuinely failed downloads are retried
+- **Browser cache with `actions/cache@v4`**: Cache keyed on `package-lock.json` hash; once warmed on a successful run, neither download nor extraction is triggered again until Playwright version changes — making the broken CDN route permanently irrelevant for subsequent runs
+
+**Result**: Pipeline reliably completes browser installation across runner regions; the two-pass strategy is self-healing and version-agnostic — no hardcoded URLs need updating on Playwright upgrades since Pass 1 always attempts the canonical install path first.
+---
+
+### 7. Duplicate Employee ID in Parallel Execution
+
+**Challenge**: When adding multiple employees in parallel, auto-generated sequential IDs collided, causing tests to fail with "Employee ID already exists".
+
+**Solutions Implemented**:
+- **UUID-based employee ID generation**: Replaced reliance on auto-generated sequential IDs with programmatically generated UUIDs for test employees (e.g., `EMP-${uuidv4()}`)
+- **Worker-scoped employee creation**: Each worker maintains its own set of created employee IDs via interceptor registration; cleanup aggregates all created IDs before deletion
+- **API-driven employee creation**: Used OrangeHRM's employee creation API (not UI) to generate employees with explicit UUIDs, bypassing the auto-generation logic
+
+**Result**: Eliminated ID collision failures; achieved reliable parallel execution with 2+ workers.
+---
+
+### 8. Flaky Leave Management Due to Leave Module Inconsistency
+
+**Challenge**: Leave module was sometimes disabled entirely (unclear when or why); tests would fail with "module not found" errors. Leave balance updates were inconsistent — UI updates lagged behind API responses.
+
+**Solutions Implemented**:
+- **Leave module availability pre-check**: Global setup validates that the leave module is active before provisioning leave data; tests skip gracefully if the module is disabled
+- **API-first leave validation**: After applying leave via UI, polled the `/api/leave/balance` endpoint instead of waiting for UI updates. Captured both status code and updated balance in the response.
+
+**Result**: Reliable leave testing even when the leave module toggles; reduced leave-related failures from 8% to ~1%.
+---
+
+### 9. Stale Global Auth Context Across Workers
+
+**Challenge**: A single shared authenticated context (stored as `storageState`) was persisted to disk and reused by all workers. When one worker's session expired and was refreshed, other workers continued using the stale context, leading to authorization failures and session corruption.
+
+**Solutions Implemented**:
+- **Per-worker auth context files**: Changed from a single shared `admin-auth.json` to per-worker files (e.g., `admin-auth-${PID}.json`)
+- **Worker-scoped fixture initialization**: Each fixture initializes a fresh context on test startup; expired tokens are refreshed per worker without affecting siblings
+- **Lock flag for refresh races**: Even with per-worker contexts, a lock flag prevents the same worker from attempting simultaneous token refreshes (which can occur during Playwright retry logic)
+
+**Result**: Eliminated context corruption; workers became fully independent; test stability improved significantly under high parallelisation.
+---
+
+### 10. Locator Instability & Self-Healing Fallbacks
+
+**Challenge**: OrangeHRM's lack of test IDs forced reliance on CSS selectors. Selectors were fragile when DOM structure changed; tests would break on UI tweaks.
+
+**Solutions Implemented**:
+- **Grouped, layout-based selectors**: Instead of targeting individual elements, selectors identified component containers (e.g., `.oxd-input-group` wrapping both input and error message), making them resilient to internal structure changes
+- **Fallback locator chains**: For critical elements, defined multiple locator strategies in order of preference (e.g., try by role, fall back to CSS class, then by placeholder)
+- **Self-healing approach**: Page objects exposed locator logic through public methods; refactoring a selector in one place fixes all tests that depend on it
+
+**Result**: Reduced locator-related failures; easier maintenance when OrangeHRM UI updates occur.
 ---
 
 ## ⚙️ Tech Stack
-
 | Tool | Version | Purpose |
 |---|---|---|
 | **Playwright** | 1.59.1 | Cross-browser automation — Chrome, Firefox, Safari |
@@ -148,13 +355,11 @@ During development, a proposal was made to abstract a shared `APIRequestContext`
 | **dotenv** | 17.4.2 | Environment variable management |
 | **Node.js** | 24 LTS | Runtime |
 | **Perplexity, ChatGPT, Claude, GitHub Copilot + Playwright MCP** | — | AI-assisted test discovery, architecture decisions, code generation, review & debugging |
-
 ---
 
 ## 🧪 Test Strategy
 
 ### Business Critical Areas
-
 | Area | What Can Go Wrong? | IMPACT |
 |---|---|---|
 | **Authentication** | User locked out / UnAuthorized access | Organization wide outage / Data Breach |
@@ -163,19 +368,6 @@ During development, a proposal was made to abstract a shared `APIRequestContext`
 | **Leave Workflow** | Incorrect Leave Balances | Payroll disputes & Legal Risks |
 | **Data Integrity** | Duplicate or Missing Employee(s)  | Reporting & Compliance Risk |
 | **API** | Contract Breaks | Larger Blast radius, Irreversible loss of trust, Legal & Compliance Risk |
-
-### Coverage by Layer
-
-| Layer | Type | Purpose |
-|---|---|---|
-| **Authentication** | Smoke + Regression | Login UI, password masking, session timeout, back-button after logout |
-| **Employee Management (PIM)** | Regression | Add employee, field validation, photo upload edge cases, user creation |
-| **Leave Management** | Regression | Subordinate leave request workflow via API + UI |
-| **Authorization** | Regression | Supervisor vs. subordinate access boundaries |
-| **Security** | Regression | Credential leakage scanning, CSRF protection, sensitive field masking |
-| **Accessibility** | Inline (per test) | WCAG 2AA via Axe-Core on all auth and PIM flows |
-| **Resilience** | Regression | Network timeout handling, slow network simulation |
-| **Performance** | Regression | Response time SLAs via Lighthouse |
 
 ### Parallelisation & Retry Strategy
 
@@ -189,7 +381,6 @@ During development, a proposal was made to abstract a shared `APIRequestContext`
   - All URLs constructed as relative paths via Playwright's `baseURL` — no hardcoded origins
 
 ### Cross-Browser Configuration
-
 | Browser | Viewport | Special Config | CI Run |
 |---|---|---|---|
 | **Chrome** | 1280×720 | Standard | ✅ |
@@ -197,16 +388,81 @@ During development, a proposal was made to abstract a shared `APIRequestContext`
 | **Safari (Webkit)** | 1280×720 | 1.5× timeout multiplier | ✅ |
 
 Safari's JavaScript execution is measurably slower; the multiplier prevents false failures without masking real timing regressions.
+---
 
+## 📖 Key Learnings & Best Practices
+
+### 1. Worker Tuning is Non-Obvious
+
+Initially, the assumption was that running tests with the maximum number of workers (based on CI machine CPU count) would be optimal. In practice, adding more workers increased failures from 10% to 20%+. The AUT has limits on how many concurrent sessions it can handle gracefully. After stress testing and observation, a **2-worker setup** emerged as optimal for this AUT — high parallelisation without overwhelming the server.
+
+**Takeaway**: Parallelisation is not a function of machine capability alone — tune based on AUT load capacity. Use stress testing (running the same test suite 10+ times sequentially) to identify the breaking point.
+---
+
+### 2. Playwright's Auto-Wait is Transformatively Powerful — Use It Correctly
+
+Transitioning from point-in-time DOM snapshots (`element.textContent()`, `element.count()`) to auto-retrying assertions (`toHaveText()`, `toHaveCount()`) reduced mysterious failures significantly. The key: **the assertion retries the condition**, not the preceding action. Using `toHaveText()` waits for text to appear; using `textContent()` with a manual wait is fragile because the wait may complete before the DOM updates.
+
+**Takeaway**: Playwright's built-in assertions are more reliable than manual waits + custom checks. Avoid `waitForTimeout()` and `waitUntil: 'networkidle'`; rely on event-driven assertions instead.
+---
+
+### 3. API-First Validation Where Possible
+
+Validating leave balance via API response (both status and data) is faster and more reliable than refreshing the UI and scraping the DOM. Similarly, checking auth state via a dedicated API call (vs. navigating the login page) is 300ms faster and deterministic. This is not just a speed optimisation — it separates the concern of "did the operation work?" from "is the UI reflecting the result?"
+
+**Takeaway**: Use API-driven validation for business logic; reserve UI testing for user-facing features (layout, accessibility, visual feedback). Hybrid testing (API + UI in the same test) is powerful when each layer tests its own concern.
+---
+
+### 4. Fail Fast is Underrated
+
+Global setup includes baseline checks: Is the AUT reachable? Is the admin user creation endpoint responding? Are the leave and recruitment modules active? These checks run once before any worker starts. Failures here halt the entire suite immediately with a clear error, providing quick feedback. Without this gate, a broken AUT would cause silent, widespread test failures 10 minutes into a run.
+
+**Takeaway**: Invest in pre-suite sanity checks. They save hours of debugging and provide faster feedback loops.
+---
+
+### 5. Cross-Cutting Concerns Must Be Centralized
+
+Auth, logging, user creation, leave allocation — these are not test-specific. They live in utils, fixtures, and global setup. Test code remains focused on assertions; infrastructure stays in infrastructure code. This separation enabled refactoring the auth manager (token refresh, CSRF extraction, lock flags) without touching a single test file.
+
+**Takeaway**: Identify cross-cutting concerns early (setup, data, auth, logging); centralize them; test code should be thin and readable.
+---
+
+### 6. Accessibility Is Not "Optional"
+
+Embedding WCAG 2AA scans directly in functional tests (not in a separate, lower-priority suite) surfaced real issues (password field contrast violations) and ensured they were prioritised for fixes. Treating accessibility as a blocking test condition — not a "nice-to-have" — changes organizational behaviour.
+
+**Takeaway**: Integrate accessibility checks into the main test flow; make violations block tests; automation is the fastest way to catch regressions.
+---
+
+### 7. Browser-Specific Workarounds Are Acceptable When Scoped
+
+Rather than avoiding Webkit entirely, the framework accommodates its limitations (slower JS execution, UI freezing during network activity) with targeted workarounds: a 1.5× timeout multiplier and platform-specific branching where unavoidable. This allows cross-browser coverage without sacrificing stability.
+
+**Takeaway**: Embrace browser quirks where they're unavoidable; use multipliers and platform-specific logic; avoid removing browser coverage just because one browser is trickier.
+---
+
+### 8. Version Control for Baselines Is Essential
+
+Visual snapshots (screenshots) must be committed to the repository and versioned like any other baseline. When a snapshot changes legitimately (e.g., design update), a developer approves the new snapshot, commits it, and the next CI run uses the updated baseline. This workflow prevents accidental visual regressions without requiring manual review on every run.
+
+**Takeaway**: Screenshots and other visual baselines are code; version control them; require explicit approval for updates.
+---
+
+### 9. Logging Discipline Pays Dividends
+
+Every test logs significant actions (page navigations, assertions, API calls, user interactions). When a test fails, the logs tell the story — exactly where execution went wrong and what state the application was in. Logs are structured (JSON via Pino), decorated with test name and worker ID, making correlation easy in CI.
+
+**Takeaway**: Log liberally; use structured logging; treat logs as primary debugging artifact, not a secondary nicety.
+---
+
+### 10. Framework Constraints Enable AI Collaboration
+
+Strict typing (TypeScript strict mode), clear coding standards (ESLint import guards, fixture conventions), and documented patterns (in `.github/copilot-instructions.md`) make it possible for AI-assisted code generation to produce conformant output. Without these constraints, AI-generated code would require extensive rework. With them, generated code often requires only minor adjustments.
+
+**Takeaway**: Invest in framework discipline early; it enables both human collaboration and AI-assisted workflows.
 ---
 
 ## 🚀 How to Run
-
-### Prerequisites
-
-- **Node.js** ≥ 24: `node --version`
-- **npm** ≥ 10: `npm --version`
-- **Environment file**: Copy `autCred.env.example` → `autCred.env` and populate credentials
 
 ### Environment Setup
 
@@ -227,17 +483,7 @@ npm run testscript -- auth --project=staging-chrome
 
 # Single test by title pattern
 npm run testscript -- "Login.*Password" --project=staging-chrome
-
-# By tag
-npm run testscript -- --grep @smoke --project=staging-chrome
-
-# Headed mode (watch the browser)
-npm run testscript -- --headed --project=staging-chrome
 ```
-
-> **Note**: Always use `npm run testscript`, not `npx playwright test` directly.
-> The npm script runs ESLint as a pre-flight gate before Playwright executes —
-> bypassing it allows lint errors to ship undetected to CI.
 
 ### View Reports
 
@@ -248,86 +494,6 @@ npm run allure-report
 # Playwright HTML report (screenshots, traces, video playback)
 npx playwright show-report
 ```
-
-**Public Dashboard**: Every CI run auto-publishes to the [Allure Dashboard](https://hussainimd.github.io/OrangeHRM-Automation-Suite/) — no credentials needed to review results.
-
-### Linting
-
-```bash
-npm run lint   # ESLint runs automatically via npm run testscript
-```
-
----
-
-## 📁 Project Structure
-
-```
-.
-├── config/
-│   └── playwright.config.ts            # Multi-browser, parallel workers, reporters,
-│                                       # environment-aware timeouts, baseURL
-├── pages/
-│   ├── LoginPage.ts                    # CSRF extraction, credential submission
-│   ├── NavigationPage.ts               # Sidebar, role-based menu traversal
-│   ├── PimEmployeeListPage.ts          # Employee list, search, add/edit actions
-│   ├── AddEmployeePage.ts              # Employee form, photo upload, validation
-│   ├── EditUserPage.ts                 # User account creation from employee record
-│   ├── UserListPage.ts                 # Admin user list and filters
-│   └── components/
-│       └── UserMenu.ts                 # Logout, profile menu widget
-├── fixtures/
-│   ├── admin-auth.fixture.ts           # Admin-role context: auth gate + teardown logout
-│   └── essUser-auth.fixture.ts         # ESS-role context: auth gate + teardown logout
-├── tests/
-│   ├── base.ts                         # Extended Playwright test with logger fixture
-│   ├── types/
-│   │   ├── credentials.ts              # {username, password} type
-│   │   ├── BasicEmployeeType.ts        # Employee creation payload
-│   │   └── EmployeeDetailsType.ts      # Employee metadata (ID, employee number)
-│   ├── errors/
-│   │   └── duplicate-user-error.ts     # Domain-specific error (not generic Error)
-│   └── ui/
-│       ├── smoke/
-│       │   └── [login, basic navigation]
-│       └── regression/
-│           ├── auth/                   # Login, session management, timeout, back-button
-│           ├── pim/                    # Add employee, validation, photo, responsive
-│           ├── authorization/          # Supervisor vs. subordinate access
-│           ├── security/               # Credential leakage, CSRF, sensitive field masking
-│           ├── performance/            # Lighthouse SLA assertions
-│           ├── resilience/             # Timeout handling, slow network simulation
-│           └── leave/                  # Subordinate leave workflow
-├── utils/
-│   ├── logger.ts                       # Pino singleton decorated with test context
-│   ├── auth-manager.utils.ts           # CSRF extraction, token refresh, lock-flag races
-│   ├── waits-manager.util.ts           # doRetriedPolling() — no arbitrary setTimeout
-│   ├── users-manager.util.ts           # Employee/user creation + employee interceptor
-│   ├── email-manager.util.ts           # Mailtrap API: inbox polling, message retrieval
-│   ├── email-parser.util.ts            # Extracts reset links from raw email bodies
-│   ├── leave-management.util.ts        # Leave allocation — month-safe date logic
-│   ├── page-load-performance.utils.ts  # Lighthouse integration helpers
-│   ├── lighthouse-performance.evaluator.ts
-│   ├── page-manager.util.ts
-│   ├── env-validations.utils.ts        # Fail fast on missing required env vars
-│   └── types/                          # API payload type definitions
-├── apis/
-│   ├── global-setup.ts                 # Provisions test employee + ESS user pre-suite
-│   └── global-cleanup.ts              # Deletes all provisioned data post-suite
-├── .github/
-│   ├── copilot-instructions.md         # Coding standards and patterns for AI assistance
-│   └── workflows/
-│       └── playwright.yml              # CI pipeline — lint gate + cross-browser run
-├── storage/                            # Auth state, employee data (gitignored)
-├── allure-results/                     # Raw Allure data (gitignored)
-├── allure-report/                      # Generated Allure HTML (gitignored, CI deploys)
-├── playwright-report/                  # Playwright HTML report
-├── package.json
-├── tsconfig.json                       # strict: true
-├── eslint.config.js
-└── autCred.env                         # Credentials (gitignored)
-```
-
----
 
 ## 🔍 Key Implementation Highlights
 
@@ -359,35 +525,6 @@ Axe-Core WCAG 2AA scans are embedded directly in login and PIM tests — not in 
 
 `strict: true` in `tsconfig.json` enforces explicit types throughout — no implicit `any`, no unguarded nulls. Custom ESLint rules enforce framework boundaries: `@playwright/test` may only be imported in `base.ts` (tests import from there, not directly from the library), and `axios` is banned entirely (Playwright's request API is used for all HTTP, keeping network handling consistent). These rules caught two instances during development where direct Playwright imports leaked into utility files, causing circular dependency warnings at compile time.
 
----
-
-## 🔧 Configuration
-
-### Environment Variables (`autCred.env`)
-
-```bash
-base_url=https://opensource-demo.orangehrmlive.com
-admin_user_name=admin
-admin_password=admin@123
-ess_user_name=ess_user
-ess_user_password=ess_password
-test_global_timeout=30000       # ms per test
-test_expect_timeout=30000       # ms per assertion (Playwright auto-retry window)
-api_timeout=30000               # ms for API calls
-test_employee_dir=storage       # directory for shared test data files
-mailtrap_base_url=https://api.mailtrap.io
-mailtrap_api_token=[token]
-mailtrap_account_id=1234567
-mailtrap_inbox_id=9876543
-```
-
-### CI Secrets (GitHub Actions)
-
-Configure in **Settings → Secrets and variables → Actions**:
-
-`BASE_URL`, `ADMIN_USER_NAME`, `ADMIN_PASSWORD`, `ESS_USER_NAME`, `ESS_USER_PASSWORD`, `MAILTRAP_API_TOKEN`, `MAILTRAP_ACCOUNT_ID`, `MAILTRAP_INBOX_ID`
-
----
 
 ## 📊 CI/CD Pipeline
 
@@ -398,77 +535,15 @@ Configure in **Settings → Secrets and variables → Actions**:
 | Step | Trigger | Action |
 |---|---|---|
 | Checkout | PR / push to main | Full git history (needed for Allure trend data) |
-| Setup Node | Always | Node 24 LTS |
-| Install | Always | `npm ci` (deterministic lockfile install) |
-| **Lint** | Always | **ESLint runs before Playwright — broken code does not execute** |
 | Test | Normal push | Full cross-browser suite (Chrome + Firefox + Safari) |
 | Test | `workflow_dispatch` | Update visual baselines |
 | Report | Always (incl. failure) | Upload Allure artifacts + publish to GitHub Pages |
 | Commit | `workflow_dispatch` only | Push updated baseline screenshots to repo |
 
-**Run time**: ~18–25 minutes (3 browsers, 2 parallel workers in CI).
-
-The ESLint step is a hard gate — the pipeline fails before Playwright runs if lint errors are present. This is intentional and matches the local `npm run testscript` behaviour, ensuring CI and local execution are semantically identical.
-
----
-
-## 🛠️ Developer Workflow
-
-### Adding a New Test
-
-1. Create file: `tests/ui/regression/[feature]/[feature-name].spec.ts`
-2. Import the appropriate fixture — never import `@playwright/test` directly:
-
-```typescript
-import { test, expect } from '../../../../fixtures/admin-auth.fixture';
-
-test('TC_XYZ | Feature | Scenario description', async ({ adminUserAuthPage, logger }) => {
-  logger.info('Starting scenario');
-  await adminUserAuthPage.goto('/web/index.php/pim/viewEmployeeList');
-  // adminUserAuthPage is pre-authenticated; no login step needed
-});
-```
-
-3. Extract all UI interactions to a Page Object in `pages/`
-4. Add Allure annotations (`@feature`, `@severity`, `@tag`)
-5. Run locally: `npm run testscript -- [filter] --project=staging-chrome`
-
-### Adding a New Page Object
-
-```typescript
-import { Locator, Page, expect } from '../tests/base';
-
-export class MyPage {
-  private readonly page: Page;
-  private readonly actionButton = 'button[data-testid="action"]';
-
-  constructor(page: Page) {
-    this.page = page;
-  }
-
-  async doAction(): Promise<void> {
-    const btn: Locator = this.page.locator(this.actionButton);
-    await expect(btn).toBeEnabled();   // auto-retrying assertion
-    await btn.click();
-  }
-}
-```
-
-### Debugging a Failed Test
-
-1. Open `playwright-report/index.html` → failed test → screenshot / trace / video
-2. Review structured logs: console output or `storage/run-*.log`
-3. Check auth state freshness: `storage/admin-auth-*.json`
-4. Reproduce locally in headed mode:
-
-```bash
-npm run testscript -- "TC_XYZ" --headed --project=staging-chrome
-```
-
+**Run time**: ~30–45 minutes (3 browsers, 2 parallel workers in CI).
 ---
 
 ## 📝 Code Quality Standards
-
 | Standard | Enforcement |
 |---|---|
 | **TypeScript strict mode** | `tsconfig.json` — no implicit `any`, no unguarded nulls |
@@ -480,15 +555,12 @@ npm run testscript -- "TC_XYZ" --headed --project=staging-chrome
 | **Test naming** | `TC_FEATURE_NNN \| Feature area \| Human-readable scenario` |
 | **Logging discipline** | Every significant step logged; failures at `warn`/`error`; no `console.log` in production paths |
 | **Comments** | Explain *why*, not *what*; code is self-documenting at the *what* level |
-
 ---
 
 ## 🤖 AI-Assisted Development Workflow
-
 This project was built using a structured, multi-model AI workflow — each tool assigned to the phase where it adds the most value. The output reflects deliberate engineering decisions; AI accelerated velocity and surfaced alternatives, but every architectural choice and code pattern was evaluated, challenged, and in several cases overridden based on the specific context of this framework.
 
 ### Tool Allocation by Phase
-
 | Phase | Tool(s) | How It Was Used |
 |---|---|---|
 | **Test Case Discovery** | Perplexity | Research-phase ideation — surfacing edge cases, OWASP-aligned security scenarios, accessibility standards (WCAG 2AA criteria), and OrangeHRM domain-specific failure modes before writing a single line of code |
@@ -498,7 +570,6 @@ This project was built using a structured, multi-model AI workflow — each tool
 | **Hands-Off Test Generation** | GitHub Copilot + Claude + Playwright MCP Agent | Agentic pipeline for spec file generation — MCP agent reads workspace structure and existing patterns, generates conformant test code against the established fixture and POM conventions, reviewed and refined before commit |
 
 ### What This Workflow Produced (and What It Didn't)
-
 The AI pipeline meaningfully accelerated three things: **discovery** (edge cases that would have taken hours of manual analysis), **scaffolding** (boilerplate that matched established patterns), and **review cycles** (catching anti-patterns across files systematically rather than file-by-file).
 
 It did not replace engineering judgment. Several AI suggestions were explicitly rejected during development:
@@ -508,278 +579,7 @@ It did not replace engineering judgment. Several AI suggestions were explicitly 
 - The credential leakage scanner's flags-accumulation pattern (no early exit) was challenged by the review model and defended — short-circuiting would have silently missed credential exposure in redirect chains
 
 The `.github/copilot-instructions.md` file in the repository documents the coding standards and architectural patterns that constrain AI-generated code — ensuring generated output conforms to the framework's conventions before it is accepted.
-
 ---
-
----
-
-## 🐛 Bugs & Issues Discovered in OrangeHRM
-
-This framework identified several functional, security, and UX defects in OrangeHRM that should be addressed:
-
-### Functional Issues
-
-| Issue | Impact | Recommendation |
-|---|---|---|
-| **Auto-Generated Employee ID Collision** | When a user stays on the Add Employee form for extended periods, the auto-generated employee ID becomes rejected as "already exists". IDs should use sequence numbers with sufficient entropy or UUIDs to prevent collisions under concurrent operations. | Generate IDs using UUID or secure random sequences; avoid static sequences that collide under load. |
-| **Stale Hiring Manager Assignment** | When a vacancy is active and the assigned hiring manager leaves/is fired, the system marks the hiring manager as `[deleted]` instead of automatically escalating to the supervisor. This breaks recruitment tracking and loses valuable HR effort. | Implement supervisor escalation on hiring manager termination; maintain recruitment pipeline continuity. |
-| **Unauthorized Access Error Recovery** | Non-admin users attempting to access admin modules receive a 500 error instead of a 403 Forbidden on back-button or home navigation. This forces users to clear cookies, degrading UX. | Return proper 403 HTTP status and render a user-friendly error page (not 500); avoid forcing cookie clears. |
-| **User Creation Password Validation** | When adding a new employee with user account creation, submitting without a password triggers a network request, then shows an error alert instead of validating client-side first. | Add client-side password validation on the form before submission; fail fast with UI error messages. |
-| **Session Timeout Inactivity** | Sessions do not auto-logout on inactivity. Even when a session expires, the UI does not respond to user actions by logging them out; stale tokens are still issued. | Implement inactivity timeout with client-side awareness; validate token freshness on every action. |
-| **Profile Picture Upload Validation** | The profile picture upload field accepts any file type, not just images. Allows uploading arbitrary files (docs, PDFs, executables), posing security risks. | Restrict file upload to MIME types: `image/jpeg`, `image/png`, `image/gif`, `image/webp`; validate client and server-side. |
-| **Emergency Contact Self-Assignment** | Any user can add themselves as an emergency contact, which is inappropriate and violates data integrity. | Restrict emergency contact creation to HR/managers only; prevent users from adding their own contacts. |
-| **Employee ID Format Validation** | Employee ID accepts arbitrary gibberish instead of enforcing a format or pattern. IDs should be alphanumeric with constraints. | Define and enforce employee ID format (e.g., `EMP-\d{5}`); validate on both client and API. |
-
-### Security Issues
-
-| Issue | Impact | Recommendation |
-|---|---|---|
-| **No DDOS/Rate Limiting** | There is no detection or mitigation for distributed denial-of-service (DDOS) attacks or brute-force login attempts. Multiple failed login attempts are not rate-limited. | Implement rate limiting (e.g., max 5 login attempts per IP per 15 minutes), IP-based throttling, or CAPTCHA after N failures. |
-| **Sensitive Data Exposure** | No field masking for sensitive data (e.g., SSN, tax ID); displayed in plain text in employee records. | Mask sensitive fields in UI; display only last 4 digits; enforce role-based visibility (HR/Payroll only). |
-| **Back-Button Session Leak** | After logout, the browser back-button can re-display cached pages with sensitive data (e.g., employee payroll info). | Set `Cache-Control: no-cache, no-store, must-revalidate` on all sensitive endpoints; use anti-caching headers. |
-
-### Usability Issues
-
-| Issue | Impact | Recommendation |
-|---|---|---|
-| **User Menu Keyboard Inaccessibility** | Top-right user menu is not keyboard-navigable (no Tab key support, no `tabindex`). Violates WCAG 2AA keyboard accessibility. | Add `tabindex="0"` to menu trigger; implement arrow-key navigation in dropdown; test with keyboard-only users. |
-| **Browser Back-Button UX** | After login, pressing browser back button returns to login page, but re-entering credentials does not refresh/redirect to dashboard — the page remains on login. | On successful login, replace history entry (use `history.replaceState()`); redirect to dashboard; prevent back-button loops. |
-| **Password Field Contrast Violation** | Password field label has a contrast ratio of 3.2:1 against its background — below the WCAG 2AA minimum of 4.5:1 for small text. | Increase contrast to 4.5:1+; use darker label color or lighter background; validate with Axe-Core. |
-| **Username Display Clutter** | Long usernames displayed next to profile picture in header create layout overflow and clunky presentation. | Truncate username (e.g., first 20 chars) with ellipsis; show full name on hover via tooltip. |
-
-### Performance Issues
-
-Chrome DevTools Lighthouse metrics show areas for improvement:
-
-| Metric | Current | Target | Action |
-|---|---|---|---|
-| **LCP (Largest Contentful Paint)** | Varies | < 4s | Lazy-load off-screen images; reduce main bundle size |
-| **CLS (Cumulative Layout Shift)** | Varies | < 0.25 | Pre-allocate space for dynamic content; avoid layout thrashing |
-| **TBT (Total Blocking Time)** | Varies | < 600ms | Break long tasks into smaller chunks; defer non-critical work |
-| **FCP (First Contentful Paint)** | Varies | < 3s | Inline critical CSS; defer non-critical scripts |
-
----
-
-## 🏔️ Challenges Faced & Solutions Implemented
-
-### 1. Parallel Execution & Worker Isolation
-
-**Challenge**: Multiple tests running in parallel against a shared AUT led to unpredictable failures. Tests interfered with each other's data and auth state.
-
-**Solutions Implemented**:
-- **Pre-authenticated sessions per worker**: Each test gets its own authenticated context via fixtures; no shared global state in the browser
-- **Worker-scoped employee data**: Global setup creates one shared employee; each worker that creates employees registers an interceptor on POST `/pim/employees` to capture IDs, enabling deterministic cleanup
-- **Atomic CSRF token refresh**: A lock flag prevents multiple workers from simultaneously attempting to refresh an expired token, eliminating race conditions
-- **Configurable worker count**: Local runs use 2 workers; CI uses 2 workers; adjusted based on AUT load tolerance and CI machine specs
-
-**Result**: Reduced flaky failures from 30% to 10% through tuning worker counts and isolating data per worker.
-
----
-
-### 2. Test Timeout & Browser-Specific Performance
-
-**Challenge**: Non-Chrome browsers (Firefox, Safari) have significantly longer execution times. Navigation timeouts were firing sporadically in CI on Linux runners.
-
-**Solutions Implemented**:
-- **Browser-specific timeout multipliers**: Webkit gets a 1.5× timeout multiplier; Firefox gets 1.2×; Chrome stays at baseline
-- **Configurable timeouts via environment**: `test_global_timeout=30000`, `test_expect_timeout=30000`, `api_timeout=30000` — adjusted per environment
-- **Navigation strategy change**: Replaced `waitUntil: 'networkidle'` (fragile on apps with background polling) with `waitUntil: 'load'` (event-driven)
-- **Auto-retrying assertions**: Playwright's `expect()` retries automatically up to the timeout window; removed arbitrary `waitForTimeout()` calls
-
-**Result**: Reduced timeout-related failures by 5%; maintained consistency across browsers without sacrificing reliability.
-
----
-
-### 3. Accessibility & Internationalization Limitations
-
-**Challenge**: OrangeHRM has limited accessibility support and lacks test IDs. Language switching breaks tests because locators depend on text content.
-
-**Solutions Implemented**:
-- **CSS selector fallback strategy**: Defined locators by logical DOM grouping (component layout) rather than role-based (which fails on non-compliant apps). Locators are resilient to minor layout changes. Combination of display text + CSS selector.
-- **Text-independent assertions**: Where possible, asserted on element visibility, enabled state, or CSS class changes — not text content
-- **Language invariant approach**: For text-dependent scenarios, captured the expected text from a reference language version and compared programmatically
-- **Accessibility inline in tests**: Axe-Core WCAG 2AA scans run on every auth and PIM test, surfacing violations (e.g., contrast ratio failures) immediately — not as a separate, deprioritised suite
-- **Screenshot baselines per locale**: If running tests in multiple languages, baselines are captured per language variant
-
-**Result**: Tests remain stable even when non-English languages are active; accessibility violations are caught as blocking failures, not warnings.
-
----
-
-### 4. Email Interception for Password Reset Testing
-
-**Challenge**: OrangeHRM does not include an email server by default. Testing password reset workflows requires email interception without touching production mail infrastructure.
-
-**Solutions Implemented**:
-- **Mailtrap sandbox integration**: Configured OrangeHRM to use Mailtrap's SMTP server (safe, isolated, API-accessible)
-- **Unique email per test user**: Employee creation uses a UUID in the email address (`test-${uuid}@mailtrap.io`); this ensures password reset emails land in the correct inbox without sync delays
-- **Email parser utility**: Extracts password reset links from raw email bodies using regex; decodes URL-encoded characters (which was breaking Webkit browsers)
-- **Inbox polling with backoff**: Email retrieval uses `doRetriedPolling()` with exponential backoff; avoids hammering the Mailtrap API
-
-**Result**: Deterministic, CI-safe password reset testing; caught a real bug where URL-encoded characters in reset links broke in Webkit but not Chrome.
-
----
-
-### 5. Single Page Application (SPA) Navigation
-
-**Challenge**: OrangeHRM is a single-page application using the History API to update URLs. Tests relying on `page.goto()` or URL change detection failed inconsistently.
-
-**Solutions Implemented**:
-- **URL assertion using `toHaveURL()`**: Instead of `expect(page.url()).toBe(...)`, used `await expect(page).toHaveURL(expectedPath)` — Playwright retries this assertion automatically if the URL hasn't updated yet
-- **No hardcoded `waitForNavigation()`**: Removed explicit navigation waits; relied on Playwright's auto-waiting via assertions
-- **Relative path navigation with baseURL**: All navigations use relative paths (`page.goto('/relative/path')`) via a configured `baseURL` in `playwright.config.ts`
-
-**Result**: Stable navigation detection; no race conditions between History API updates and test assertions.
-
----
-
-### 6. Webkit Browser Instability
-
-**Challenge**: Webkit (Safari) freezes the UI until all network activity completes, causing significantly different timing behaviour than Chrome or Firefox. This led to higher failure rates on CI (Linux Webkit runs).
-
-**Solutions Implemented**:
-- **1.5× timeout multiplier for Webkit**: Tests running on Webkit get longer assertion windows without masking real performance regressions
-- **Browser-specific workarounds in tests**: For Webkit-specific issues (e.g., timeout handling), conditions were added with `test.skip` or platform-specific logic to avoid false failures
-- **Prioritisation of Chrome/Firefox**: Webkit is retained for cross-browser coverage but is secondary; critical CI runs prioritise Chrome + Firefox
-- **Stress testing via repeated runs**: Each test was executed 10+ times locally to identify Webkit-specific flakiness; issues were either fixed or acceptably isolated
-
-**Result**: Webkit remains in CI coverage without causing cascading failures; critical test runs on Chrome + Firefox with high confidence.
-
----
-
-### 7. Duplicate Employee ID in Parallel Execution
-
-**Challenge**: When adding multiple employees in parallel, auto-generated sequential IDs collided, causing tests to fail with "Employee ID already exists".
-
-**Solutions Implemented**:
-- **UUID-based employee ID generation**: Replaced reliance on auto-generated sequential IDs with programmatically generated UUIDs for test employees (e.g., `EMP-${uuidv4()}`)
-- **Worker-scoped employee creation**: Each worker maintains its own set of created employee IDs via interceptor registration; cleanup aggregates all created IDs before deletion
-- **API-driven employee creation**: Used OrangeHRM's employee creation API (not UI) to generate employees with explicit UUIDs, bypassing the auto-generation logic
-
-**Result**: Eliminated ID collision failures; achieved reliable parallel execution with 2+ workers.
-
----
-
-### 8. Flaky Leave Management Due to Leave Module Inconsistency
-
-**Challenge**: Leave module was sometimes disabled entirely (unclear when or why); tests would fail with "module not found" errors. Leave balance updates were inconsistent — UI updates lagged behind API responses.
-
-**Solutions Implemented**:
-- **API-first leave validation**: After applying leave via UI, polled the `/api/leave/balance` endpoint instead of waiting for UI updates. Captured both status code and updated balance in the response.
-- **Leave module availability pre-check**: Global setup validates that the leave module is active before provisioning leave data; tests skip gracefully if the module is disabled
-- **Month-anchored date logic**: Leave allocation always uses the 1st of the current month as the anchor, avoiding month-boundary issues (February 30th, etc.)
-
-**Result**: Reliable leave testing even when the leave module toggles; reduced leave-related failures from 8% to ~1%.
-
----
-
-### 9. Stale Global Auth Context Across Workers
-
-**Challenge**: A single shared authenticated context (stored as `storageState`) was persisted to disk and reused by all workers. When one worker's session expired and was refreshed, other workers continued using the stale context, leading to authorization failures and session corruption.
-
-**Solutions Implemented**:
-- **Per-worker auth context files**: Changed from a single shared `admin-auth.json` to per-worker files (e.g., `admin-auth-${PID}.json`)
-- **Worker-scoped fixture initialization**: Each fixture initializes a fresh context on test startup; expired tokens are refreshed per worker without affecting siblings
-- **Lock flag for refresh races**: Even with per-worker contexts, a lock flag prevents the same worker from attempting simultaneous token refreshes (which can occur during Playwright retry logic)
-
-**Result**: Eliminated context corruption; workers became fully independent; test stability improved significantly under high parallelisation.
-
----
-
-### 10. Locator Instability & Self-Healing Fallbacks
-
-**Challenge**: OrangeHRM's lack of test IDs forced reliance on CSS selectors. Selectors were fragile when DOM structure changed; tests would break on UI tweaks.
-
-**Solutions Implemented**:
-- **Grouped, layout-based selectors**: Instead of targeting individual elements, selectors identified component containers (e.g., `.oxd-input-group` wrapping both input and error message), making them resilient to internal structure changes
-- **Fallback locator chains**: For critical elements, defined multiple locator strategies in order of preference (e.g., try by role, fall back to CSS class, then by placeholder)
-- **Self-healing approach**: Page objects exposed locator logic through public methods; refactoring a selector in one place fixes all tests that depend on it
-
-**Result**: Reduced locator-related failures; easier maintenance when OrangeHRM UI updates occur.
-
----
-
-## 📖 Key Learnings & Best Practices
-
-### 1. Worker Tuning is Non-Obvious
-
-Initially, the assumption was that running tests with the maximum number of workers (based on CI machine CPU count) would be optimal. In practice, adding more workers increased failures from 10% to 20%+. The AUT has limits on how many concurrent sessions it can handle gracefully. After stress testing and observation, a **2-worker setup** emerged as optimal for this AUT — high parallelisation without overwhelming the server.
-
-**Takeaway**: Parallelisation is not a function of machine capability alone — tune based on AUT load capacity. Use stress testing (running the same test suite 10+ times sequentially) to identify the breaking point.
-
----
-
-### 2. Playwright's Auto-Wait is Transformatively Powerful — Use It Correctly
-
-Transitioning from point-in-time DOM snapshots (`element.textContent()`, `element.count()`) to auto-retrying assertions (`toHaveText()`, `toHaveCount()`) reduced mysterious failures significantly. The key: **the assertion retries the condition**, not the preceding action. Using `toHaveText()` waits for text to appear; using `textContent()` with a manual wait is fragile because the wait may complete before the DOM updates.
-
-**Takeaway**: Playwright's built-in assertions are more reliable than manual waits + custom checks. Avoid `waitForTimeout()` and `waitUntil: 'networkidle'`; rely on event-driven assertions instead.
-
----
-
-### 3. API-First Validation Where Possible
-
-Validating leave balance via API response (both status and data) is faster and more reliable than refreshing the UI and scraping the DOM. Similarly, checking auth state via a dedicated API call (vs. navigating the login page) is 300ms faster and deterministic. This is not just a speed optimisation — it separates the concern of "did the operation work?" from "is the UI reflecting the result?"
-
-**Takeaway**: Use API-driven validation for business logic; reserve UI testing for user-facing features (layout, accessibility, visual feedback). Hybrid testing (API + UI in the same test) is powerful when each layer tests its own concern.
-
----
-
-### 4. Fail Fast is Underrated
-
-Global setup includes baseline checks: Is the AUT reachable? Is the admin user creation endpoint responding? Are the leave and recruitment modules active? These checks run once before any worker starts. Failures here halt the entire suite immediately with a clear error, providing quick feedback. Without this gate, a broken AUT would cause silent, widespread test failures 10 minutes into a run.
-
-**Takeaway**: Invest in pre-suite sanity checks. They save hours of debugging and provide faster feedback loops.
-
----
-
-### 5. Cross-Cutting Concerns Must Be Centralized
-
-Auth, logging, user creation, leave allocation — these are not test-specific. They live in utils, fixtures, and global setup. Test code remains focused on assertions; infrastructure stays in infrastructure code. This separation enabled refactoring the auth manager (token refresh, CSRF extraction, lock flags) without touching a single test file.
-
-**Takeaway**: Identify cross-cutting concerns early (setup, data, auth, logging); centralize them; test code should be thin and readable.
-
----
-
-### 6. Accessibility Is Not "Optional"
-
-Embedding WCAG 2AA scans directly in functional tests (not in a separate, lower-priority suite) surfaced real issues (password field contrast violations) and ensured they were prioritised for fixes. Treating accessibility as a blocking test condition — not a "nice-to-have" — changes organizational behaviour.
-
-**Takeaway**: Integrate accessibility checks into the main test flow; make violations block tests; automation is the fastest way to catch regressions.
-
----
-
-### 7. Browser-Specific Workarounds Are Acceptable When Scoped
-
-Rather than avoiding Webkit entirely, the framework accommodates its limitations (slower JS execution, UI freezing during network activity) with targeted workarounds: a 1.5× timeout multiplier and platform-specific branching where unavoidable. This allows cross-browser coverage without sacrificing stability.
-
-**Takeaway**: Embrace browser quirks where they're unavoidable; use multipliers and platform-specific logic; avoid removing browser coverage just because one browser is trickier.
-
----
-
-### 8. Version Control for Baselines Is Essential
-
-Visual snapshots (screenshots) must be committed to the repository and versioned like any other baseline. When a snapshot changes legitimately (e.g., design update), a developer approves the new snapshot, commits it, and the next CI run uses the updated baseline. This workflow prevents accidental visual regressions without requiring manual review on every run.
-
-**Takeaway**: Screenshots and other visual baselines are code; version control them; require explicit approval for updates.
-
----
-
-### 9. Logging Discipline Pays Dividends
-
-Every test logs significant actions (page navigations, assertions, API calls, user interactions). When a test fails, the logs tell the story — exactly where execution went wrong and what state the application was in. Logs are structured (JSON via Pino), decorated with test name and worker ID, making correlation easy in CI.
-
-**Takeaway**: Log liberally; use structured logging; treat logs as primary debugging artifact, not a secondary nicety.
-
----
-
-### 10. Framework Constraints Enable AI Collaboration
-
-Strict typing (TypeScript strict mode), clear coding standards (ESLint import guards, fixture conventions), and documented patterns (in `.github/copilot-instructions.md`) make it possible for AI-assisted code generation to produce conformant output. Without these constraints, AI-generated code would require extensive rework. With them, generated code often requires only minor adjustments.
-
-**Takeaway**: Invest in framework discipline early; it enables both human collaboration and AI-assisted workflows.
-
----
-
 ## 📚 References
 
 - [Playwright Documentation](https://playwright.dev)
@@ -790,7 +590,6 @@ Strict typing (TypeScript strict mode), clear coding standards (ESLint import gu
 - [Pino Logger](https://getpino.io/)
 - [WCAG 2AA Guidelines](https://www.w3.org/WAI/WCAG2AA-Conformance)
 - [Web Vitals & Lighthouse](https://web.dev/vitals/)
-
 ---
 
 ## 🎓 Deep Dives & Extended Reading
@@ -804,5 +603,4 @@ Strict typing (TypeScript strict mode), clear coding standards (ESLint import gu
 - Operational framework for teams scaling AI collaboration across projects
 
 **Recommended for**: Engineering leaders, team architects, SDETs evaluating AI-assisted testing, hiring managers assessing engineering maturity.
-
 ---
