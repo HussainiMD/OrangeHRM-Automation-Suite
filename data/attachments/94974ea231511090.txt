@@ -1,0 +1,1 @@
+[JavaScript Error: "Image corrupt or truncated." {file: "https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewPhoto/empNumber/7" line: 0}]

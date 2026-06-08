@@ -1,0 +1,12 @@
+[09:12:01] INFO (5508): found admin auth json path: ./storage/admin-auth-5508.json
+[09:12:02] INFO (5508): PID: 5508 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:12:02] INFO (5508): No need of Auth as current authentication is valid
+[09:12:02] INFO (5508): found admin auth json path: ./storage/admin-auth-5508.json
+[09:12:03] INFO (5508): PID: 5508 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:12:03] INFO (5508): No need of Auth as current authentication is valid
+[09:12:03] INFO (5508): found admin auth json path: ./storage/admin-auth-5508.json
+[09:12:03] INFO (5508): PID: 5508 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:12:03] INFO (5508): No need of Auth as current authentication is valid
+[09:12:04] INFO (5508): does "user_f5beca68-e7f7-4df5-9412-bdde33101ef" user exists? false
+[09:12:04] INFO (5508): using employee number 309 for adding new user
+[09:12:05] INFO (5508): add user request API response status is 200

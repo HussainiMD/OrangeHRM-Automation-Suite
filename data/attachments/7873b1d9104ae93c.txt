@@ -1,0 +1,12 @@
+[09:24:27] INFO (6845): found admin auth json path: ./storage/admin-auth-6845.json
+[09:24:28] INFO (6845): PID: 6845 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:24:28] INFO (6845): No need of Auth as current authentication is valid
+[09:24:28] INFO (6845): found admin auth json path: ./storage/admin-auth-6845.json
+[09:24:29] INFO (6845): PID: 6845 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:24:29] INFO (6845): No need of Auth as current authentication is valid
+[09:24:29] INFO (6845): found admin auth json path: ./storage/admin-auth-6845.json
+[09:24:29] INFO (6845): PID: 6845 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:24:29] INFO (6845): No need of Auth as current authentication is valid
+[09:24:30] INFO (6845): does "user_bca32301-5a1a-403e-bd5f-938c8058eba" user exists? false
+[09:24:30] INFO (6845): using employee number 309 for adding new user
+[09:24:30] INFO (6845): add user request API response status is 200

@@ -1,0 +1,11 @@
+[09:37:22] INFO (11214): PID: 11214 - Starting the process for a new Auth token
+[09:37:27] INFO (11214): Refreshing local globalAPIRequestContext reference
+[09:37:27] INFO (11214): found admin auth json path: ./storage/admin-auth-11214.json
+[09:37:28] INFO (11214): PID: 11214 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:37:28] INFO (11214): No need of Auth as current authentication is valid
+[09:37:28] INFO (11214): found admin auth json path: ./storage/admin-auth-11214.json
+[09:37:28] INFO (11214): PID: 11214 - Got response code 200 while accessing URL-https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=1
+[09:37:28] INFO (11214): No need of Auth as current authentication is valid
+[09:37:29] INFO (11214): does "user_f5fb46a6-9ff2-4de4-89a8-a80634437bd" user exists? false
+[09:37:29] INFO (11214): using employee number 309 for adding new user
+[09:37:30] INFO (11214): add user request API response status is 200

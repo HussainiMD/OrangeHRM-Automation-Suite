@@ -1,0 +1,5 @@
+[09:59:59] INFO (16112): dashboard page duration - 7.68 seconds
+    worker: 19
+    test: "TC_LOGIN_051-001 | Performance | Login | Login and dashboard page response time"
+    retry: 0
+    file: "/home/runner/work/OrangeHRM-Automation-Suite/OrangeHRM-Automation-Suite/tests/ui/regression/performance/response-time.spec.ts"
