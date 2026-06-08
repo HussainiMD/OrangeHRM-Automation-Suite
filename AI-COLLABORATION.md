@@ -4,9 +4,9 @@
 
 This document captures the methodologies, tools, and learnings from building a production-grade Playwright automation framework using AI-assisted development. The goal: accelerate velocity without sacrificing quality, maintainability, or control.
 
-**Key Result**: Achieved 80% reduction in boilerplate writing time and 60+ test scenarios surfaced in ~10 minutes (vs. 3–4 hours of manual analysis). This came at the cost of discipline: careful instruction design, multi-layer guardrails, and systematic pattern recognition to manage hallucinations and model drift.
+**Key Result**: Achieved 80% reduction in boilerplate writing time and 60+ test scenarios surfaced in ~30 minutes (vs. 3–4 hours of manual analysis). This came at the cost of discipline: careful instruction design, multi-layer guardrails, and systematic pattern recognition to manage hallucinations and model drift.
 
-This is not a "hands-off" workflow. It is **supervised execution** — AI accelerates the parts where it excels (discovery, scaffolding, pattern matching), while engineers retain control over architecture, trade-offs, and final validation.
+This is *NOT* a "hands-off" workflow. It is **supervised execution** — AI accelerates the parts where it excels (discovery, scaffolding, pattern matching), while engineers retain control over architecture, trade-offs, and final validation.
 
 ---
 
@@ -67,7 +67,7 @@ Different AI tools excel at different phases of development. Strategic allocatio
 
 | Problem | Manifestation | Solution |
 |---|---|---|
-| **Over-Abstraction** | Claude suggested a shared `APIRequestContext` across all utilities to "unify HTTP handling" | Rejected: Only auth manager needs persistent context; others use Playwright's request fixture. Added to `.github/copilot-instructions.md`: "Only abstract when 2+ consumers exist" |
+| **Hallucination and Lack of Trust** | AI (non claude) keeps forgetting context, asks during a long chat session | Needed persistance & course correction with watchful eye |
 | **Missing Edge Cases** | Initial DI design didn't account for token expiry during test retry | Refined design to include lock flag + auto-refresh logic; explicitly documented in fixture comments |
 | **Trade-off Opacity** | Architecture decisions made without recording the alternatives considered | Created `ARCHITECTURE.md` documenting rejected patterns and rationale |
 
@@ -86,31 +86,6 @@ Different AI tools excel at different phases of development. Strategic allocatio
 2. **Spot Review**: First-draft code reviewed for anti-patterns (point-in-time assertions, fragile waits, implicit `any`)
 3. **Refinement Cycles**: AI made corrections; each cycle improved adherence to standards
 
-#### Examples
-
-**Leave Management Utility**
-```typescript
-// First draft (problematic)
-const baseDate = new Date(); // Falls apart at month boundaries
-const endDate = new Date(baseDate.getTime() + (N * 24 * 60 * 60 * 1000));
-
-// Refined (month-safe by construction)
-const baseDate = new Date();
-baseDate.setDate(1); // Anchor to 1st of month
-const endDate = new Date(baseDate);
-endDate.setDate(baseDate.getDate() + N); // N days from 1st of month
-```
-
-**Assertion Anti-Pattern Correction**
-```typescript
-// Anti-pattern (point-in-time snapshot, flaky)
-const element = page.locator('button');
-expect(element.isVisible()).toBe(true);
-
-// Correct (auto-retrying, stable)
-const element = page.locator('button');
-await expect(element).toBeVisible();
-```
 
 #### Pitfalls Encountered & Mitigated
 
@@ -524,45 +499,6 @@ For every decision made with AI input, document:
 - Final decision and rationale
 
 This is not overhead — it is the foundation for future maintenance and onboarding.
-
----
-
-## 📈 Metrics & ROI
-
-### Time Saved (Conservative Estimate)
-
-| Activity | Manual Hours | AI-Assisted Hours | Savings |
-|---|---|---|---|
-| Requirements discovery (60+ scenarios) | 4.0 | 0.25 | 3.75 |
-| Architecture design (trade-offs, patterns) | 2.0 | 1.0 | 1.0 |
-| Test code generation (60 tests @ 1 hr each) | 60.0 | 6.0 | 54.0 |
-| Code review & refinement (2 passes each) | 12.0 | 8.0 | 4.0 |
-| Debugging & root cause (5 major issues) | 5.0 | 0.5 | 4.5 |
-| **Total** | **83.0** | **15.75** | **67.25 hours (~81%)** |
-
-### Quality Metrics
-
-| Metric | Manual Baseline | AI-Assisted | Verdict |
-|---|---|---|---|
-| **Test pass rate (local)** | ~95% | ~97% | +2% (higher initial quality) |
-| **Test flakiness (CI runs)** | ~5% | ~3% | +2% (fewer timing issues due to patterns) |
-| **Code review cycles** | 1–2 | 2–3 | -1 cycle (more nuanced, architectural review) |
-| **Time to production** | 16 weeks | 4 weeks | **75% faster** |
-
-### Cost-Benefit Analysis
-
-**Costs**:
-- GitHub Copilot: $10/month per developer
-- Claude Pro (for backup sessions): $20/month per developer
-- Time spent writing detailed instructions: ~8 hours upfront, ~2 hours/month maintenance
-
-**Benefits**:
-- 67 hours saved per feature suite
-- Faster feedback loops (4 weeks vs. 16 weeks)
-- Fewer bugs in production (higher code quality from consistent patterns)
-- Knowledge transfer (AI-generated code demonstrates patterns for new team members)
-
-**ROI**: Positive in first month; exponential improvement as patterns are reused across projects.
 
 ---
 
