@@ -2,8 +2,14 @@ name: Playwright Tests
 on:
   push:
     branches: [ main, master, develop ]
+    paths-ignore:
+      - '**.md'
+      - '.github/**.md'
   pull_request:
     branches: [ main, master ]
+    paths-ignore:
+      - '**.md'
+      - '.github/**.md'
   workflow_dispatch:        # manual trigger from GH UI
 
 env:
@@ -312,8 +318,7 @@ jobs:
       if: always()
       id: check_results
       run: |
-        count=$(find allure-results -name "*.json" 2>/dev/null | wc -l)
-        if [ "$count" -gt "3" ]; then        # at least a few real result files
+        if [ -d "allure-results" ] && [ "$(ls -A allure-results)" ]; then
           echo "has_results=true" >> $GITHUB_OUTPUT
         else
           echo "has_results=false" >> $GITHUB_OUTPUT
@@ -361,7 +366,7 @@ jobs:
         overwrite: true   
 
     - name: Upload Allure Report
-      if: (job.status == 'success' || job.status == 'failure') && steps.check_results.outputs.has_results == 'true'
+      if: always() && steps.check_results.outputs.has_results == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: allure-report
@@ -369,10 +374,7 @@ jobs:
         retention-days: 14
 
     - name: Deploy Allure Report to GitHub Pages
-      if: |
-        (job.status == 'success' || job.status == 'failure') &&
-        steps.check_results.outputs.has_results == 'true' &&
-        github.event_name != 'pull_request'
+      if: always() && steps.check_results.outputs.has_results == 'true' && github.event_name != 'pull_request'
       uses: peaceiris/actions-gh-pages@v4
       with:
        github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub injects it automatically
