@@ -51,7 +51,7 @@ This framework demonstrates **structured AI collaboration** at SCALE — using C
 ## 💼 Business Value Delivered
 
 - **Eliminated 6–8 hours/week of manual regression** — ~65 test cases execute in parallel across three browsers, catching auth gaps, validation failures, and access-control violations before they reach UAT
-- **Cross-browser confidence in under 45 minutes** — Chrome, Firefox, and Safari run simultaneously in CI; significant reduction of feeback time + major browsers covered!!
+- **Cross-browser confidence in under 45 minutes** — Chrome, Firefox, and Safari run simultaneously in CI; significant reduction of feedback time + major browsers covered!!
 - **Employee onboarding defect detection before UAT** — PIM form validation tests cover 12+ failure modes (photo upload edge cases, field masking, mandatory field bypass), preventing late-stage rework
 - **Built-in accessibility compliance gate** — Automated WCAG 2AA scanning on every auth and PIM flow; discovered password field *contrast* violations (3.2:1 vs. required 4.5:1) before release
 - **Instant post-incident root cause data** — Video, DOM trace, and screenshot captured on every failure; reduced average debugging time 
@@ -191,7 +191,7 @@ Two fixtures — `adminUserAuthContext` and `essUserAuthPage` — inject pre-aut
 
 On fixture *initialisation*, an explicit auth gate assertion confirms the session is valid before handing control to the test. On *teardown*, the fixture logs out and handles errors gracefully — if logout fails (e.g., session already expired), it catches and logs the failure rather than crashing the teardown chain. This design means a session failure manifests as a fixture error with a clear message, not as a mysterious mid-test assertion failure.
 
-**Mid Flight Auto Refresh which is thread safe from parellel workers**
+**Mid Flight Auto Refresh which is thread safe from parallel workers**
 When a token expires during a test and Playwright retries, the auth manager refreshes credentials using a lock flag to prevent race conditions across parallel workers. Subsequent retries get a guaranteed fresh context. 
 
 **2. Global Setup / Teardown with Worker Isolation**
@@ -214,11 +214,11 @@ A critical design decision: the scanner does **not** short-circuit on the first 
 
 **5. Leave Management Utility**
 
-The leave allocation utility ensures that leaves are pre alloted in the global setup phase. During testing the leave application validation test cases, underlying API response based verification is used to ensure that test stays TRULY INDEPENDENT. There by ensuring that tests can be run in Parellel
+The leave allocation utility ensures that leaves are pre alloted in the global setup phase. During testing the leave application validation test cases, underlying API response based verification is used to ensure that test stays TRULY INDEPENDENT. There by ensuring that tests can be run in Parallel
 
 **6. YAGNI-Driven API Architecture (balancing right setup and future proofing)**
 
-By design Single Repoonsibility principle is embraced: Each need has a dedicated utility (e.g auth manager). Cross cutting concerns like logging, setup and data clean up in AUT are abstracted away from the test case. All of them happen behind the scenes!!
+By design Single Responsibility principle is embraced: Each need has a dedicated utility (e.g auth manager). Cross cutting concerns like logging, setup and data clean up in AUT are abstracted away from the test case. All of them happen behind the scenes!!
 
 ---
 
