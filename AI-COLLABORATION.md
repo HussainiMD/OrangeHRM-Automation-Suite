@@ -217,8 +217,8 @@ Using ONLY the locators from Phase 1:
 
 | Metric | Manual Approach | AI-Assisted | Improvement |
 |---|---|---|---|
-| **Time to identify 60+ test scenarios** | 3–4 hours | ~10 minutes | **95% faster** |
-| **Edge cases surfaced** | Typical: 20–25 | Typical: 50–60 | **+100% coverage** |
+| **Time to identify 60+ test scenarios** | 3–4 hours | ~10 minutes | **90% faster** |
+| **Edge cases surfaced** | Typical: 20–25 | Typical: 50–60 | **+50% coverage** |
 | **Follow-up refinement iterations** | 0–1 | 2–3 | Negligible (refinement is quick) |
 
 ### Test Case Documentation
