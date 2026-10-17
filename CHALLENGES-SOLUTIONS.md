@@ -8,7 +8,7 @@
 - **Pre-authenticated sessions per worker**: Each test gets its own authenticated context via fixtures; no shared global state in the browser
 - **Worker-scoped employee data**: Global setup creates one shared employee; each worker that creates employees registers an interceptor on POST `/pim/employees` to capture IDs, enabling deterministic cleanup
 - **Atomic CSRF token refresh**: A lock flag prevents multiple workers from simultaneously attempting to refresh an expired token, eliminating *race conditions*.
-- **Configurable worker count**: Local runs use 2 workers; CI uses 2 workers; adjusted based on AUT load tolerance and CI machine specs
+- **Configurable worker count**: Local runs use 3 workers; CI uses 2 workers; adjusted based on AUT load tolerance and CI machine specs
 
 **Result**: Reduced flaky failures from 30% to 10% through tuning worker counts and isolating data per worker.
 

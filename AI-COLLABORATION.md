@@ -213,6 +213,8 @@ Using ONLY the locators from Phase 1:
 
 ## 📊 Velocity Metrics: AI-Augmented Results
 
+*Disclaimer*: Self-reported estimates from one developer on one project. 'Manual' figures are hypothetical, not measured
+
 ### Test Scenario Discovery
 
 | Metric | Manual Approach | AI-Assisted |
@@ -314,7 +316,7 @@ Using ONLY the locators from Phase 1:
    ✓ No axios imports → ESLint rule blocks it
    ```
 
-2. **Pre-Commit Lint Gate**
+2. **Pre-Test Lint Gate**
    ```bash
    npm run testscript  # Runs ESLint before Playwright
    # If lint fails, execution stops; no tests run
@@ -336,7 +338,7 @@ Using ONLY the locators from Phase 1:
 
 #### Coverage
 
-- Catches 85–90% of anti-patterns automatically
+- Catches the anti-patterns automatically
 - Requires human review for architectural violations (e.g., "should this be a utility or a test utility?")
 - Edge cases (over-abstraction, missing error handling) remain expert review territory
 
@@ -577,6 +579,6 @@ Teams adopting this approach should expect:
 - 70–85% reduction in boilerplate time
 - 90% faster debugging with AI-assisted trace analysis
 - Improved code quality through consistent pattern enforcement
-- Higher initial investment in instruction design, but exponential payoff as patterns are reused
+- Higher initial investment in instruction design, but it will be eventual payoff as patterns are reused
 
 The operational framework presented here (sessions, guardrails, documentation discipline) is portable across teams and projects. Start small, iterate on instructions, layer guardrails progressively, and measure impact rigorously.

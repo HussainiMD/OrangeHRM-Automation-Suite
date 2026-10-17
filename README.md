@@ -2,9 +2,9 @@
 
 ## 🎯 What This Project Does
 
-This is a **production-grade UI automation framework** for OrangeHRM, an enterprise HR management system used by many organisations world wide. It validates critical business workflows — employee lifecycle management, authentication, role-based access control, leave processing, security hardening, and system resilience — across three major browsers with zero manual intervention.
+This is a **pro-grade UI automation framework** for OrangeHRM, an enterprise HR management system used by many organisations world wide. It validates critical business workflows — employee lifecycle management, authentication, role-based access control, leave processing, security hardening, and system resilience — across three major browsers with minimal manual intervention.
 
-The framework goes beyond functional testing: instrumented with structured logging, automated accessibility scanning (WCAG 2AA), email interception, credential leakage detection, and Lighthouse performance assertions. It is architected as a PORTFOLIO demonstration of what a senior SDET produces at scale — not a collection of scripts, but a maintainable engineering system.
+The framework goes beyond functional testing: instrumented with structured logging, automated accessibility scanning (WCAG 2AA), email interception, credential leakage detection, and Lighthouse performance assertions. It is architected as a PORTFOLIO demonstration of what a senior SDET can offer — not a collection of scripts, but a maintainable engineering system.
 
 ## What Makes This Different From a Tutorial Project
 | Decision | Why |
@@ -21,7 +21,7 @@ The framework goes beyond functional testing: instrumented with structured loggi
 
 ## 💼 Business Value Delivered
 
-- **Test coverage at speed** — ~65 test cases execute in parallel across three browsers, catching auth gaps, validation failures, and access-control violations before they reach UAT
+- **Test coverage at speed** — ~65 test cases execute in parallel across three browsers, catching auth gaps, validation failures, and access-control violations
 - **Cross-browser confidence** — Chrome, Firefox, and Safari run simultaneously in CI; significant reduction of feedback time + major browsers covered!!
 - **Employee onboarding defect detection before UAT** — PIM form validation tests cover 12+ failure modes (photo upload edge cases, field masking, mandatory field bypass), preventing late-stage rework
 - **Built-in accessibility compliance gate** — Automated WCAG 2AA scanning on every auth and PIM flow; discovered password field *contrast* violations (3.2:1 vs. required 4.5:1) before release
@@ -204,21 +204,9 @@ Safari's JavaScript execution is measurably slower; the multiplier prevents fals
 
 ---
 
-## 🤖 AI-Augmented Development: Engineering Velocity & Quality
-
-This framework demonstrates **structured AI collaboration** at SCALE — using Claude, ChatGPT, GitHub Copilot, and Playwright MCP to accelerate development without sacrificing quality or control. The approach combines agentic automation with deterministic guardrails. 
-
-**How It Works**: AI handles discovery, scaffolding, and pattern-matching; engineers retain *full authority* over architecture, trade-offs, and validation. Soft guardrails (detailed instructions, pattern examples) are layered with **hard** guardrails (ESLint rules, pre-commit gates, code review checklists).
-
-**For Hiring Managers/Leads**: This demonstrates operational maturity in AI collaboration — not replacing engineers, but amplifying their impact through **disciplined supervision and systematic guardrail design**. The framework is PORTABLE across teams and projects.
-
-👉 **[Read AI-COLLABORATION.md →](./AI-COLLABORATION.md)** for a deep dive into tools, methodologies, metrics, and operational lessons learned.
-
----
-
 ## 🏔️ Challenges Faced & Solutions Implemented
 
-👉 **[Read CHALLENGES-SOLUTIONS.md →](./CHALLENGES-SOLUTIONS.md)** to know details of challenges and solutions (for them) while working on thsi project
+👉 **[Read CHALLENGES-SOLUTIONS.md →](./CHALLENGES-SOLUTIONS.md)** to know details of challenges and solutions (for them) while working on this project
 
 ---
 
@@ -315,6 +303,15 @@ npx playwright show-report
 ## 🤖 AI-Assisted Development Workflow
 This project was built using a structured, multi-model AI workflow — each tool assigned to the phase where it adds the most value. The output reflects deliberate engineering decisions; AI accelerated velocity and surfaced alternatives, but every architectural choice and code pattern was evaluated, challenged, and in several cases overridden based on the specific context of this framework.
 
+This framework demonstrates **structured AI collaboration** at SCALE — using Claude, ChatGPT, GitHub Copilot, and Playwright MCP to accelerate development without sacrificing quality or control. The approach combines agentic automation with deterministic guardrails. 
+
+**How It Works**: AI handles discovery, scaffolding, and pattern-matching; engineers retain *full authority* over architecture, trade-offs, and validation. Soft guardrails (detailed instructions, pattern examples) are layered with **hard** guardrails (ESLint rules, pre-commit gates, code review checklists).
+
+This demonstrates operational maturity in AI collaboration — not replacing engineers, but amplifying their impact through **disciplined supervision and systematic guardrail design**. The framework is PORTABLE across teams and projects.
+
+👉 **[Read AI-COLLABORATION.md →](./AI-COLLABORATION.md)** for a deep dive into tools, methodologies, metrics, and operational lessons learned.
+
+
 ### Tool Allocation by Phase
 | Phase | Tool(s) | How It Was Used |
 |---|---|---|
@@ -327,7 +324,7 @@ This project was built using a structured, multi-model AI workflow — each tool
 ### What This Workflow Produced (and What It Didn't)
 The AI pipeline meaningfully accelerated three things: **discovery** (edge cases that would have taken hours of manual analysis), **scaffolding** (boilerplate that matched established patterns), and **review cycles** (catching anti-patterns across files systematically rather than file-by-file).
 
-Unlike the popular belief. AI needs HAND HOLDING, drawing fence line, more precise instructions, psuedo code and watchful eye. Otherwise, it causes "*shooting in the foot*" kind of situation, very easily!!
+Unlike the popular belief. AI needs HAND HOLDING, drawing fence line, more precise instructions, psudo code and watchful eye. Otherwise, it causes "*shooting in the foot*" kind of situation, very easily!!
 
 The `.github/copilot-instructions.md` file in the repository documents the coding standards and architectural patterns that constrain AI-generated code — ensuring generated output conforms to the framework's conventions before it is accepted.
 
@@ -350,7 +347,7 @@ The `.github/copilot-instructions.md` file in the repository documents the codin
 ### Primary Document: AI-Augmented Development Operations
 📖 **[AI-COLLABORATION.md](./AI-COLLABORATION.md)** — A comprehensive operational guide on building production systems with AI-assisted development. Covers:
 - Tool allocation by development phase (discovery, architecture, coding, debugging, agentic generation)
-- Velocity metrics & ROI analysis 
+- Velocity estimates 
 - Guardrail design patterns (soft + hard layers to prevent hallucinations and enforce standards)
 - Challenge resolution & lessons learned (handling token limits, model drift, session discipline)
 - Operational framework for teams scaling AI collaboration across projects
