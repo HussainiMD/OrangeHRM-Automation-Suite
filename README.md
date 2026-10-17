@@ -30,6 +30,17 @@ The framework goes beyond functional testing: instrumented with structured loggi
 
 ---
 
+## 🔗 Quick Links
+- **Repository**: [github.com/HussainiMD/OrangeHRM-Automation-Suite](https://github.com/HussainiMD/OrangeHRM-Automation-Suite)
+- 🎬 ***Demo***: Hybrid API + UI Password Reset Flow - CLICK on the LINK below
+     - [![DEMO video]<img width="50" height="50" alt="password_reset_thumbnail_under_50kb" src="https://github.com/user-attachments/assets/c83dfbb1-7c3b-4b46-8bd9-777b9c9e1af1" />](https://youtu.be/3aTzZftW2K0)
+          - <small>Playwright pauses after triggering reset → Mailtrap inbox shows email landing in real time → script resumes, pulls link via API, completes recovery across browsers.</small>
+- **Public Allure Dashboard**: [hussainimd.github.io/OrangeHRM-Automation-Suite](https://hussainimd.github.io/OrangeHRM-Automation-Suite/) — Live test history, trends, and flakiness data
+     - <img width="1862" height="835" alt="Allur_Report_Screenshot" src="https://github.com/user-attachments/assets/8303a5c0-f1cb-484d-9536-bcb443973f5f" />
+- **CI/CD Workflow**: [GitHub Actions](https://github.com/HussainiMD/OrangeHRM-Automation-Suite/actions/workflows/playwright.yml) — Trigger a manual run anytime *without* a code push
+
+---
+
 ## 🏗️ Architecture & Design Decisions
 
 ### 📁 Project Structure
@@ -190,18 +201,6 @@ Safari's JavaScript execution is measurably slower; the multiplier prevents fals
 ## 🐛 Bugs & Issues Discovered in OrangeHRM
 
 👉 **[Read BUGS-DISCOVERED.md →](./BUGS-DISCOVERED.md)** to know details of bugs/issues discovered during testing.
-
----
-
-
-## 🔗 Quick Links
-- **Repository**: [github.com/HussainiMD/OrangeHRM-Automation-Suite](https://github.com/HussainiMD/OrangeHRM-Automation-Suite)
-- 🎬 ***Demo***: Hybrid API + UI Password Reset Flow - CLICK on the LINK below
-     - [![DEMO video]<img width="50" height="50" alt="password_reset_thumbnail_under_50kb" src="https://github.com/user-attachments/assets/c83dfbb1-7c3b-4b46-8bd9-777b9c9e1af1" />](https://youtu.be/3aTzZftW2K0)
-          - <small>Playwright pauses after triggering reset → Mailtrap inbox shows email landing in real time → script resumes, pulls link via API, completes recovery across browsers.</small>
-- **Public Allure Dashboard**: [hussainimd.github.io/OrangeHRM-Automation-Suite](https://hussainimd.github.io/OrangeHRM-Automation-Suite/) — Live test history, trends, and flakiness data
-     - <img width="1862" height="835" alt="Allur_Report_Screenshot" src="https://github.com/user-attachments/assets/8303a5c0-f1cb-484d-9536-bcb443973f5f" />
-- **CI/CD Workflow**: [GitHub Actions](https://github.com/HussainiMD/OrangeHRM-Automation-Suite/actions/workflows/playwright.yml) — Trigger a manual run anytime *without* a code push
 
 ---
 
