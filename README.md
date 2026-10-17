@@ -21,8 +21,8 @@ The framework goes beyond functional testing: instrumented with structured loggi
 
 ## 💼 Business Value Delivered
 
-- **Eliminated 6–8 hours/week of manual regression** — ~65 test cases execute in parallel across three browsers, catching auth gaps, validation failures, and access-control violations before they reach UAT
-- **Cross-browser confidence in under 45 minutes** — Chrome, Firefox, and Safari run simultaneously in CI; significant reduction of feedback time + major browsers covered!!
+- **Test coverage at speed** — ~65 test cases execute in parallel across three browsers, catching auth gaps, validation failures, and access-control violations before they reach UAT
+- **Cross-browser confidence** — Chrome, Firefox, and Safari run simultaneously in CI; significant reduction of feedback time + major browsers covered!!
 - **Employee onboarding defect detection before UAT** — PIM form validation tests cover 12+ failure modes (photo upload edge cases, field masking, mandatory field bypass), preventing late-stage rework
 - **Built-in accessibility compliance gate** — Automated WCAG 2AA scanning on every auth and PIM flow; discovered password field *contrast* violations (3.2:1 vs. required 4.5:1) before release
 - **Instant post-incident root cause data** — Video, DOM trace, and screenshot captured on every failure; reduced average debugging time 
@@ -133,7 +133,7 @@ Two fixtures — `adminUserAuthContext` and `essUserAuthPage` — inject pre-aut
 
 On fixture *initialisation*, an explicit auth gate assertion confirms the session is valid before handing control to the test. On *teardown*, the fixture logs out and handles errors gracefully — if logout fails (e.g., session already expired), it catches and logs the failure rather than crashing the teardown chain. This design means a session failure manifests as a fixture error with a clear message, not as a mysterious mid-test assertion failure.
 
-**Mid Flight Auto Refresh which is thread safe from parallel workers**
+**Mid Flight Auto Refresh which is safe (& consistent) from parallel workers**
 When a token expires during a test and Playwright retries, the auth manager refreshes credentials using a lock flag to prevent race conditions across parallel workers. Subsequent retries get a guaranteed fresh context. 
 
 **2. Global Setup / Teardown with Worker Isolation**
@@ -206,15 +206,7 @@ Safari's JavaScript execution is measurably slower; the multiplier prevents fals
 
 ## 🤖 AI-Augmented Development: Engineering Velocity & Quality
 
-This framework demonstrates **structured AI collaboration** at SCALE — using Claude, ChatGPT, GitHub Copilot, and Playwright MCP to accelerate development without sacrificing quality or control. The approach combines agentic automation with deterministic guardrails, resulting in:
-
-| Metric | Improvement |
-|---|---|
-| **Test scenario discovery** | 60+ cases surfaced in ~10 minutes (vs. 3–4 hours manual analysis) — **60% faster** |
-| **Test code generation** | 80% boilerplate reduction; typical test written in ~10 minutes (vs. 1 hour manual) — **75% faster** |
-| **Debugging & root cause** | Average resolution dropped from ~30–60 min to ~15 minutes with AI-assisted trace analysis — **60% faster** |
-| **Total development velocity** | 75% reduction in manual effort |
-| **Code quality** | Consistent pattern enforcement via fixtures, utilities, and guardrails; first-pass quality  |
+This framework demonstrates **structured AI collaboration** at SCALE — using Claude, ChatGPT, GitHub Copilot, and Playwright MCP to accelerate development without sacrificing quality or control. The approach combines agentic automation with deterministic guardrails. 
 
 **How It Works**: AI handles discovery, scaffolding, and pattern-matching; engineers retain *full authority* over architecture, trade-offs, and validation. Soft guardrails (detailed instructions, pattern examples) are layered with **hard** guardrails (ESLint rules, pre-commit gates, code review checklists).
 
@@ -239,7 +231,7 @@ This framework demonstrates **structured AI collaboration** at SCALE — using C
 | **Pino Logger** | 10.3.1 | Structured JSON logging with test context decoration |
 | **Allure Reporting** | 3.7.2 | Test reports with screenshots, traces, trends, flakiness data |
 | **Axe-Core (Playwright)** | 4.11.2 | WCAG 2AA accessibility scanning per test |
-| **Lighthouse** | 13.1.0 | Performance SLA assertions (load time, API response time) |
+| **Lighthouse & Response times** | 13.1.0 | Performance SLA assertions (load time, API response time) |
 | **Mailtrap** | 4.5.1 | Email sandbox API for password-reset flow interception |
 | **dotenv** | 17.4.2 | Environment variable management |
 | **Node.js** | 24 LTS | Runtime |
